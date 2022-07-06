@@ -1,5 +1,4 @@
 import de.honoka.util.code.DateBuilder;
-import de.honoka.util.file.FileUtils;
 import de.honoka.util.system.SystemInfoBean;
 import de.honoka.util.text.ExceptionUtils;
 import de.honoka.util.text.TextUtils;
@@ -7,9 +6,6 @@ import de.honoka.util.various.ReflectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -91,13 +87,6 @@ public class AllTest {
         System.out.println(Exception.class.isAssignableFrom(RuntimeException.class));
         //false
         System.out.println(RuntimeException.class.isAssignableFrom(Exception.class));
-    }
-
-    //@Test
-    public void urlToFileTest() throws Exception {
-        File f = new File(Path.of(FileUtils.getClasspath(),
-                "a.html").toString());
-        FileUtils.urlToFile(new URL("http://www.baidu.com"), f);
     }
 
     //@Test

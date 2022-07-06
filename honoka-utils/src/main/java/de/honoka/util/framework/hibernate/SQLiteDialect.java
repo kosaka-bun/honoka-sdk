@@ -65,15 +65,6 @@ public class SQLiteDialect extends Dialect {
         return "select last_insert_rowid()";
     }
 
-    public boolean supportsLimit() {
-        return true;
-    }
-
-    public String getLimitString(String query, boolean hasOffset) {
-        return new StringBuffer(query.length() + 20).append(query).append(
-                hasOffset ? " limit ? offset ?" : " limit ?").toString();
-    }
-
     public boolean supportsTemporaryTables() {
         return true;
     }
@@ -145,15 +136,5 @@ public class SQLiteDialect extends Dialect {
 
     public boolean supportsCascadeDelete() {
         return false;
-    }
-
-    /**
-     * 修复分页bug
-     *
-     * @author Z.kc
-     */
-    @Override
-    public boolean bindLimitParametersInReverseOrder() {
-        return true;
     }
 }
