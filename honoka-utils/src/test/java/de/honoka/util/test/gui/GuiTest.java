@@ -1,5 +1,7 @@
+package de.honoka.util.test.gui;
+
 import de.honoka.util.code.CodeUtils;
-import de.honoka.util.system.ConsoleWindow;
+import de.honoka.util.system.gui.ConsoleWindow;
 
 import java.util.UUID;
 

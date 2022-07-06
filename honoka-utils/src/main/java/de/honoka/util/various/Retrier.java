@@ -29,6 +29,7 @@ public class Retrier {
         this.defaultRetryingTimes = defaultRetryingTimes;
     }
 
+    @SafeVarargs
     public Retrier(Class<? extends Throwable>... types) {
         this(Arrays.asList(types));
     }

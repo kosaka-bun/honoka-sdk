@@ -7,6 +7,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
@@ -15,8 +16,10 @@ import java.util.concurrent.ScheduledFuture;
  */
 public abstract class Task implements SchedulingConfigurer {
 
-    /* 由于被Spring框架所代理的对象的字段不能被直接访问，故要访问此类的可变字段，
-       均需定义getter和setter */
+    /**
+     * 由于被Spring框架所代理的对象的字段不能被直接访问，故要访问此类的可变字段，
+     * 均需定义getter和setter
+     */
     protected String cron;
 
     public String getCron() {
@@ -30,8 +33,8 @@ public abstract class Task implements SchedulingConfigurer {
 
     /**
      * 用于提醒子类为cron字段赋初值
+     * 不应在构造方法的参数处指定需要传入cron，会影响spring对此类的加载
      */
-    //不应在构造方法的参数处指定需要传入cron，会影响spring对此类的加载
     protected abstract String initCron();
 
     /**
@@ -50,8 +53,8 @@ public abstract class Task implements SchedulingConfigurer {
 
     /**
      * 任务执行时调用此方法，此方法将被对应的切面类所监视
+     * 要使此方法被切面类所监视，必须在子类中重写此方法，但不需要额外实现，保持默认实现即可
      */
-    //要使此方法被切面类所监视，必须在子类中重写此方法，但不需要额外实现，保持默认实现即可
     public synchronized String run() throws Exception {
         if(doneInAdvance) {
             doneInAdvance = false;    //表示忽略此次执行，然后指定下一次任务未被提前执行
@@ -82,6 +85,7 @@ public abstract class Task implements SchedulingConfigurer {
     /**
      * 获取spring的计划任务列表
      */
+    @SuppressWarnings("unchecked")
     private Set<ScheduledFuture<?>> getScheduledFutures() {
         return (Set<ScheduledFuture<?>>) ReflectUtils.getFieldValue(
                 scheduledTaskRegistrar, "scheduledTasks");
@@ -127,7 +131,7 @@ public abstract class Task implements SchedulingConfigurer {
     public void start() {
         if(isRunning()) return;
         TriggerTask triggerTask = getTriggerTask();
-        scheduledFuture = scheduledTaskRegistrar.getScheduler()
+        scheduledFuture = Objects.requireNonNull(scheduledTaskRegistrar.getScheduler())
                 .schedule(triggerTask.getRunnable(), triggerTask.getTrigger());
         getScheduledFutures().add(scheduledFuture);
     }

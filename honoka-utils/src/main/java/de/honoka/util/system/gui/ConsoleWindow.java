@@ -1,8 +1,7 @@
-package de.honoka.util.system;
+package de.honoka.util.system.gui;
 
 import de.honoka.util.code.ActionUtils;
 import de.honoka.util.code.ThrowsRunnable;
-import de.honoka.util.system.gui.WrapableJTextPane;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -44,7 +43,7 @@ public class ConsoleWindow {
 
     private final JFrame frame = new JFrame();
 
-    private final String windowName;
+    final String windowName;
 
     private final JTextPane textPane = new WrapableJTextPane();
 
@@ -199,7 +198,8 @@ public class ConsoleWindow {
                 writeToTextPane(this, bytes);
             }
         }
-        ConsoleOutputStream newOut = new ConsoleOutputStreamImpl(System.out, defaultFontColor);
+        ConsoleOutputStream newOut = new ConsoleOutputStreamImpl(System.out,
+                defaultFontColor);
         ConsoleOutputStream newErr = new ConsoleOutputStreamImpl(System.err,
                 new Color(255, 107, 103, 255));
         PrintStream newOutPrintStream =
@@ -208,6 +208,10 @@ public class ConsoleWindow {
                 new PrintStream(newErr, false, StandardCharsets.UTF_8);
         System.setOut(newOutPrintStream);
         System.setErr(newErrPrintStream);
+    }
+
+    private void changeSystemIn() {
+        System.setIn(new ConsoleInputStream(this));
     }
 
     /**
@@ -302,8 +306,9 @@ public class ConsoleWindow {
         defaultAttributeSet = attributeSet;
         //设置textPane属性
         initTextPane();
-        //转移系统输出流
+        //转移系统输入输出流
         changeSystemOut();
+        changeSystemIn();
         //分别设置水平和垂直滚动条自动出现
         initScrollPane();
         //加载窗口
@@ -449,8 +454,7 @@ public class ConsoleWindow {
     }
 
     @SneakyThrows
-    private synchronized void writeToTextPane(
-            String str, AttributeSet attributeSet) {
+    synchronized void writeToTextPane(String str, AttributeSet attributeSet) {
         StyledDocument doc = textPane.getStyledDocument();
         if(attributeSet == null) attributeSet = defaultAttributeSet;
         doc.insertString(doc.getLength(), str, attributeSet);

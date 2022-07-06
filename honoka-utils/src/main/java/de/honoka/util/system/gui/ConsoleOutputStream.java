@@ -1,6 +1,4 @@
-package de.honoka.util.system;
-
-import de.honoka.util.system.gui.ColorAttributeSets;
+package de.honoka.util.system.gui;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;

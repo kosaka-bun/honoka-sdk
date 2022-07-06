@@ -1,3 +1,5 @@
+package de.honoka.util.test;
+
 import de.honoka.util.code.DateBuilder;
 import de.honoka.util.system.SystemInfoBean;
 import de.honoka.util.text.ExceptionUtils;
