@@ -3,6 +3,7 @@ package de.honoka.util.file;
 import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -88,6 +89,13 @@ public class FileUtils {
     public static void checkOrTouch(File... files) {
         for(File f : files) {
             org.apache.commons.io.FileUtils.touch(f);
+        }
+    }
+
+    @SneakyThrows
+    public static String urlToString(URL url) {
+        try(InputStream is = url.openStream()) {
+            return new String(is.readAllBytes());
         }
     }
 }

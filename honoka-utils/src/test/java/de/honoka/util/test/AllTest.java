@@ -5,6 +5,7 @@ import de.honoka.util.system.SystemInfoBean;
 import de.honoka.util.text.ExceptionUtils;
 import de.honoka.util.text.TextUtils;
 import de.honoka.util.various.ReflectUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -17,6 +18,11 @@ import java.util.regex.Pattern;
 @SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 public class AllTest {
 
+    @Test
+    public void test9() {
+        ArrayUtils.toPrimitive(List.of((byte) 1, (byte) 3).toArray(new Byte[0]));
+    }
+
     //@Test
     public void test8() {
         List<Double> decimals = Arrays.asList(
@@ -26,7 +32,7 @@ public class AllTest {
                 SystemInfoBean.getDecimalStr(d, 3)));
     }
 
-    @Test
+    //@Test
     public void test7() {
         SystemInfoBean sib = new SystemInfoBean();
         System.out.println(sib.getHeapInit());

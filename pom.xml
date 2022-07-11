@@ -11,26 +11,18 @@
     <modules>
         <module>honoka-utils</module>
         <module>honoka-json</module>
+        <module>honoka-spring-boot-parent</module>
     </modules>
 
     <properties>
         <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
         <plugins>
-            <!-- java的版本控制插件，不加这一段，默认语言级别是1.5 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
             <!-- 指定maven发布项目到仓库时需要附带源代码 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
