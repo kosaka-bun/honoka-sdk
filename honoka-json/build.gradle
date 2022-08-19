@@ -1,4 +1,8 @@
+version '1.0'
+
 subprojects {
+    version project(':honoka-json').version
+
     dependencies {
         implementation project(':honoka-utils')
     }

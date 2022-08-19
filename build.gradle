@@ -1,12 +1,10 @@
 group 'de.honoka.sdk'
-version '1.0'
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
 
     group rootProject.group
-    version rootProject.version
     sourceCompatibility = '1.8'
 
     repositories {
@@ -17,6 +15,8 @@ subprojects {
         String lombok = 'org.projectlombok:lombok:1.18.16'
         compileOnly lombok
         annotationProcessor lombok
+        testCompileOnly lombok
+        testAnnotationProcessor lombok
     }
 
     tasks.withType(Test) {
