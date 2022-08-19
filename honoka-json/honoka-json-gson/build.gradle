@@ -1,4 +1,6 @@
 dependencies {
-    implementation project(':honoka-json:honoka-json-api')
+    Project honokaJsonApi = project(':honoka-json:honoka-json-api')
+    apiElements honokaJsonApi
+    implementation honokaJsonApi
     implementation 'com.google.code.gson:gson:2.8.6'
 }

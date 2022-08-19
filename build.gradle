@@ -41,16 +41,24 @@ subprojects {
                 }
             }
         }
+    }
 
-        publications {
-            maven(MavenPublication) {
-                groupId project.group
-                artifactId project.name
-                version project.version
+    ext {
+        setupVersion = { String versionStr ->
+            version versionStr
 
-                from components.java
+            publishing {
+                publications {
+                    maven(MavenPublication) {
+                        groupId project.group
+                        artifactId project.name
+                        version versionStr
 
-                artifact sourcesJar
+                        from components.java
+
+                        artifact sourcesJar
+                    }
+                }
             }
         }
     }

@@ -1,10 +1,12 @@
-version '1.0'
+setupVersion '1.0'
 
 dependencies {
+    String commonsLang3 = 'org.apache.commons:commons-lang3:3.12.0'
+    String commonsIo = 'commons-io:commons-io:2.11.0'
+    String jsoup = 'org.jsoup:jsoup:1.11.3'
+    implementation commonsLang3, commonsIo, jsoup
+    apiElements commonsLang3, commonsIo, jsoup
     compileOnly 'org.springframework:spring-context:5.2.10.RELEASE'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'commons-io:commons-io:2.11.0'
-    implementation 'org.jsoup:jsoup:1.11.3'
     compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
     compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
     compileOnly 'org.aspectj:aspectjweaver:1.9.4'
