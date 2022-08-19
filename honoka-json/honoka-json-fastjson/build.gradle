@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':honoka-json:honoka-json-api')
+    implementation 'com.alibaba:fastjson:1.2.75'
+}
