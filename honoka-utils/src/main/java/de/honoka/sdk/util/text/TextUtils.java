@@ -2,8 +2,10 @@ package de.honoka.sdk.util.text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public class TextUtils {
 
@@ -44,5 +46,13 @@ public class TextUtils {
      */
     public static String boolSwitchToString(boolean b) {
         return b ? "开" : "关";
+    }
+
+    /**
+     * （供1.8及以下使用）获取每一行
+     */
+    public static List<String> getLines(String s) {
+        s = s.replace("\r", "");
+        return Arrays.asList(s.split("\n"));
     }
 }

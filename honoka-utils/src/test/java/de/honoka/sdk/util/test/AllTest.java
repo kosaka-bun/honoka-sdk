@@ -5,9 +5,7 @@ import de.honoka.sdk.util.system.SystemInfoBean;
 import de.honoka.sdk.util.text.ExceptionUtils;
 import de.honoka.sdk.util.text.TextUtils;
 import de.honoka.sdk.util.various.ReflectUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
 
 import java.text.DateFormat;
 import java.util.Arrays;
@@ -17,11 +15,6 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 public class AllTest {
-
-    @Test
-    public void test9() {
-        ArrayUtils.toPrimitive(List.of((byte) 1, (byte) 3).toArray(new Byte[0]));
-    }
 
     //@Test
     public void test8() {

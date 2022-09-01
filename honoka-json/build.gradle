@@ -1,8 +1,6 @@
 setupVersion '1.0'
 
 subprojects {
-    setupVersion project(':honoka-json').version
-
     dependencies {
         implementation project(':honoka-utils')
     }

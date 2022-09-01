@@ -12,10 +12,11 @@ public class GuiTest {
     }
 
     private static void consoleWindowTest() {
-        ConsoleWindow window = new ConsoleWindow("hello", null,
-                () -> {
-                    System.out.println("系统退出");
-                });
+        //ConsoleWindow window = new ConsoleWindow("hello", null,
+        //        () -> {
+        //            System.out.println("系统退出");
+        //        });
+        ConsoleWindow window = new ConsoleWindow("hello");
         window.setAutoScroll(true);
         window.setScreenZoomScale(1.25);
         window.show();

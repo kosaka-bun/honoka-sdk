@@ -1,3 +1,5 @@
+setupVersion '1.0'
+
 dependencies {
     Project honokaJsonApi = project(':honoka-json:honoka-json-api')
     apiElements honokaJsonApi

@@ -2,6 +2,7 @@ package de.honoka.sdk.util.system.gui;
 
 import de.honoka.sdk.util.code.ActionUtils;
 import de.honoka.sdk.util.code.ThrowsRunnable;
+import de.honoka.sdk.util.text.TextUtils;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -55,8 +56,17 @@ public class ConsoleWindow {
 
     private final JScrollPane scrollPane = new JScrollPane();
 
+    private final JPanel inputFieldContainer = new JPanel();
+
+    private final JTextField inputField = new JTextField();
+
     private final Dimension defaultFrameSize = new Dimension(1000, 600);
 
+    /**
+     * 在高分辨率的屏幕下，通常会使用屏幕比例缩放，在这样的模式下，直接
+     * 获取鼠标点击的坐标往往不能获取到正确的坐标，需要指定当前缩放比例
+     * 来换算成正确的坐标。
+     */
     private double screenZoomScale = 1.0;
 
     private final Font menuItemFont = new Font("Microsoft YaHei UI",
@@ -185,6 +195,7 @@ public class ConsoleWindow {
     /**
      * 转移系统输出流
      */
+    @SneakyThrows
     private void changeSystemOut() {
         class ConsoleOutputStreamImpl extends ConsoleOutputStream {
 
@@ -203,9 +214,9 @@ public class ConsoleWindow {
         ConsoleOutputStream newErr = new ConsoleOutputStreamImpl(System.err,
                 new Color(255, 107, 103, 255));
         PrintStream newOutPrintStream =
-                new PrintStream(newOut, false, StandardCharsets.UTF_8);
+                new PrintStream(newOut, false, "UTF-8");
         PrintStream newErrPrintStream =
-                new PrintStream(newErr, false, StandardCharsets.UTF_8);
+                new PrintStream(newErr, false, "UTF-8");
         System.setOut(newOutPrintStream);
         System.setErr(newErrPrintStream);
     }
@@ -215,7 +226,7 @@ public class ConsoleWindow {
     }
 
     /**
-     * 分别设置水平和垂直滚动条自动出现
+     * 加载滚动框，分别设置水平和垂直滚动条自动出现
      */
     private void initScrollPane() {
         scrollPane.setViewportView(textPane);
@@ -227,16 +238,54 @@ public class ConsoleWindow {
     }
 
     /**
+     * 加载控制台输入框
+     */
+    private void initInputField() {
+        inputFieldContainer.setLayout(new BorderLayout(10, 10));
+        inputFieldContainer.add(new JLabel(), BorderLayout.NORTH);
+        inputFieldContainer.add(new JLabel(), BorderLayout.SOUTH);
+        inputFieldContainer.add(new JLabel(), BorderLayout.EAST);
+        //label
+        //空格是为了模拟左边距
+        JLabel label = new JLabel("  输入到控制台：");
+        label.setFont(menuItemFont);
+        inputFieldContainer.add(label, BorderLayout.WEST);
+        //inputField
+        inputField.setFont(menuItemFont);
+        ActionListener actionListener = e -> {
+            String input = inputField.getText() + "\n";
+            //将自己输入的内容用蓝色字回显
+            writeToTextPane(input, ColorAttributeSets.getAttributeSet(34));
+            ConsoleInputStream systemIn = (ConsoleInputStream) System.in;
+            synchronized(System.in) {
+                byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
+                for(byte aByte : bytes) {
+                    systemIn.buffer.offer(aByte);
+                }
+                systemIn.buffer.offer((byte) -1);
+                systemIn.notifyAll();
+            }
+        };
+        inputField.registerKeyboardAction(
+                actionListener,
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0,
+                        false),
+                JComponent.WHEN_FOCUSED
+        );
+        inputFieldContainer.add(inputField);
+        //frame
+        frame.add(inputFieldContainer, BorderLayout.SOUTH);
+        hideInputField();
+    }
+
+    /**
      * 加载窗口
      */
     private void initFrame() {
         frame.setTitle(windowName);
         frame.setMinimumSize(defaultFrameSize);
-        //frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        //windowListener = new WindowListenerImpl(this);
-        //frame.addWindowListener(windowListener);
     }
 
     /**
@@ -311,6 +360,8 @@ public class ConsoleWindow {
         changeSystemIn();
         //分别设置水平和垂直滚动条自动出现
         initScrollPane();
+        //加载控制台输入框
+        initInputField();
         //加载窗口
         initFrame();
     }
@@ -351,6 +402,10 @@ public class ConsoleWindow {
         frame.setVisible(false);
     }
 
+    /**
+     * 获取有限行数的控制台内容的HTML表示文本
+     * 控制台每一行对应一个HTML的pre标签，该标签将记录该行的颜色
+     */
     //查找、添加和删除不可同时进行，因此需要添加synchronized
     @SneakyThrows
     public synchronized String getText(int limit) {
@@ -362,7 +417,8 @@ public class ConsoleWindow {
         String html = bao.toString();
         //解析每个span中包含的文本内容
         List<String> contents = new ArrayList<>();
-        for(Iterator<String> lines = html.lines().iterator(); lines.hasNext(); ) {
+        for(Iterator<String> lines = TextUtils.getLines(html).iterator();
+            lines.hasNext(); ) {
             String line = lines.next();
             //查找起始p标签
             if(!line.trim().startsWith("<p")) continue;
@@ -383,7 +439,8 @@ public class ConsoleWindow {
                                 content.append(line.substring(indent));
                             } catch(Exception e) {
                                 //字符不足缩进，去除左侧空格，保留右侧空格
-                                content.append(line.stripLeading());
+                                content.append(StringUtils.stripStart(
+                                        line, null));
                             }
                         } else break;
                     }
@@ -420,9 +477,10 @@ public class ConsoleWindow {
         limit += 1;
         if(lineCount > limit) {
             int removeLineCount = lineCount - limit;
-            resultStr = resultStr.substring(resultStr.indexOf("<pre",
-                    StringUtils.ordinalIndexOf(resultStr, "<br>",
-                            removeLineCount)));
+            resultStr = resultStr.substring(resultStr.indexOf(
+                    "<pre", StringUtils.ordinalIndexOf(resultStr,
+                            "<br>", removeLineCount)
+            ));
         }
         return resultStr;
     }
@@ -477,8 +535,9 @@ public class ConsoleWindow {
     @SneakyThrows
     private synchronized void removeSurplusTextInTextPane() {
         Document doc = textPane.getDocument();
-        int lineCount = (int) doc.getText(0, doc.getLength())
-                .lines().count();
+        int lineCount = TextUtils.getLines(
+                doc.getText(0, doc.getLength())
+        ).size();
         if(lineCount <= textPaneMaxLine) return;
         //清除多余的行
         int offset = StringUtils.ordinalIndexOf(
@@ -567,5 +626,13 @@ public class ConsoleWindow {
             }).start();
         });
         trayIconMenu.insert(item, trayIconMenu.getItemCount() - 1);
+    }
+
+    public void showInputField() {
+        inputFieldContainer.setVisible(true);
+    }
+
+    public void hideInputField() {
+        inputFieldContainer.setVisible(false);
     }
 }

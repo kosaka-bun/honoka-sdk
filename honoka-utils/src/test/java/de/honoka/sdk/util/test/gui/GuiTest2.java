@@ -10,10 +10,11 @@ public class GuiTest2 {
 
     @SneakyThrows
     public static void main(String[] args) {
-        ConsoleWindow window = new ConsoleWindow("hello",
-                null, () -> {});
+        ConsoleWindow window = new ConsoleWindow("hello");
+        window.setScreenZoomScale(1.25);
         window.show();
         Thread.sleep(1000);
+        System.out.print("请输入：");
         String str = new Scanner(System.in).nextLine();
         ColorfulText.of().green(str).println();
         Thread.sleep(3000);
