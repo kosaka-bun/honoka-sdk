@@ -18,6 +18,10 @@ public class GuiTest2 {
         String str = new Scanner(System.in).nextLine();
         ColorfulText.of().green(str).println();
         Thread.sleep(3000);
+        System.out.print("请输入：");
+        str = new Scanner(System.in).nextLine();
+        ColorfulText.of().green(str).println();
+        Thread.sleep(3000);
         System.exit(0);
     }
 }

@@ -263,6 +263,7 @@ public class ConsoleWindow {
                     systemIn.buffer.offer(aByte);
                 }
                 systemIn.buffer.offer((byte) -1);
+                inputField.setText("");
                 systemIn.notifyAll();
             }
         };
@@ -630,6 +631,11 @@ public class ConsoleWindow {
 
     public void showInputField() {
         inputFieldContainer.setVisible(true);
+        //显示输入框后将焦点放在输入框上
+        inputField.dispatchEvent(new FocusEvent(
+                inputField, FocusEvent.FOCUS_GAINED, true
+        ));
+        inputField.requestFocusInWindow();
     }
 
     public void hideInputField() {

@@ -1,7 +1,7 @@
 package de.honoka.sdk.util.framework.spring.task;
 
 /**
- * Spring框架在指定的时间执行此计划任务时需要调用的Runnable类。
+ * Spring框架在指定的时间执行此计划任务时需要调用的Runnable类
  * Spring框架在执行计划任务时，不直接调用计划任务的任务方法，而是通过调用某个Runnable类的
  * run方法，来间接调用计划任务的任务方法。
  */
