@@ -2,11 +2,15 @@ package de.honoka.sdk.util.test;
 
 import de.honoka.sdk.util.code.DateBuilder;
 import de.honoka.sdk.util.system.SystemInfoBean;
+import de.honoka.sdk.util.test.util.TestUtils;
 import de.honoka.sdk.util.text.ExceptionUtils;
 import de.honoka.sdk.util.text.TextUtils;
 import de.honoka.sdk.util.various.ReflectUtils;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -15,6 +19,18 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 public class AllTest {
+
+    @SneakyThrows
+    @Test
+    public void test9() {
+        byte[] strBytes = "中文".getBytes(StandardCharsets.UTF_8);
+        byte[] strBytesGbk = "中文".getBytes("GBK");
+        TestUtils.showBytes(strBytes);
+        TestUtils.showBytes(strBytesGbk);
+        String str = new String(strBytes, StandardCharsets.UTF_8);
+        System.out.println(str);
+        TestUtils.showBytes(str.getBytes(StandardCharsets.UTF_8));
+    }
 
     //@Test
     public void test8() {

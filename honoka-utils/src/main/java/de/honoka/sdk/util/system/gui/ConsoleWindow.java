@@ -70,13 +70,24 @@ public class ConsoleWindow {
     private double screenZoomScale = 1.0;
 
     private final Font menuItemFont = new Font("Microsoft YaHei UI",
-            Font.PLAIN, 13);
+            Font.PLAIN, 12);
 
     private volatile boolean autoScroll = true;
 
-    private CheckboxMenuItem autoScrollItem;
+    private JCheckBoxMenuItem autoScrollItem;
 
-    private PopupMenu trayIconMenu;
+    private JPopupMenu trayIconMenu;
+
+    /**
+     * 使用JDialog作为JPopupMenu的载体
+     */
+    private final JDialog trayIconMenuContainer = new JDialog();
+
+    /**
+     * 托盘图标右键菜单的坐标修正值，如果觉得菜单弹出时的位置不正确，可通过它修改
+     */
+    private final Dimension trayIconMenuLocationOffset =
+            new Dimension(13, 13);
 
     /**
      * 设置textPane属性
@@ -138,13 +149,21 @@ public class ConsoleWindow {
     }
 
     private void initTextPaneMenu(JTextPane textPane) {
-        PopupMenu textAreaMenu = new PopupMenu();
-        JWindow screen = new JWindow();   //定义屏幕左上角位置，让弹出菜单相对于它定位
+        //region 定义左上角点，和弹出菜单
+        JWindow screen = new JWindow();
+        JPopupMenu textAreaMenu = new JPopupMenu() {
+
+            @Override
+            public void firePopupMenuWillBecomeInvisible() {
+                screen.setVisible(false);
+            }
+        };
         screen.setLocation(0, 0);
         screen.setSize(0, 0);
         screen.add(textAreaMenu);
+        //endregion
         //复制项
-        MenuItem copyItem = new MenuItem("Copy");
+        JMenuItem copyItem = new JMenuItem("复制");
         copyItem.setFont(menuItemFont);
         copyItem.addActionListener(e -> {
             try {
@@ -160,13 +179,13 @@ public class ConsoleWindow {
         });
         textAreaMenu.add(copyItem);
         //恢复窗口大小项
-        MenuItem resizeItem = new MenuItem("Reset Window Size");
+        JMenuItem resizeItem = new JMenuItem("恢复默认窗口大小");
         resizeItem.setFont(menuItemFont);
         resizeItem.addActionListener(e -> frame.setSize(defaultFrameSize));
         textAreaMenu.add(resizeItem);
         //自动滚屏项
-        CheckboxMenuItem autoScrollItem =
-                new CheckboxMenuItem("Auto Scroll / Auto Clear");
+        JCheckBoxMenuItem autoScrollItem = new JCheckBoxMenuItem(
+                "自动滚屏 / 限制窗口内最大行数");
         autoScrollItem.setFont(menuItemFont);
         autoScrollItem.addItemListener(e -> {
             boolean state = e.getStateChange() == ItemEvent.SELECTED;
@@ -177,16 +196,12 @@ public class ConsoleWindow {
         updateAutoScrollLockItem(isAutoScroll());
         //region 监听弹出右键菜单
         textPane.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getButton() != MouseEvent.BUTTON3) return;
-                new Thread(() -> {
-                    screen.setVisible(true);
-                    textAreaMenu.show(screen,
-                            (int) (e.getXOnScreen() * screenZoomScale),
-                            (int) (e.getYOnScreen() * screenZoomScale));
-                    screen.setVisible(false);
-                }).start();
+                screen.setVisible(true);
+                textAreaMenu.show(screen, e.getXOnScreen(), e.getYOnScreen());
             }
         });
         //endregion
@@ -299,40 +314,81 @@ public class ConsoleWindow {
             throw new RuntimeException("不支持系统托盘");
         //获取当前平台的系统托盘
         SystemTray tray = SystemTray.getSystemTray();
-        //创建点击图标时的弹出菜单
-        PopupMenu popupMenu = new PopupMenu();
+        //region 创建点击图标时的弹出菜单
+        JPopupMenu popupMenu = new JPopupMenu() {
+
+            //消失后将绑定的组件（container）一起消失
+            @Override
+            public void firePopupMenuWillBecomeInvisible() {
+                trayIconMenuContainer.setVisible(false);
+            }
+        };
         initTrayIconMenu(popupMenu, onExit);
         trayIconMenu = popupMenu;
+        //endregion
         //创建一个托盘图标
-        TrayIcon trayIcon = new TrayIcon(systemTrayIcon, windowName, trayIconMenu);
+        TrayIcon trayIcon = new TrayIcon(systemTrayIcon, windowName);
         //托盘图标自适应尺寸
         trayIcon.setImageAutoSize(true);
-        //region 设置鼠标点击监听
+        //设置鼠标点击监听
         trayIcon.addMouseListener(new MouseAdapter() {
+
+            private Dimension trayIconMenuSize;
+
             @Override
             public void mouseClicked(MouseEvent e) {
-                /* 不需要添加右键事件，只要托盘图标在初始化时指定了弹出菜单，
-                 * 右键点击托盘图标就能弹出这个菜单 */
-                //监听左键点击托盘图标事件
-                if(e.getButton() != MouseEvent.BUTTON1) return;
-                if(!frame.isVisible()) show();
+                //监听点击托盘图标事件
+                switch(e.getButton()) {
+                    //左键
+                    case MouseEvent.BUTTON1:
+                        if(!frame.isVisible()) show();
+                        break;
+                    //右键
+                    case MouseEvent.BUTTON3:
+                        onRightClick(e);
+                        break;
+                }
+            }
+
+            private void onRightClick(MouseEvent e) {
+                double width, height;
+                if(trayIconMenuSize == null) {
+                    trayIconMenuContainer.setVisible(true);
+                    trayIconMenu.show(trayIconMenuContainer, 0, 0);
+                    trayIconMenuSize = trayIconMenu.getSize();
+                }
+                width = trayIconMenuSize.getWidth();
+                height = trayIconMenuSize.getHeight();
+                trayIconMenuContainer.setLocation(
+                        (int) (e.getX() / screenZoomScale -
+                                width / screenZoomScale -
+                                trayIconMenuLocationOffset.getWidth() *
+                                        screenZoomScale
+                        ),
+                        (int) (e.getY() / screenZoomScale -
+                                height / screenZoomScale -
+                                trayIconMenuLocationOffset.getHeight() *
+                                        screenZoomScale
+                        )
+                );
+                trayIconMenuContainer.setVisible(true);
+                trayIconMenu.show(trayIconMenuContainer, 0, 0);
             }
         });
-        //endregion
         //添加托盘图标到系统托盘
         tray.add(trayIcon);
     }
 
-    private void initTrayIconMenu(PopupMenu popupMenu,
+    private void initTrayIconMenu(JPopupMenu popupMenu,
                                   ThrowsRunnable onExit) {
         //应用名项
-        MenuItem applicationNameItem = new MenuItem(windowName);
+        JMenuItem applicationNameItem = new JMenuItem(windowName);
         applicationNameItem.setFont(menuItemFont);
         applicationNameItem.setEnabled(false);
         popupMenu.add(applicationNameItem);
         popupMenu.addSeparator();
         //退出项
-        MenuItem exitItem = new MenuItem("Exit");
+        JMenuItem exitItem = new JMenuItem("退出");
         exitItem.setFont(menuItemFont);
         exitItem.addActionListener(e -> {
             //点击菜单的退出按钮时，执行退出时方法，然后退出程序
@@ -346,6 +402,9 @@ public class ConsoleWindow {
             }
         });
         popupMenu.add(exitItem);
+        //init container
+        trayIconMenuContainer.setUndecorated(true);
+        trayIconMenuContainer.setSize(0, 0);
     }
 
     public ConsoleWindow(String windowName) {
@@ -568,7 +627,7 @@ public class ConsoleWindow {
         if(autoScroll) doAutoScroll();
     }
 
-    private void exitApplication(MenuItem exitItem, ThrowsRunnable onExit) {
+    private void exitApplication(JMenuItem exitItem, ThrowsRunnable onExit) {
         //在执行前先禁用此退出选项
         exitItem.setEnabled(false);
         System.out.println("正在退出……");
@@ -607,7 +666,7 @@ public class ConsoleWindow {
     public void addTrayIconMenuItem(String name, boolean needConfirm,
                                     ThrowsRunnable action) {
         if(trayIconMenu == null) return;
-        MenuItem item = new MenuItem(name);
+        JMenuItem item = new JMenuItem(name);
         item.setFont(menuItemFont);
         item.addActionListener(e -> {
             //进行操作确认
@@ -626,7 +685,7 @@ public class ConsoleWindow {
                 item.setEnabled(true);
             }).start();
         });
-        trayIconMenu.insert(item, trayIconMenu.getItemCount() - 1);
+        trayIconMenu.insert(item, trayIconMenu.getComponentCount() - 1);
     }
 
     public void showInputField() {
