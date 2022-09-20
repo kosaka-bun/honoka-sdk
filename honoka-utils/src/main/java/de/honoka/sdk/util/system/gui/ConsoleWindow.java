@@ -700,4 +700,8 @@ public class ConsoleWindow {
     public void hideInputField() {
         inputFieldContainer.setVisible(false);
     }
+
+    public void setTrayIconMenuLocationOffset(int width, int height) {
+        trayIconMenuLocationOffset.setSize(width, height);
+    }
 }

@@ -1,5 +1,3 @@
-setupVersion '1.0'
-
 subprojects {
     dependencies {
         implementation project(':honoka-utils')
