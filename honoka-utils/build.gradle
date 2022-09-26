@@ -1,4 +1,4 @@
-setupVersion '1.0.1'
+setupVersion '1.0.2'
 
 dependencies {
     String commonsText = 'org.apache.commons:commons-text:1.9'

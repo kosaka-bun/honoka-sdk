@@ -1,6 +1,7 @@
 package de.honoka.sdk.util.file;
 
 import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.InputStream;
@@ -16,7 +17,7 @@ import java.util.Objects;
 
 public class FileUtils {
 
-    private static String CLASSPATH;
+    private static volatile String CLASSPATH;
 
     /**
      * 检查当前运行的jar包外部是否含有指定的资源文件，若有则忽略此资源，若没有
@@ -28,12 +29,14 @@ public class FileUtils {
      * @return 指定的资源当中是否有某些资源原本不在jar包外部
      */
     @SneakyThrows
-    public static boolean checkResources(Class<?> clazz, String... paths) {
+    public static boolean copyResourceIfNotExists(Class<?> clazz,
+                                                  String... paths) {
         boolean result = false;
         String classpath = getClasspath();
         for(String path : paths) {
-            URL url = Objects.requireNonNull(clazz.getResource(path));
-            File file = new File(Path.of(classpath, path).toString());
+            URL url = clazz.getResource(path);
+            if(url == null) continue;
+            File file = new File(Paths.get(classpath, path).toString());
             if(file.exists()) continue;
             //指定的资源不存在
             result = true;
@@ -95,7 +98,7 @@ public class FileUtils {
     @SneakyThrows
     public static String urlToString(URL url) {
         try(InputStream is = url.openStream()) {
-            return new String(is.readAllBytes());
+            return new String(IOUtils.toByteArray(is));
         }
     }
 }
