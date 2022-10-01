@@ -8,14 +8,14 @@ import de.honoka.sdk.json.api.JsonObject;
 
 //package-private
 class Common {
-	
+
 	static final Gson gson = new GsonBuilder()
 			.setDateFormat("yyyy-MM-dd HH:mm:ss")
 			//驼峰转下划线
 			.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 			.serializeNulls()
 			.create();
-	
+
 	static com.google.gson.JsonElement toOriginalJsonElement(Object value) {
 		//本框架的Json数据
 		if(value instanceof GsonJsonObject)

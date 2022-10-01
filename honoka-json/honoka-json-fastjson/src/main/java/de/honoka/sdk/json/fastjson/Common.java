@@ -10,22 +10,22 @@ import de.honoka.sdk.json.api.JsonObject;
 
 //package-private
 class Common {
-	
+
 	static final SerializerFeature[] serializerFeatures = {
 			SerializerFeature.WriteMapNullValue
 	};
-	
+
 	static final SerializeConfig serializeConfig = new SerializeConfig();
-	
+
 	static final ParserConfig parserConfig = new ParserConfig();
-	
+
 	static {
 		//序列化时转为下划线
 		serializeConfig.propertyNamingStrategy = PropertyNamingStrategy.SnakeCase;
 		//提取时根据下划线提取
 		parserConfig.propertyNamingStrategy = PropertyNamingStrategy.SnakeCase;
 	}
-	
+
 	static Object toOriginalJsonElement(Object value) {
 		//本框架的Json数据
 		if(value instanceof FastJsonObject)

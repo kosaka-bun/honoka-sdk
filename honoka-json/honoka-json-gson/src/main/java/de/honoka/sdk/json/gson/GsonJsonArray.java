@@ -5,7 +5,7 @@ import de.honoka.sdk.json.api.JsonArray;
 import java.util.Iterator;
 
 @SuppressWarnings({ "unchecked" })
-public class GsonJsonArray<T> extends JsonArray<T> {
+class GsonJsonArray<T> extends JsonArray<T> {
 
     com.google.gson.JsonArray originalJsonArray;
 
@@ -27,12 +27,12 @@ public class GsonJsonArray<T> extends JsonArray<T> {
         this.originalJsonArray = (com.google.gson.JsonArray) originalJsonArray;
     }
 
-    public GsonJsonArray(Class<?> dataType) {
+    GsonJsonArray(Class<?> dataType) {
         super(dataType);
         initEmpty();
     }
 
-    public GsonJsonArray(String jsonStr, Class<?> dataType) {
+    GsonJsonArray(String jsonStr, Class<?> dataType) {
         super(dataType);
         initByJsonString(jsonStr);
     }

@@ -7,7 +7,7 @@ import de.honoka.sdk.json.api.JsonArray;
 import java.util.Iterator;
 
 @SuppressWarnings({ "unchecked" })
-public class FastJsonArray<T> extends JsonArray<T> {
+class FastJsonArray<T> extends JsonArray<T> {
 
     JSONArray originalJsonArray;
 
@@ -28,12 +28,12 @@ public class FastJsonArray<T> extends JsonArray<T> {
         this.originalJsonArray = (JSONArray) originalJsonArray;
     }
 
-    public FastJsonArray(Class<?> dataType) {
+    FastJsonArray(Class<?> dataType) {
         super(dataType);
         initEmpty();
     }
 
-    public FastJsonArray(String jsonStr, Class<?> dataType) {
+    FastJsonArray(String jsonStr, Class<?> dataType) {
         super(dataType);
         initByJsonString(jsonStr);
     }
