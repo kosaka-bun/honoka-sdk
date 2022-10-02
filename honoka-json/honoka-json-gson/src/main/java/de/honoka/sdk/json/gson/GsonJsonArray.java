@@ -81,7 +81,7 @@ class GsonJsonArray<T> extends JsonArray<T> {
 
     @Override
     public String toPrettyString() {
-        Gson gson = Common.gsonBuilder.setPrettyPrinting().create();
+        Gson gson = Common.copyBuilder().setPrettyPrinting().create();
         return gson.toJson(originalJsonArray);
     }
 

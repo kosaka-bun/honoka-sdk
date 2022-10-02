@@ -1,16 +1,13 @@
 package de.honoka.sdk.json.fastjson;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.PropertyNamingStrategy;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import de.honoka.sdk.json.api.JsonArray;
 import de.honoka.sdk.json.api.JsonObject;
+import de.honoka.sdk.json.api.service.JsonConfigCallback;
 import de.honoka.sdk.json.api.util.JsonConfig;
-
-import java.util.Arrays;
-import java.util.List;
 
 //package-private
 class Common {
@@ -25,27 +22,13 @@ class Common {
         init();
     }
 
-    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     static void init() {
         JsonConfig config = JsonConfig.get();
+        JsonConfigCallback callback = JsonConfigCallback.get();
         //serializerFeatures
-        List<SerializerFeature> serializerFeatureList = Arrays.asList(
-                SerializerFeature.WriteMapNullValue
-        );
-        if(config.isPretty()) {
-            serializerFeatureList.add(SerializerFeature.PrettyFormat);
-        }
-        serializerFeatures = serializerFeatureList.toArray(new SerializerFeature[0]);
+        callback.onPrettySet(config.isPretty());
         //serializeConfig, parserConfig
-        if(config.isCamelCase()) {
-            serializeConfig.propertyNamingStrategy = PropertyNamingStrategy.NoChange;
-            parserConfig.propertyNamingStrategy = PropertyNamingStrategy.NoChange;
-        } else {
-            //序列化时转为下划线
-            serializeConfig.propertyNamingStrategy = PropertyNamingStrategy.SnakeCase;
-            //提取时根据下划线提取
-            parserConfig.propertyNamingStrategy = PropertyNamingStrategy.SnakeCase;
-        }
+        callback.onCamelCaseSet(config.isCamelCase());
     }
 
     static Object toOriginalJsonElement(Object value) {

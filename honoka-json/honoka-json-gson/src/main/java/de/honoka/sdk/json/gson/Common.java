@@ -1,16 +1,21 @@
 package de.honoka.sdk.json.gson;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.honoka.sdk.json.api.JsonArray;
 import de.honoka.sdk.json.api.JsonObject;
+import de.honoka.sdk.json.api.service.JsonConfigCallback;
 import de.honoka.sdk.json.api.util.JsonConfig;
+import lombok.SneakyThrows;
+
+import java.lang.reflect.Constructor;
 
 //package-private
 class Common {
 
-    static GsonBuilder gsonBuilder;
+    static GsonBuilder gsonBuilder = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd HH:mm:ss")
+            .serializeNulls();
 
     static Gson gson;
 
@@ -20,19 +25,21 @@ class Common {
 
     static void init() {
         JsonConfig config = JsonConfig.get();
-        gsonBuilder = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd HH:mm:ss")
-                .serializeNulls();
-        if(config.isPretty()) {
-            gsonBuilder.setPrettyPrinting();
-        }
-        if(config.isCamelCase()) {
-            gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY);
-        } else {
-            gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy
-                    .LOWER_CASE_WITH_UNDERSCORES);
-        }
+        JsonConfigCallback callback = JsonConfigCallback.get();
+        callback.onPrettySet(config.isPretty());
+        callback.onCamelCaseSet(config.isCamelCase());
+    }
+
+    static void buildGson() {
         gson = gsonBuilder.create();
+    }
+
+    @SneakyThrows
+    static GsonBuilder copyBuilder() {
+        Constructor<GsonBuilder> constructor = GsonBuilder.class
+                .getDeclaredConstructor(Gson.class);
+        constructor.setAccessible(true);
+        return constructor.newInstance(gson);
     }
 
     static com.google.gson.JsonElement toOriginalJsonElement(Object value) {

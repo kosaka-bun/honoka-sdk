@@ -1,24 +1,30 @@
 package de.honoka.sdk.json.api.util;
 
-import org.apache.commons.lang3.NotImplementedException;
+import de.honoka.sdk.json.api.service.JsonConfigCallback;
+import lombok.Getter;
 
-import java.util.ServiceLoader;
+@Getter
+public class JsonConfig {
 
-public interface JsonConfig {
+    private static final JsonConfig instance = new JsonConfig();
 
-    boolean isCamelCase();
+    private boolean camelCase;
 
-    JsonConfig setCamelCase(boolean camelCase);
+    private boolean pretty;
 
-    boolean isPretty();
+    public static JsonConfig get() {
+        return instance;
+    }
 
-    JsonConfig setPretty(boolean pretty);
+    public JsonConfig setCamelCase(boolean camelCase) {
+        this.camelCase = camelCase;
+        JsonConfigCallback.get().onCamelCaseSet(camelCase);
+        return this;
+    }
 
-    static JsonConfig get() {
-        ServiceLoader<JsonConfig> loader = ServiceLoader.load(JsonConfig.class);
-        for(JsonConfig config : loader) {
-            return config;
-        }
-        throw new NotImplementedException(JsonConfig.class.getName());
+    public JsonConfig setPretty(boolean pretty) {
+        this.pretty = pretty;
+        JsonConfigCallback.get().onPrettySet(pretty);
+        return this;
     }
 }

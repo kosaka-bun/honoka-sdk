@@ -1,5 +1,18 @@
 # 更新日志
 
+## 1.1.0
+#### honoka-json-fastjson 1.1.0
+- 使用SPI重写对API的实现。
+- 实现公共配置类的回调接口，用户在通过公共配置类进行配置时，实现框架可收到回调。
+
+#### honoka-json-gson 1.1.0
+- 使用SPI重写对API的实现。
+- 实现公共配置类的回调接口，用户在通过公共配置类进行配置时，实现框架可收到回调。
+
+#### honoka-json-api 1.1.0
+- 使用SPI重写`JsonObject`、`JsonArray`等接口。
+- 添加了`JsonConfig`、`JsonConfigCallback`等公共配置类。
+
 ## 1.0.2
 #### honoka-utils 1.0.2
 - 优化`FileUtils`，去除Java 9+的API。
