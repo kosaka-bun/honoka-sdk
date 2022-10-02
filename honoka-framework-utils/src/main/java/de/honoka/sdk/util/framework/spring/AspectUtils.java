@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.various;
+package de.honoka.sdk.util.framework.spring;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.CodeSignature;

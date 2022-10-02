@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.web;
+package de.honoka.sdk.util.framework.web;
 
 import org.apache.commons.lang3.StringUtils;
 

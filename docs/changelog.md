@@ -1,5 +1,13 @@
 # 更新日志
 
+## 1.1.1
+#### honoka-utils 1.0.3
+- 移除`CodeUtils.doIgnoreExceptions()`，用`ActionUtils.doIgnoreException()`代替。
+- 移除`web`与`framework`包，将其独立到honoka-framework-utils模块中。
+
+#### honoka-framework-utils 1.0.0
+- 起始版本
+
 ## 1.1.0
 #### honoka-json-fastjson 1.1.0
 - 使用SPI重写对API的实现。
