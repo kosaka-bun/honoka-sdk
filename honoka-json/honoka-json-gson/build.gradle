@@ -1,4 +1,4 @@
-setupVersion '1.1.0'
+setupVersion '1.1.1'
 
 dependencies {
     Project honokaJsonApi = project(':honoka-json:honoka-json-api')

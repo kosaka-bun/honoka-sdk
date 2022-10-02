@@ -39,12 +39,4 @@ public class CodeUtils {
     public static void sneakyThrows(Throwable t) {
         throw t;
     }
-
-    public static void doIgnoreExceptions(ThrowsRunnable action) {
-        try {
-            action.run();
-        } catch(Throwable t) {
-            //ignore
-        }
-    }
 }

@@ -124,6 +124,7 @@ public class ReflectUtils {
     /**
      * 调用某个方法，自动推断要调用的方法的参数类型列表
      */
+    @SuppressWarnings("UnusedReturnValue")
     @SneakyThrows
     public static Object invokeMethod(Object obj, String methodName,
                                       Object... args) {

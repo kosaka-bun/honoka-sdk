@@ -48,14 +48,10 @@ public abstract class JsonObject implements Map<String, Object> {
         return jo;
     }
 
-    protected JsonObject getAbstractJsonObject(String path) {
-        return (JsonObject) getJsonObject(path);
-    }
-
     private <T> T getValue(String path, Class<?> dataType) {
         String[] jsonPathAndKey = splitJsonObjectPathAndKey(path);
         if(jsonPathAndKey[0] != null) {
-            return getAbstractJsonObject(jsonPathAndKey[0])
+            return getJsonObject(jsonPathAndKey[0])
                     .getValueInThisObject(jsonPathAndKey[1], dataType);
         } else {
             return getValueInThisObject(jsonPathAndKey[1], dataType);
@@ -98,7 +94,7 @@ public abstract class JsonObject implements Map<String, Object> {
     public <T> JsonArray<T> getJsonArray(String path, Class<?> dataType) {
         String[] jsonPathAndKey = splitJsonObjectPathAndKey(path);
         if(jsonPathAndKey[0] != null) {
-            return getAbstractJsonObject(jsonPathAndKey[0])
+            return getJsonObject(jsonPathAndKey[0])
                     .getJsonArrayInThisObject(jsonPathAndKey[1], dataType);
         } else {
             return getJsonArrayInThisObject(jsonPathAndKey[1], dataType);

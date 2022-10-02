@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.web;
+package de.honoka.sdk.util.framework.web;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
