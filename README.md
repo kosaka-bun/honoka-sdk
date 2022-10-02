@@ -15,8 +15,7 @@ Honoka SDK是一款包含了各式各样实用工具的Java工具包，主要包
 ### [ColorfulText](./honoka-utils/src/main/java/de/honoka/sdk/util/code/ColorfulText.java)
 用于方便地在控制台输出彩色文字。
 ```java
-ColorfulText.of().red("red ").green("green ")
-        .blue("blue").println();
+ColorfulText.of().red("red ").green("green ").blue("blue").println();
 ```
 ![](./docs/img/1.png)
 
