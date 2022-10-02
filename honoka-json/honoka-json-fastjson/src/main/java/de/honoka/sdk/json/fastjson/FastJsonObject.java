@@ -2,117 +2,128 @@ package de.honoka.sdk.json.fastjson;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import de.honoka.sdk.json.api.JsonArray;
 import de.honoka.sdk.json.api.JsonObject;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Set;
 
 @SuppressWarnings("unchecked")
 class FastJsonObject extends JsonObject {
 
-	JSONObject originalJsonObject;
+    JSONObject originalJsonObject;
 
-	//region init
+    //region init
 
-	@Override
-	protected void initEmpty() {
-		originalJsonObject = new JSONObject();
-	}
+    @Override
+    protected void initEmpty() {
+        originalJsonObject = new JSONObject();
+    }
 
-	@Override
-	protected void initByJsonString(String jsonStr) {
-		originalJsonObject = JSON.parseObject(jsonStr);
-	}
+    @Override
+    protected void initByJsonString(String jsonStr) {
+        originalJsonObject = JSON.parseObject(jsonStr);
+    }
 
-	@Override
-	protected <T> void initByOriginalJsonObject(T originalJsonObject) {
-		this.originalJsonObject = (JSONObject) originalJsonObject;
-	}
+    @Override
+    protected <T> void initByOriginalJsonObject(T originalJsonObject) {
+        this.originalJsonObject = (JSONObject) originalJsonObject;
+    }
 
-	FastJsonObject() {
-		initEmpty();
-	}
+    FastJsonObject() {
+        initEmpty();
+    }
 
-	FastJsonObject(String jsonStr) {
-		initByJsonString(jsonStr);
-	}
+    FastJsonObject(String jsonStr) {
+        initByJsonString(jsonStr);
+    }
 
-	FastJsonObject(JSONObject originalJsonObject) {
-		initByOriginalJsonObject(originalJsonObject);
-	}
+    FastJsonObject(JSONObject originalJsonObject) {
+        initByOriginalJsonObject(originalJsonObject);
+    }
 
-	//endregion
+    //endregion
 
-	//region JsonObject
+    //region JsonObject
 
-	@Override
-	protected JsonObject getJsonObjectInThisObject(String key) {
-		return new FastJsonObject(originalJsonObject.getJSONObject(key));
-	}
+    @Override
+    protected JsonObject getJsonObjectInThisObject(String key) {
+        return new FastJsonObject(originalJsonObject.getJSONObject(key));
+    }
 
-	@Override
-	protected <T> T getValueInThisObject(String key, Class<?> dataType) {
-		return (T) new FastJsonDataConverter(originalJsonObject.get(key))
-				.transfer(dataType);
-	}
+    @Override
+    protected <T> T getValueInThisObject(String key, Class<?> dataType) {
+        return (T) new FastJsonDataConverter(originalJsonObject.get(key))
+                .transfer(dataType);
+    }
 
-	@Override
-	protected <T> JsonArray<T> getJsonArrayInThisObject(
-			String key, Class<?> dataType) {
-		return new FastJsonArray<>(originalJsonObject.getJSONArray(key), dataType);
-	}
+    @Override
+    protected <T> JsonArray<T> getJsonArrayInThisObject(
+            String key, Class<?> dataType) {
+        return new FastJsonArray<>(originalJsonObject.getJSONArray(key), dataType);
+    }
 
-	@Override
-	public <T> T toObject(Class<T> type) {
-		//toJavaObject的feature参数暂未被使用，可以任意传递
-		return originalJsonObject.toJavaObject(type,
-				Common.parserConfig, 0);
-	}
+    @Override
+    public <T> T toObject(Class<T> type) {
+        //toJavaObject的feature参数暂未被使用，可以任意传递
+        return originalJsonObject.toJavaObject(type,
+                Common.parserConfig, 0);
+    }
 
-	@Override
-	public String toString() {
-		return originalJsonObject.toString(Common.serializerFeatures);
-	}
+    @Override
+    public String toString() {
+        return originalJsonObject.toString(Common.serializerFeatures);
+    }
 
-	@Override
-	public JsonObject add(String key, Object value) {
-		originalJsonObject.put(key, Common.toOriginalJsonElement(value));
-		return this;
-	}
+    @Override
+    public String toPrettyString() {
+        SerializerFeature[] serializerFeatures = ArrayUtils.add(
+                Common.serializerFeatures,
+                SerializerFeature.PrettyFormat
+        );
+        return originalJsonObject.toString(serializerFeatures);
+    }
 
-	@Override
-	protected Set<Entry<String, Object>> originalEntrySet() {
-		return originalJsonObject.entrySet();
-	}
+    @Override
+    public JsonObject add(String key, Object value) {
+        originalJsonObject.put(key, Common.toOriginalJsonElement(value));
+        return this;
+    }
 
-	@Override
-	protected Object convertOriginalJsonData(Object data) {
-		return new FastJsonDataConverter(data).transfer(null);
-	}
+    @Override
+    protected Set<Entry<String, Object>> originalEntrySet() {
+        return originalJsonObject.entrySet();
+    }
 
-	//endregion
+    @Override
+    protected Object convertOriginalJsonData(Object data) {
+        return new FastJsonDataConverter(data).transfer(null);
+    }
 
-	//region Map
+    //endregion
 
-	@Override
-	public int size() {
-		return originalJsonObject.size();
-	}
+    //region Map
 
-	@Override
-	public boolean containsKey(Object key) {
-		return originalJsonObject.containsKey(key);
-	}
+    @Override
+    public int size() {
+        return originalJsonObject.size();
+    }
 
-	@Override
-	public Object remove(Object key) {
-		return originalJsonObject.remove((String) key);
-	}
+    @Override
+    public boolean containsKey(Object key) {
+        return originalJsonObject.containsKey(key);
+    }
 
-	@Override
-	public Set<String> keySet() {
-		return originalJsonObject.keySet();
-	}
+    @Override
+    public Object remove(Object key) {
+        return originalJsonObject.remove((String) key);
+    }
 
-	//endregion
+    @Override
+    public Set<String> keySet() {
+        return originalJsonObject.keySet();
+    }
+
+    //endregion
 }

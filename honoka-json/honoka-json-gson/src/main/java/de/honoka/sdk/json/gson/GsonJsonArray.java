@@ -1,5 +1,6 @@
 package de.honoka.sdk.json.gson;
 
+import com.google.gson.Gson;
 import de.honoka.sdk.json.api.JsonArray;
 
 import java.util.Iterator;
@@ -75,7 +76,13 @@ class GsonJsonArray<T> extends JsonArray<T> {
 
     @Override
     public String toString() {
-        return originalJsonArray.toString();
+        return Common.gson.toJson(originalJsonArray);
+    }
+
+    @Override
+    public String toPrettyString() {
+        Gson gson = Common.gsonBuilder.setPrettyPrinting().create();
+        return gson.toJson(originalJsonArray);
     }
 
     @Override

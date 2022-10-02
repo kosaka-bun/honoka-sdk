@@ -3,7 +3,7 @@ package de.honoka.sdk.json.fastjson;
 import de.honoka.sdk.json.api.JsonArray;
 import de.honoka.sdk.json.api.service.JsonArrayService;
 
-class FastJsonArrayService implements JsonArrayService {
+public class FastJsonArrayService implements JsonArrayService {
 
     @Override
     public <T> JsonArray<T> of(Class<T> clazz) {

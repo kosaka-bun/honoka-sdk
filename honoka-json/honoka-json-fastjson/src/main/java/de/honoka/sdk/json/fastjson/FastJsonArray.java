@@ -2,7 +2,9 @@ package de.honoka.sdk.json.fastjson;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import de.honoka.sdk.json.api.JsonArray;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Iterator;
 
@@ -77,6 +79,15 @@ class FastJsonArray<T> extends JsonArray<T> {
     @Override
     public String toString() {
         return originalJsonArray.toString(Common.serializerFeatures);
+    }
+
+    @Override
+    public String toPrettyString() {
+        SerializerFeature[] serializerFeatures = ArrayUtils.add(
+                Common.serializerFeatures,
+                SerializerFeature.PrettyFormat
+        );
+        return originalJsonArray.toString(serializerFeatures);
     }
 
     @Override

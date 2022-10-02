@@ -115,6 +115,8 @@ public abstract class JsonObject implements Map<String, Object> {
 
     public abstract String toString();
 
+    public abstract String toPrettyString();
+
     public abstract JsonObject add(String key, Object value);
 
     public abstract <T> T toObject(Class<T> type);

@@ -45,6 +45,8 @@ public abstract class JsonArray<T> implements Collection<T> {
 
     public abstract String toString();
 
+    public abstract String toPrettyString();
+
     @Override
     public void forEach(Consumer<? super T> action) {
         for(T t : this) {
