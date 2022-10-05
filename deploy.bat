@@ -6,5 +6,5 @@ publish
 :: 进入git仓库，然后提交并推送
 cd /d F:\Projects\Other\remote-maven-repo
 git add . && ^
-git commit -m update && ^
+git commit -m "Update honoka-sdk" && ^
 git push

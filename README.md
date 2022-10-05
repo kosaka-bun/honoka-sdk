@@ -9,7 +9,7 @@ Honoka SDK是一款包含了各式各样实用工具的Java工具包，主要包
 
 本项目采用Apache-2.0 License，使用本项目时，请遵守此开源许可证的相关规定。
 
-**本项目中所有代码并未经过严格测试，请勿用于生产环境。**
+**本项目中的所有代码并未经过严格测试，请勿用于生产环境。**
 
 ## 功能展示
 ### [ColorfulText](./honoka-utils/src/main/java/de/honoka/sdk/util/code/ColorfulText.java)
@@ -21,14 +21,14 @@ ColorfulText.of().red("red ").green("green ").blue("blue").println();
 
 ### [ConsoleWindow](./honoka-utils/src/main/java/de/honoka/sdk/util/system/gui/ConsoleWindow.java)
 这是一个使用Java AWT与Swing等组件编写的一个控制台窗口，它可以通过系统托盘图标的方式，使任何可执行jar包能够在系统后台运行。
+
 控制台窗口关闭后，jar包将继续保持在后台运行，点击jar包对应的系统托盘图标，可再次打开控制台窗口。
 ```java
 public static void main(String[] args) {
     //参数1：控制台窗口标题
     //参数2：要创建的托盘图标的URL，为null表示默认图标
     //参数3：执行托盘右键菜单中的“退出”项时，要执行的代码段
-    ConsoleWindow window = new ConsoleWindow("Test",
-            null, () -> {
+    ConsoleWindow window = new ConsoleWindow("Test", null, () -> {
         System.out.println("系统退出");
     });
     window.setAutoScroll(true);
@@ -40,10 +40,12 @@ public static void main(String[] args) {
     app.run(args);
 }
 ```
-控制台窗口：<br />
+控制台窗口：
+
 ![](./docs/img/2.png)
 
-系统托盘图标：<br />
+系统托盘图标：
+
 ![](./docs/img/3.png)
 
 ### [FileUtils](./honoka-utils/src/main/java/de/honoka/sdk/util/file/FileUtils.java)
@@ -54,7 +56,7 @@ public static void main(String[] args) {
 ```java
 //参数1：要提取的资源所在的jar包中的某个类，用于基于它获取资源的URL
 //参数2：要提取的资源路径，可以为多个
-copyResourceIfNotExists(ClassInJar.class, "/dir/file1.txt", "/dir/file2.txt");
+FileUtils.copyResourceIfNotExists(ClassInJar.class, "/dir/file1.txt", "/dir/file2.txt");
 ```
 执行完上述代码后，当前运行的jar包所在目录下的`dir`文件夹下应该有`file1.txt`与`file2.txt`两个文件。
 
@@ -74,7 +76,7 @@ C:\Projects\a-project\build\classes\java\main
 主要用于直接读取jar包中的文本文件。
 
 ### [ImageUtils](./honoka-utils/src/main/java/de/honoka/sdk/util/various/ImageUtils.java)
-文字转图片工具类，转换时图片的高度是自适应的，图片的宽度可以自行指定。可以指定每行最大字符数，或是为图片指定一个固定宽度。此外，它还能具有一定的渲染HTML的能力。
+文字转图片工具类，转换时图片的高度是自适应的，图片的宽度可以自行指定。可以指定每行最大字符数，或是为图片指定一个固定宽度。此外，它还具有一定的渲染HTML的能力。
 
 ### [ReflectUtils](./honoka-utils/src/main/java/de/honoka/sdk/util/various/ReflectUtils.java)
 强大的反射工具类，可以方便地获取和修改被`private`和`final`所修饰的字段的值，以及方便地自动查找和调用指定名称的`private`方法，具有一定的类型推断能力。
@@ -159,18 +161,20 @@ for(Entity e : array) {
 
 ### Maven
 ```xml
-<dependency>
-    <groupId>de.honoka.sdk</groupId>
-    <artifactId>honoka-utils</artifactId>
-    <version>版本号</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>de.honoka.sdk</groupId>
+        <artifactId>honoka-utils</artifactId>
+        <version>版本号</version>
+    </dependency>
 
-<dependency>
-    <groupId>de.honoka.sdk</groupId>
-    <artifactId>honoka-json-gson</artifactId>
-    <!-- 或：<artifactId>honoka-json-fastjson</artifactId> -->
-    <version>版本号</version>
-</dependency>
+    <dependency>
+        <groupId>de.honoka.sdk</groupId>
+        <artifactId>honoka-json-gson</artifactId>
+        <!-- 或：<artifactId>honoka-json-fastjson</artifactId> -->
+        <version>版本号</version>
+    </dependency>
+</dependencies>
 ```
 
 ### Gradle
