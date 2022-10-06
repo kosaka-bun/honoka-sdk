@@ -1,5 +1,21 @@
 # 更新日志
 
+## 1.1.2
+#### honoka-utils 1.0.4
+- 添加`ThrowsConsumer`接口。
+
+#### honoka-framework-utils 1.0.1
+- 将模块依赖改为指定版本依赖。
+
+#### honoka-json-api 1.1.2
+- 将模块依赖改为指定版本依赖。
+
+#### honoka-json-gson 1.1.2
+- 将模块依赖改为指定版本依赖。
+
+#### honoka-json-fastjson 1.1.2
+- 将模块依赖改为指定版本依赖。
+
 ## 1.1.1
 #### honoka-utils 1.0.3
 - 移除`CodeUtils.doIgnoreExceptions()`，用`ActionUtils.doIgnoreException()`代替。

@@ -87,7 +87,7 @@ public class ConsoleWindow {
      * 托盘图标右键菜单的坐标修正值，如果觉得菜单弹出时的位置不正确，可通过它修改
      */
     private final Dimension trayIconMenuLocationOffset =
-            new Dimension(13, 13);
+            new Dimension(21, 17);
 
     /**
      * 设置textPane属性

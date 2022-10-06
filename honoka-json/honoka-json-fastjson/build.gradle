@@ -1,7 +1,7 @@
-setupVersion '1.1.1'
+setupVersion '1.1.2'
 
 dependencies {
-    Project honokaJsonApi = project(':honoka-json:honoka-json-api')
+    String honokaJsonApi = 'de.honoka.sdk:honoka-json-api:1.1.2'
     apiElements honokaJsonApi
     implementation honokaJsonApi
     implementation 'com.alibaba:fastjson:1.2.75'
