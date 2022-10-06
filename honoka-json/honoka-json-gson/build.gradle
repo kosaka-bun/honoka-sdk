@@ -1,7 +1,7 @@
-setupVersion '1.1.2-dev'
+setupVersion '1.1.2'
 
 dependencies {
-    String honokaJsonApi = 'de.honoka.sdk:honoka-json-api:1.1.1'
+    String honokaJsonApi = 'de.honoka.sdk:honoka-json-api:1.1.2'
     apiElements honokaJsonApi
     implementation honokaJsonApi
     implementation 'com.google.code.gson:gson:2.8.6'

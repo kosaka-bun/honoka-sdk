@@ -1,5 +1,5 @@
 subprojects {
     dependencies {
-        implementation 'de.honoka.sdk:honoka-utils:1.0.3'
+        implementation 'de.honoka.sdk:honoka-utils:1.0.4'
     }
 }
