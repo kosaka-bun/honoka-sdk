@@ -6,8 +6,8 @@ public interface ThrowsRunnable extends Runnable {
 
     void throwsRun() throws Throwable;
 
-    @Override
     @SneakyThrows
+    @Override
     default void run() {
         throwsRun();
     }
