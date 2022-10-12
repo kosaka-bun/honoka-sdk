@@ -27,19 +27,16 @@ ColorfulText.of().red("red ").green("green ").blue("blue").println();
 控制台窗口关闭后，jar包将继续保持在后台运行，点击jar包对应的系统托盘图标，可再次打开控制台窗口。
 ```java
 public static void main(String[] args) {
-    //参数1：控制台窗口标题
-    //参数2：要创建的托盘图标的URL，为null表示默认图标
-    //参数3：执行托盘右键菜单中的“退出”项时，要执行的代码段
-    ConsoleWindow window = new ConsoleWindow("Test", null, () -> {
+    //of方法参数：控制台窗口标题
+    //setOnExit：执行托盘右键菜单中的“退出”项时，要执行的代码段
+    /*
+     * setScreenZoomScale：当前系统的屏幕缩放比例大小，用于准确定位右键弹出菜单
+     * 若不正确设置，则弹出菜单的位置可能会与鼠标点击的位置存在较大偏差
+     */
+    ConsoleWindow.Builder.of("Test").setOnExit(() -> {
         System.out.println("系统退出");
-    });
-    window.setAutoScroll(true);
-    //当前系统的屏幕缩放比例大小，用于准确定位右键弹出菜单
-    //若不正确设置，则弹出菜单的位置与点击位置可能出现较大偏差
-    window.setScreenZoomScale(1.25);
-    window.show();
-    SpringApplication app = new SpringApplication(TestApplication.class);
-    app.run(args);
+    }).setScreenZoomScale(1.25).build();
+    SpringApplication.run(TestApplication.class, args);
 }
 ```
 控制台窗口：
@@ -65,7 +62,8 @@ FileUtils.copyResourceIfNotExists(ClassInJar.class, "/dir/file1.txt", "/dir/file
 #### getClasspath()
 用于获取当前运行的jar包所在的目录的路径，或所运行的class文件的classpath根目录。
 
-设一个Gradle项目在不打包的情况下，直接运行时，其根目录的路径为：`C:\Projects\a-project`<br />
+设一个Gradle项目在不打包的情况下，直接运行时，其根目录的路径为：`C:\Projects\a-project`。
+
 则这个方法的返回值类似于：
 ```
 C:\Projects\a-project\build\classes\java\main
