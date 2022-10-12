@@ -4,11 +4,11 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 /**
- * 该类是真正实现超长单词都能自动换行的 JTextPane 的子类
- * Java 7 以下版本的 JTextPane 本身都能实现自动换行，对
- * 超长单词都能有效，但从 Java 7 开始读超长单词就不能自动
- * 换行，导致 JTextPane 的实际宽度变大，使得滚动条出现。
- * 下面的方法是对这个 bug 的较好修复。
+ * 该类是真正实现超长单词都能自动换行的JTextPane的子类。
+ *
+ * Java 7以下版本的JTextPane本身都能实现自动换行，对超长单词都能有效，
+ * 但从Java 7开始，超长单词就不能自动换行，导致JTextPane的实际宽度变大，
+ * 使得滚动条出现。下面的方法是对这个bug的较好修复。
  */
 public class WrapableJTextPane extends JTextPane {
 
