@@ -3,6 +3,7 @@ package de.honoka.sdk.util.system.gui;
 import de.honoka.sdk.util.code.ActionUtils;
 import de.honoka.sdk.util.code.ThrowsRunnable;
 import de.honoka.sdk.util.text.TextUtils;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -35,24 +36,56 @@ public class ConsoleWindow {
     //全局初始化，先于所有类型的初始化执行
     static {
         //设置本机系统外观
-        try {
+        ActionUtils.doIgnoreException(() -> {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception e) {
-            e.printStackTrace();
+        });
+    }
+
+    public static class Builder {
+
+        private Builder() {}
+
+        public static ConsoleWindowBuilder of() {
+            return ConsoleWindowBuilder.of();
+        }
+
+        public static ConsoleWindowBuilder of(String windowName) {
+            return ConsoleWindowBuilder.of(windowName);
         }
     }
 
-    private final JFrame frame = new JFrame();
+    //package-private
+    String windowName;
 
-    final String windowName;
+    //package-private
+    /**
+     * 在高分辨率的屏幕下，通常会使用屏幕比例缩放，在这样的模式下，直接
+     * 获取鼠标点击的坐标往往不能获取到正确的坐标，需要指定当前缩放比例
+     * 来换算成正确的坐标。
+     */
+    Double screenZoomScale;
+
+    //package-private
+    Dimension defaultFrameSize;
+
+    //package-private
+    Font menuItemFont, textPaneFont;
+
+    //package-private
+    Integer textPaneMaxLine;
+
+    //width值越大越靠左，height值越大越靠上
+    //package-private
+    /**
+     * 托盘图标右键菜单的坐标修正值，如果觉得菜单弹出时的位置不正确，可通过它修改
+     */
+    Dimension trayIconMenuLocationOffset;
+
+    private final JFrame frame = new JFrame();
 
     private final JTextPane textPane = new WrapableJTextPane();
 
-    private final int textPaneMaxLine = 200;
-
     private final Color defaultFontColor = Color.LIGHT_GRAY;
-
-    private final AttributeSet defaultAttributeSet;
 
     private final JScrollPane scrollPane = new JScrollPane();
 
@@ -60,19 +93,10 @@ public class ConsoleWindow {
 
     private final JTextField inputField = new JTextField();
 
-    private final Dimension defaultFrameSize = new Dimension(1000, 600);
-
-    /**
-     * 在高分辨率的屏幕下，通常会使用屏幕比例缩放，在这样的模式下，直接
-     * 获取鼠标点击的坐标往往不能获取到正确的坐标，需要指定当前缩放比例
-     * 来换算成正确的坐标。
-     */
-    private double screenZoomScale = 1.0;
-
-    private final Font menuItemFont = new Font("Microsoft YaHei UI",
-            Font.PLAIN, 12);
-
+    @Getter
     private volatile boolean autoScroll = true;
+
+    private AttributeSet defaultAttributeSet;
 
     private JCheckBoxMenuItem autoScrollItem;
 
@@ -83,11 +107,212 @@ public class ConsoleWindow {
      */
     private final JDialog trayIconMenuContainer = new JDialog();
 
+    //package-private
+    ConsoleWindow() {}
+
+    //package-private
     /**
-     * 托盘图标右键菜单的坐标修正值，如果觉得菜单弹出时的位置不正确，可通过它修改
+     * 只加载窗口
      */
-    private final Dimension trayIconMenuLocationOffset =
-            new Dimension(21, 17);
+    void init() {
+        //初始化默认样式集
+        SimpleAttributeSet attributeSet = new SimpleAttributeSet();
+        StyleConstants.setForeground(attributeSet, defaultFontColor);
+        defaultAttributeSet = attributeSet;
+        //设置textPane属性
+        initTextPane();
+        //转移系统输入输出流
+        changeSystemOut();
+        changeSystemIn();
+        //分别设置水平和垂直滚动条自动出现
+        initScrollPane();
+        //加载控制台输入框
+        initInputField();
+        //加载窗口
+        initFrame();
+    }
+
+    /**
+     * 加载窗口和系统托盘图标
+     */
+    void init(URL iconPath, ThrowsRunnable onExit) {
+        init();
+        //未提供图标则加载默认图标
+        if(iconPath == null)
+            iconPath = this.getClass().getResource("/img/java.png");
+        //创建图片对象
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(iconPath));
+        //加载系统托盘图标
+        initSystemTrayIcon(icon.getImage(), onExit);
+        //加载窗口时默认指定的是关闭窗口时退出程序
+        //有了托盘图标后需要对窗口关闭时的动作进行修改
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    }
+
+    //package-private
+    void showInputField() {
+        inputFieldContainer.setVisible(true);
+        //显示输入框后将焦点放在输入框上
+        inputField.dispatchEvent(new FocusEvent(
+                inputField, FocusEvent.FOCUS_GAINED, true
+        ));
+        inputField.requestFocusInWindow();
+    }
+
+    void hideInputField() {
+        inputFieldContainer.setVisible(false);
+    }
+
+    public void show() {
+        if(frame.isVisible()) return;
+        //窗口可视
+        frame.setVisible(true);
+        //将窗口显示出来（如果是最小化到任务栏的状态）
+        switch(frame.getExtendedState()) {
+            case JFrame.ICONIFIED:    //最小化
+                frame.setExtendedState(JFrame.NORMAL);
+                break;
+            case 7:  //7表示最大化的窗口被最小化到任务栏
+                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                break;
+        }
+    }
+
+    public void hide() {
+        frame.setVisible(false);
+    }
+
+    /**
+     * 获取有限行数的控制台内容的HTML表示文本
+     * 控制台每一行对应一个HTML的pre标签，该标签将记录该行的颜色
+     */
+    //查找、添加和删除不可同时进行，因此需要添加synchronized
+    @SneakyThrows
+    public synchronized String getText(int limit) {
+        //将document中的内容转换为html
+        StyledDocument doc = textPane.getStyledDocument();
+        HTMLEditorKit htmlEditorKit = new HTMLEditorKit();
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        htmlEditorKit.write(bao, doc, 0, doc.getLength());
+        String html = bao.toString();
+        //解析每个span中包含的文本内容
+        List<String> contents = new ArrayList<>();
+        for(Iterator<String> lines = TextUtils.getLines(html).iterator();
+            lines.hasNext(); ) {
+            String line = lines.next();
+            //查找起始p标签
+            if(!line.trim().startsWith("<p")) continue;
+            while(lines.hasNext()) {
+                line = lines.next();
+                //查找起始span标签
+                String trimedLine = line.trim();
+                if(trimedLine.startsWith("<span")) {
+                    //计算缩进
+                    int indent = line.indexOf("<") + 2;
+                    StringBuilder content = new StringBuilder();
+                    //获取span标签之间的每一行
+                    while(lines.hasNext()) {
+                        line = lines.next();
+                        //遇到结束标签即跳出
+                        if(!line.trim().startsWith("</span")) {
+                            try {
+                                content.append(line.substring(indent));
+                            } catch(Exception e) {
+                                //字符不足缩进，去除左侧空格，保留右侧空格
+                                content.append(StringUtils.stripStart(
+                                        line, null));
+                            }
+                        } else break;
+                    }
+                    //转义<>符号，然后添加到列表中，表示一个span标签的文本内容
+                    String contentStr = content.toString()
+                            .replaceAll("<", "&lt;")
+                            .replaceAll(">", "&gt;");
+                    contents.add(contentStr);
+                } else if(trimedLine.startsWith("</p")) {
+                    //遇到结束p标签，为文本内容列表中的最后一个元素添加html换行符
+                    int lastIndex = contents.size() - 1;
+                    String last = contents.get(lastIndex) + "<br>";
+                    contents.set(lastIndex, last);
+                    //跳出，查找下一个起始p标签
+                    break;
+                }
+            }
+        }
+        //提取每个span的颜色
+        Elements spans = Jsoup.parse(html).select("span");
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < spans.size(); i++) {
+            org.jsoup.nodes.Element span = spans.get(i);
+            String style = span.attr("style");
+            int colorPos = style.indexOf("color:");
+            style = style.substring(colorPos, style.indexOf(";", colorPos) + 1);
+            result.append("<pre style=\"").append(style).append("\">")
+                    .append(contents.get(i)).append("</pre>");
+        }
+        //判断是否需要截取
+        String resultStr = result.toString();
+        int lineCount = StringUtils.countMatches(resultStr, "<br>") + 1;
+        //最后一行为空行，故实际限制数量应为limit + 1
+        limit += 1;
+        if(lineCount > limit) {
+            int removeLineCount = lineCount - limit;
+            resultStr = resultStr.substring(resultStr.indexOf(
+                    "<pre", StringUtils.ordinalIndexOf(resultStr,
+                            "<br>", removeLineCount)
+            ));
+        }
+        return resultStr;
+    }
+
+    //不论自动滚动是否打开，始终返回固定限制数量的文本
+    public synchronized String getText() {
+        return getText(textPaneMaxLine);
+    }
+
+    public void setAutoScroll(boolean autoScroll) {
+        this.autoScroll = autoScroll;
+        updateAutoScrollLockItem(isAutoScroll());
+    }
+
+    public void setTextPaneFont(Font font) {
+        textPane.setFont(font);
+    }
+
+    public void setTextPaneFont(String fontFamily) {
+        setTextPaneFont(new Font(
+                fontFamily,
+                textPaneFont.getStyle(),
+                textPaneFont.getSize()
+        ));
+    }
+
+    public void addTrayIconMenuItem(String name, boolean needConfirm,
+                                    ThrowsRunnable action) {
+        if(trayIconMenu == null) return;
+        JMenuItem item = new JMenuItem(name);
+        item.setFont(menuItemFont);
+        item.addActionListener(e -> {
+            //进行操作确认
+            if(needConfirm) {
+                int option = JOptionPane.showConfirmDialog(frame,
+                        "确定执行" + name + "吗？", windowName,
+                        JOptionPane.OK_CANCEL_OPTION);
+                //判断是否选择了“是”选项
+                if(option != JOptionPane.OK_OPTION) return;
+            }
+            //执行指定的方法
+            //通过新线程执行方法，避免卡住界面
+            new Thread(() -> {
+                item.setEnabled(false);
+                ActionUtils.doAction(name, action);
+                item.setEnabled(true);
+            }).start();
+        });
+        trayIconMenu.insert(item, trayIconMenu.getComponentCount() - 1);
+    }
+
+    //region init methods
 
     /**
      * 设置textPane属性
@@ -96,9 +321,7 @@ public class ConsoleWindow {
         textPane.setBackground(new Color(43, 43, 43, 255));
         textPane.setForeground(defaultFontColor);
         textPane.setMargin(new Insets(8, 8, 8, 8));
-        textPane.setFont(new Font("Microsoft YaHei Mono",
-                Font.PLAIN, 18));
-        //textArea.setLineWrap(true);
+        setTextPaneFont(textPaneFont);
         textPane.setEditable(false);
         //监听ScrollLock
         textPane.addKeyListener(new KeyListener() {
@@ -212,26 +435,16 @@ public class ConsoleWindow {
      */
     @SneakyThrows
     private void changeSystemOut() {
-        class ConsoleOutputStreamImpl extends ConsoleOutputStream {
-
-            public ConsoleOutputStreamImpl(PrintStream systemPrintStream,
-                                           Color printColor) {
-                super(systemPrintStream, printColor);
-            }
-
-            @Override
-            public void print(List<Byte> bytes) {
-                writeToTextPane(this, bytes);
-            }
-        }
-        ConsoleOutputStream newOut = new ConsoleOutputStreamImpl(System.out,
+        ConsoleOutputStream newOut = new ConsoleOutputStream(System.out,
                 defaultFontColor);
-        ConsoleOutputStream newErr = new ConsoleOutputStreamImpl(System.err,
+        ConsoleOutputStream newErr = new ConsoleOutputStream(System.err,
                 new Color(255, 107, 103, 255));
-        PrintStream newOutPrintStream =
-                new PrintStream(newOut, false, "UTF-8");
-        PrintStream newErrPrintStream =
-                new PrintStream(newErr, false, "UTF-8");
+        newOut.setPrintMethod(bytes -> writeToTextPane(newOut, bytes));
+        newErr.setPrintMethod(bytes -> writeToTextPane(newErr, bytes));
+        PrintStream newOutPrintStream = new PrintStream(newOut,
+                false, "UTF-8");
+        PrintStream newErrPrintStream = new PrintStream(newErr,
+                false, "UTF-8");
         System.setOut(newOutPrintStream);
         System.setErr(newErrPrintStream);
     }
@@ -407,148 +620,7 @@ public class ConsoleWindow {
         trayIconMenuContainer.setSize(0, 0);
     }
 
-    public ConsoleWindow(String windowName) {
-        this.windowName = windowName;
-        //初始化默认样式集
-        SimpleAttributeSet attributeSet = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeSet, defaultFontColor);
-        defaultAttributeSet = attributeSet;
-        //设置textPane属性
-        initTextPane();
-        //转移系统输入输出流
-        changeSystemOut();
-        changeSystemIn();
-        //分别设置水平和垂直滚动条自动出现
-        initScrollPane();
-        //加载控制台输入框
-        initInputField();
-        //加载窗口
-        initFrame();
-    }
-
-    public ConsoleWindow(String windowName, URL iconPath,
-                         ThrowsRunnable onExit) {
-        this(windowName);
-        //有系统托盘图标时，最小化则隐藏窗口
-        //windowListener.hideWindowOnIconified = true;
-        //未提供图标则加载默认图标
-        if(iconPath == null)
-            iconPath = this.getClass().getResource("/img/java.png");
-        //创建图片对象
-        ImageIcon icon = new ImageIcon(Objects.requireNonNull(iconPath));
-        //加载系统托盘图标
-        initSystemTrayIcon(icon.getImage(), onExit);
-        //加载窗口时默认指定的是关闭窗口时退出程序
-        //有了托盘图标后需要对窗口关闭时的动作进行修改
-        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }
-
-    public void show() {
-        if(frame.isVisible()) return;
-        //窗口可视
-        frame.setVisible(true);
-        //将窗口显示出来（如果是最小化到任务栏的状态）
-        switch(frame.getExtendedState()) {
-            case JFrame.ICONIFIED:    //最小化
-                frame.setExtendedState(JFrame.NORMAL);
-                break;
-            case 7:  //7表示最大化的窗口被最小化到任务栏
-                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                break;
-        }
-    }
-
-    public void hide() {
-        frame.setVisible(false);
-    }
-
-    /**
-     * 获取有限行数的控制台内容的HTML表示文本
-     * 控制台每一行对应一个HTML的pre标签，该标签将记录该行的颜色
-     */
-    //查找、添加和删除不可同时进行，因此需要添加synchronized
-    @SneakyThrows
-    public synchronized String getText(int limit) {
-        //将document中的内容转换为html
-        StyledDocument doc = textPane.getStyledDocument();
-        HTMLEditorKit htmlEditorKit = new HTMLEditorKit();
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        htmlEditorKit.write(bao, doc, 0, doc.getLength());
-        String html = bao.toString();
-        //解析每个span中包含的文本内容
-        List<String> contents = new ArrayList<>();
-        for(Iterator<String> lines = TextUtils.getLines(html).iterator();
-            lines.hasNext(); ) {
-            String line = lines.next();
-            //查找起始p标签
-            if(!line.trim().startsWith("<p")) continue;
-            while(lines.hasNext()) {
-                line = lines.next();
-                //查找起始span标签
-                String trimedLine = line.trim();
-                if(trimedLine.startsWith("<span")) {
-                    //计算缩进
-                    int indent = line.indexOf("<") + 2;
-                    StringBuilder content = new StringBuilder();
-                    //获取span标签之间的每一行
-                    while(lines.hasNext()) {
-                        line = lines.next();
-                        //遇到结束标签即跳出
-                        if(!line.trim().startsWith("</span")) {
-                            try {
-                                content.append(line.substring(indent));
-                            } catch(Exception e) {
-                                //字符不足缩进，去除左侧空格，保留右侧空格
-                                content.append(StringUtils.stripStart(
-                                        line, null));
-                            }
-                        } else break;
-                    }
-                    //转义<>符号，然后添加到列表中，表示一个span标签的文本内容
-                    String contentStr = content.toString()
-                            .replaceAll("<", "&lt;")
-                            .replaceAll(">", "&gt;");
-                    contents.add(contentStr);
-                } else if(trimedLine.startsWith("</p")) {
-                    //遇到结束p标签，为文本内容列表中的最后一个元素添加html换行符
-                    int lastIndex = contents.size() - 1;
-                    String last = contents.get(lastIndex) + "<br>";
-                    contents.set(lastIndex, last);
-                    //跳出，查找下一个起始p标签
-                    break;
-                }
-            }
-        }
-        //提取每个span的颜色
-        Elements spans = Jsoup.parse(html).select("span");
-        StringBuilder result = new StringBuilder();
-        for(int i = 0; i < spans.size(); i++) {
-            org.jsoup.nodes.Element span = spans.get(i);
-            String style = span.attr("style");
-            int colorPos = style.indexOf("color:");
-            style = style.substring(colorPos, style.indexOf(";", colorPos) + 1);
-            result.append("<pre style=\"").append(style).append("\">")
-                    .append(contents.get(i)).append("</pre>");
-        }
-        //判断是否需要截取
-        String resultStr = result.toString();
-        int lineCount = StringUtils.countMatches(resultStr, "<br>") + 1;
-        //最后一行为空行，故实际限制数量应为limit + 1
-        limit += 1;
-        if(lineCount > limit) {
-            int removeLineCount = lineCount - limit;
-            resultStr = resultStr.substring(resultStr.indexOf(
-                    "<pre", StringUtils.ordinalIndexOf(resultStr,
-                            "<br>", removeLineCount)
-            ));
-        }
-        return resultStr;
-    }
-
-    //不论自动滚动是否打开，始终返回固定限制数量的文本
-    public synchronized String getText() {
-        return getText(textPaneMaxLine);
-    }
+    //endregion
 
     private synchronized void writeToTextPane(
             ConsoleOutputStream out, List<Byte> buffer) {
@@ -572,7 +644,8 @@ public class ConsoleWindow {
     }
 
     @SneakyThrows
-    synchronized void writeToTextPane(String str, AttributeSet attributeSet) {
+    private synchronized void writeToTextPane(
+            String str, AttributeSet attributeSet) {
         StyledDocument doc = textPane.getStyledDocument();
         if(attributeSet == null) attributeSet = defaultAttributeSet;
         doc.insertString(doc.getLength(), str, attributeSet);
@@ -602,7 +675,8 @@ public class ConsoleWindow {
         //清除多余的行
         int offset = StringUtils.ordinalIndexOf(
                 doc.getText(0, doc.getLength()), "\n",
-                lineCount - textPaneMaxLine) + 1;
+                lineCount - textPaneMaxLine
+        ) + 1;
         textPane.getDocument().remove(0, offset);
     }
 
@@ -611,15 +685,6 @@ public class ConsoleWindow {
         removeSurplusTextInTextPane();
         //滚屏到页尾
         textPaneScrollToEnd();
-    }
-
-    public boolean isAutoScroll() {
-        return autoScroll;
-    }
-
-    public void setAutoScroll(boolean autoScroll) {
-        this.autoScroll = autoScroll;
-        updateAutoScrollLockItem(isAutoScroll());
     }
 
     private void updateAutoScrollLockItem(boolean autoScroll) {
@@ -645,63 +710,5 @@ public class ConsoleWindow {
             //不选择强制退出，则恢复退出选项
             exitItem.setEnabled(true);
         }
-    }
-
-    public double getScreenZoomScale() {
-        return screenZoomScale;
-    }
-
-    public void setScreenZoomScale(double screenZoomScale) {
-        this.screenZoomScale = screenZoomScale;
-    }
-
-    public void setTextPaneFont(Font font) {
-        textPane.setFont(font);
-    }
-
-    public void setTextPaneFont(String fontFamily) {
-        setTextPaneFont(new Font(fontFamily, Font.PLAIN, 18));
-    }
-
-    public void addTrayIconMenuItem(String name, boolean needConfirm,
-                                    ThrowsRunnable action) {
-        if(trayIconMenu == null) return;
-        JMenuItem item = new JMenuItem(name);
-        item.setFont(menuItemFont);
-        item.addActionListener(e -> {
-            //进行操作确认
-            if(needConfirm) {
-                int option = JOptionPane.showConfirmDialog(frame,
-                        "确定执行" + name + "吗？", windowName,
-                        JOptionPane.OK_CANCEL_OPTION);
-                //判断是否选择了“是”选项
-                if(option != JOptionPane.OK_OPTION) return;
-            }
-            //执行指定的方法
-            //通过新线程执行方法，避免卡住界面
-            new Thread(() -> {
-                item.setEnabled(false);
-                ActionUtils.doAction(name, action);
-                item.setEnabled(true);
-            }).start();
-        });
-        trayIconMenu.insert(item, trayIconMenu.getComponentCount() - 1);
-    }
-
-    public void showInputField() {
-        inputFieldContainer.setVisible(true);
-        //显示输入框后将焦点放在输入框上
-        inputField.dispatchEvent(new FocusEvent(
-                inputField, FocusEvent.FOCUS_GAINED, true
-        ));
-        inputField.requestFocusInWindow();
-    }
-
-    public void hideInputField() {
-        inputFieldContainer.setVisible(false);
-    }
-
-    public void setTrayIconMenuLocationOffset(int width, int height) {
-        trayIconMenuLocationOffset.setSize(width, height);
     }
 }

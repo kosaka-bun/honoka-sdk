@@ -1,5 +1,12 @@
 # 更新日志
 
+## 1.1.3
+#### honoka-utils 1.0.5
+- 修改`ConsoleWindow`的初始化逻辑，移除公共构造器。
+- 修改`ConsoleWindow`部分字段的访问权限。
+- 创建`ConsoleWindowBuilder`以构建`ConsoleWindow`实例。
+- 移除`ConsoleWindow.setTrayIconMenuLocationOffset()`方法。
+
 ## 1.1.2
 #### honoka-utils 1.0.4
 - 添加`ThrowsConsumer`接口。

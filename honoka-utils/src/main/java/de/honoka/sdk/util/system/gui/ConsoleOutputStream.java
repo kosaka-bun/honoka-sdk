@@ -1,20 +1,23 @@
 package de.honoka.sdk.util.system.gui;
 
+import lombok.Setter;
+import lombok.SneakyThrows;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 用于代理系统输出流的自定义输出流
  */
-public abstract class ConsoleOutputStream extends OutputStream {
+public class ConsoleOutputStream extends OutputStream {
 
     private final List<Byte> buffer = new ArrayList<>();
 
@@ -23,6 +26,9 @@ public abstract class ConsoleOutputStream extends OutputStream {
     private final AttributeSet defaultPrintAttributeSet;
 
     private AttributeSet printAttributeSet;
+
+    @Setter
+    private Consumer<List<Byte>> printMethod;
 
     public ConsoleOutputStream(PrintStream systemPrintStream, Color printColor) {
         this.originalPrintStream = systemPrintStream;
@@ -38,16 +44,14 @@ public abstract class ConsoleOutputStream extends OutputStream {
         originalPrintStream.write(b);
     }
 
+    @SneakyThrows
     @Override
-    public synchronized void write(byte[] b, int off, int len)
-            throws IOException {
+    public synchronized void write(byte[] b, int off, int len) {
         super.write(b, off, len);
         //这里在字节数组输出完成后将缓存中的字节转换为字符串然后输出
-        print(buffer);
+        printMethod.accept(buffer);
         buffer.clear();
     }
-
-    public abstract void print(List<Byte> bytes);
 
     public AttributeSet getPrintAttributeSet() {
         return printAttributeSet;
