@@ -33,14 +33,9 @@ public class GuiTest {
     }
 
     private static void consoleWindowTest() {
-        ConsoleWindow window = new ConsoleWindow(
-                "hello", null, () -> {
+        ConsoleWindow window = ConsoleWindow.Builder.of().setOnExit(() -> {
             System.out.println("系统退出");
-        });
-        //ConsoleWindow window = new ConsoleWindow("hello");
-        window.setAutoScroll(true);
-        window.setScreenZoomScale(1.25);
-        window.show();
+        }).setWindowName("hello").setScreenZoomScale(1.25).build();
         System.out.println(1);
         System.out.println(2);
         System.err.println(3);
@@ -57,9 +52,8 @@ public class GuiTest {
 
     @SneakyThrows
     private static void inputFieldTest() {
-        ConsoleWindow window = new ConsoleWindow("hello");
-        window.setScreenZoomScale(1.25);
-        window.show();
+        ConsoleWindow.Builder.of("hello")
+                .setScreenZoomScale(1.25).build();
         Thread.sleep(1000);
         System.out.print("请输入：");
         String str = new Scanner(System.in).nextLine();
@@ -160,15 +154,10 @@ public class GuiTest {
     }
 
     private static void popupMenuTest2() {
-        ConsoleWindow window = new ConsoleWindow(
-                "hello中文", null, () -> {
+        ConsoleWindow window = ConsoleWindow.Builder.of().setOnExit(() -> {
             System.out.println("系统退出");
-        });
-        //ConsoleWindow window = new ConsoleWindow("hello");
-        window.setAutoScroll(true);
-        window.setScreenZoomScale(1.25);
+        }).setWindowName("hello中文").setScreenZoomScale(1.25).build();
         window.addTrayIconMenuItem("中文", false, () -> {});
-        window.show();
         System.out.println(123);
         System.err.println(567);
     }
