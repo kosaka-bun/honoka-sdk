@@ -1,5 +1,11 @@
 # 更新日志
 
+## 1.1.4
+#### honoka-utils 1.0.6
+- 增强和优化`ColorAttributeSets`，现在可以缓存各个ANSI代码的`AttributeSet`和`Color`。
+- 增加`ColorfulOutputStream`，通过HTML格式保存控制台输出的彩色内容。
+- 优化`ConsoleOutputStream`。
+
 ## 1.1.3
 #### honoka-utils 1.0.5
 - 修改`ConsoleWindow`的初始化逻辑，移除公共构造器。

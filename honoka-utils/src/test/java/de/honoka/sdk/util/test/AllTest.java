@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Arrays;
@@ -20,8 +21,21 @@ import java.util.regex.Pattern;
 @SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 public class AllTest {
 
-    @SneakyThrows
     @Test
+    public void test11() {
+        String[] parts = "\n\nvaerber\navrwvrvar\n\n\n".split("\n", -1);
+        System.out.println(Arrays.asList(parts));
+    }
+
+    //@Test
+    public void test10() {
+        Color color = new Color(12, 34, 56);
+        System.out.printf("#%02X%02X%02X\n", color.getRed(), color.getGreen(),
+                color.getBlue());
+    }
+
+    @SneakyThrows
+    //@Test
     public void test9() {
         byte[] strBytes = "中文".getBytes(StandardCharsets.UTF_8);
         byte[] strBytesGbk = "中文".getBytes("GBK");

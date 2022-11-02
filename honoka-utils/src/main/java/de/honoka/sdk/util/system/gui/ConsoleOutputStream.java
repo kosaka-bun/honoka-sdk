@@ -1,5 +1,6 @@
 package de.honoka.sdk.util.system.gui;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
@@ -25,6 +26,8 @@ public class ConsoleOutputStream extends OutputStream {
 
     private final AttributeSet defaultPrintAttributeSet;
 
+    @Getter
+    @Setter
     private AttributeSet printAttributeSet;
 
     @Setter
@@ -51,14 +54,6 @@ public class ConsoleOutputStream extends OutputStream {
         //这里在字节数组输出完成后将缓存中的字节转换为字符串然后输出
         printMethod.accept(buffer);
         buffer.clear();
-    }
-
-    public AttributeSet getPrintAttributeSet() {
-        return printAttributeSet;
-    }
-
-    public void setPrintAttributeSet(AttributeSet printAttributeSet) {
-        this.printAttributeSet = printAttributeSet;
     }
 
     public String changePrintColorByAnsiString(String str) {
