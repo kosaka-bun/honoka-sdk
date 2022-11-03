@@ -1,4 +1,4 @@
-setupVersion '1.0.6'
+setupVersion '1.0.7'
 
 dependencies {
     String commonsText = 'org.apache.commons:commons-text:1.9'
@@ -8,5 +8,4 @@ dependencies {
     implementation commonsLang3, commonsText, commonsIo, jsoup
     apiElements commonsLang3, commonsText, commonsIo, jsoup
     implementation 'gui.ava:html2image:2.0.1'
-    testImplementation 'junit:junit:4.13'
 }

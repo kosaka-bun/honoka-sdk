@@ -2,6 +2,7 @@ package de.honoka.sdk.util.various;
 
 import lombok.SneakyThrows;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -113,7 +114,10 @@ public class ReflectUtils {
         modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
     }
 
-    private static Class<?>[] getParameterType(Object[] args) {
+    /**
+     * 根据参数列表推断参数类型列表
+     */
+    private static Class<?>[] getParameterTypeList(Object[] args) {
         Class<?>[] parameterType = new Class<?>[args.length];
         for(int i = 0; i < args.length; i++) {
             parameterType[i] = args[i].getClass();
@@ -128,7 +132,7 @@ public class ReflectUtils {
     @SneakyThrows
     public static Object invokeMethod(Object obj, String methodName,
                                       Object... args) {
-        return invokeMethod(obj, methodName, getParameterType(args), args);
+        return invokeMethod(obj, methodName, getParameterTypeList(args), args);
     }
 
     @SneakyThrows
@@ -142,7 +146,7 @@ public class ReflectUtils {
     @SneakyThrows
     public static Object invokeMethod(Class<?> clazz, String methodName,
                                       Object... args) {
-        return invokeMethod(clazz, methodName, getParameterType(args), args);
+        return invokeMethod(clazz, methodName, getParameterTypeList(args), args);
     }
 
     @SneakyThrows
@@ -151,5 +155,16 @@ public class ReflectUtils {
                                       Object... args) {
         Method m = getMethod(clazz, methodName, parameterType);
         return m.invoke(null, args);
+    }
+
+    /**
+     * 创建新实例
+     */
+    @SneakyThrows
+    public static <T> T newInstance(Class<T> clazz, Object... args) {
+        Class<?>[] parameterType = getParameterTypeList(args);
+        Constructor<T> constructor = clazz.getDeclaredConstructor(parameterType);
+        constructor.setAccessible(true);
+        return constructor.newInstance(args);
     }
 }

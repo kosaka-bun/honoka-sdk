@@ -8,11 +8,12 @@ import de.honoka.sdk.util.text.TextUtils;
 import de.honoka.sdk.util.various.ReflectUtils;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,21 @@ import java.util.regex.Pattern;
 public class AllTest {
 
     @Test
+    public void test12() {
+        Class<?>[] classes = {
+                int.class, Integer.class,
+                String.class,
+                Double.class, double.class,
+                boolean.class, Boolean.class
+        };
+        List<String> list = new ArrayList<>();
+        for(Class<?> clazz : classes) {
+            list.add(clazz.getSimpleName());
+        }
+        System.out.println(list);
+    }
+
+    //@Test
     public void test11() {
         String[] parts = "\n\nvaerber\navrwvrvar\n\n\n".split("\n", -1);
         System.out.println(Arrays.asList(parts));

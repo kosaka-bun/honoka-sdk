@@ -1,5 +1,11 @@
 # 更新日志
 
+## 1.1.5
+#### honoka-utils 1.0.7
+- 更新`CsvTable`API，增加泛型功能。
+- 增加`DefaultCsvTable`。
+- `ReflectUtils`增加`newInstance`方法。
+
 ## 1.1.4
 #### honoka-utils 1.0.6
 - 增强和优化`ColorAttributeSets`，现在可以缓存各个ANSI代码的`AttributeSet`和`Color`。
