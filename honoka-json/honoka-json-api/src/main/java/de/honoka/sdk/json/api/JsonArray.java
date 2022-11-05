@@ -171,6 +171,18 @@ public abstract class JsonArray<T> implements Collection<T> {
     }
 
     public static <T1> JsonArray<T1> of(Class<T1> clazz) {
-        return of(null, clazz);
+        return of((String) null, clazz);
+    }
+
+    public static <T1> JsonArray<T1> of(Collection<?> collection, Class<T1> clazz) {
+        ServiceLoader<JsonArrayService> loader = ServiceLoader.load(
+                JsonArrayService.class);
+        for(JsonArrayService service : loader) {
+            if(collection == null) {
+                return service.of(clazz);
+            }
+            return service.of(collection, clazz);
+        }
+        throw new NotImplementedException(JsonArrayService.class.getName());
     }
 }

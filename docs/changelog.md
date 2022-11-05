@@ -1,5 +1,16 @@
 # 更新日志
 
+## 1.1.6
+#### honoka-json-api 1.1.3
+- 为`JsonObject`与`JsonObjectService`增加新的`of(Object obj)`方法。
+- 为`JsonArray`与`JsonArrayService`增加新的`of(Collection<?> collection, Class<T> clazz)`方法。
+
+#### honoka-json-gson 1.1.3
+- 适配honoka-json-api 1.1.3。
+
+#### honoka-json-fastjson 1.1.3
+- 适配honoka-json-api 1.1.3。
+
 ## 1.1.5
 #### honoka-utils 1.0.7
 - 更新`CsvTable`API，增加泛型功能。
@@ -42,6 +53,15 @@
 
 #### honoka-framework-utils 1.0.0
 - 起始版本
+
+#### honoka-json-api 1.1.1
+- 更新了`JsonObject`类中部分方法所使用的内部API。
+
+#### honoka-json-fastjson 1.1.1
+- 更新版本号。
+
+#### honoka-json-gson 1.1.1
+- 更新版本号。
 
 ## 1.1.0
 #### honoka-json-fastjson 1.1.0

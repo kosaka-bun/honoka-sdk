@@ -117,7 +117,7 @@ class FastJsonObject extends JsonObject {
 
     @Override
     public Object remove(Object key) {
-        return originalJsonObject.remove((String) key);
+        return originalJsonObject.remove(key);
     }
 
     @Override

@@ -7,4 +7,6 @@ public interface JsonObjectService {
     JsonObject of();
 
     JsonObject of(String jsonStr);
+
+    JsonObject of(Object obj);
 }

@@ -193,4 +193,16 @@ public abstract class JsonObject implements Map<String, Object> {
     public static JsonObject of() {
         return of(null);
     }
+
+    public static JsonObject of(Object obj) {
+        ServiceLoader<JsonObjectService> loader = ServiceLoader.load(
+                JsonObjectService.class);
+        for(JsonObjectService service : loader) {
+            if(obj == null) {
+                return service.of();
+            }
+            return service.of(obj);
+        }
+        throw new NotImplementedException(JsonObjectService.class.getName());
+    }
 }

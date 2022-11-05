@@ -14,4 +14,9 @@ public class GsonJsonObjectService implements JsonObjectService {
     public JsonObject of(String jsonStr) {
         return new GsonJsonObject(jsonStr);
     }
+
+    @Override
+    public JsonObject of(Object obj) {
+        return of(Common.gson.toJson(obj));
+    }
 }
