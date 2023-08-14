@@ -1,4 +1,9 @@
+//file:noinspection GroovyAssignabilityCheck
+//file:noinspection ConfigurationAvoidance
+//file:noinspection GrUnresolvedAccess
+
 group 'de.honoka.sdk'
+version '1.1.6'
 
 subprojects {
     apply plugin: 'java'
