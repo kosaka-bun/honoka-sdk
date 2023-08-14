@@ -1,6 +1,6 @@
 //file:noinspection GrUnresolvedAccess
 
-setupVersion '1.0.1'
+setupVersionAndPublishing '1.0.1'
 
 dependencies {
     implementation 'de.honoka.sdk:honoka-utils:1.0.4'

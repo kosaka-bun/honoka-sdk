@@ -1,6 +1,6 @@
 //file:noinspection GrUnresolvedAccess
 
-setupVersion '1.0.8-dev'
+setupVersionAndPublishing '1.0.8-dev'
 
 dependencies {
     String commonsText = 'org.apache.commons:commons-text:1.9'

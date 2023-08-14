@@ -2,25 +2,52 @@
 //file:noinspection ConfigurationAvoidance
 //file:noinspection GrUnresolvedAccess
 
-group 'de.honoka.sdk'
-version '1.1.7-dev'
+buildscript {
+    def setupRepositories = {
+        it.repositories {
+            maven {
+                url 'https://maven.aliyun.com/repository/public'
+            }
+            mavenCentral()
+            maven {
+                url 'https://mirrors.honoka.de/maven-repo'
+            }
+        }
+    }
+    setupRepositories(delegate)
+    repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        gradlePluginPortal()
+    }
+    ext {
+        def d = delegate
+        d.setupRepositories = setupRepositories
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+group = 'de.honoka.sdk'
+version = '1.1.7-dev'
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
 
-    group rootProject.group
+    group = rootProject.group
     sourceCompatibility = '1.8'
 
-    repositories {
-        maven {
-            url 'https://maven.aliyun.com/repository/central'
-        }
-        mavenCentral()
-        maven {
-            url 'https://mirrors.honoka.de/maven-repo/'
-        }
-    }
+    setupRepositories(delegate)
 
     dependencies {
         String lombok = 'org.projectlombok:lombok:1.18.26'
@@ -35,10 +62,6 @@ subprojects {
 
     tasks.withType(Test) {
         useJUnitPlatform()
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
@@ -58,15 +81,15 @@ subprojects {
     }
 
     ext {
-        setupVersion = { String versionStr ->
-            version versionStr
+        setupVersionAndPublishing = {
+            version it
 
             publishing {
                 publications {
                     maven(MavenPublication) {
                         groupId project.group
                         artifactId project.name
-                        version versionStr
+                        version it
 
                         from components.java
 
@@ -76,8 +99,4 @@ subprojects {
             }
         }
     }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
 }
