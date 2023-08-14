@@ -27,7 +27,7 @@ jobs:
           chmod +x gradlew
           # 打包，并发布到一个路径为'[项目根目录]/build/temp-maven-repo'的临时maven仓库中
           # 这个仓库将只会包含这一项目的打包好的当前版本
-          ./gradlew -PremoteMavenRepositoryUrl=build/temp-maven-repo publish
+          ./gradlew -PremoteMavenRepositoryUrl=$(pwd)/build/temp-maven-repo publish
           # 读取当前gradle项目根模块的版本信息
           # 通过output，为当前step声明一个能在其他地方通过${{ steps.gradle_build.outputs.project_version }}访问的变量
           echo "project_version=$(./gradlew properties | grep 'version:\s')" >> "$GITHUB_OUTPUT"

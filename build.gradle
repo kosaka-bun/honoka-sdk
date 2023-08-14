@@ -13,11 +13,17 @@ subprojects {
     sourceCompatibility = '1.8'
 
     repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
+        }
         mavenCentral()
+        maven {
+            url 'https://mirrors.honoka.de/maven-repo'
+        }
     }
 
     dependencies {
-        String lombok = 'org.projectlombok:lombok:1.18.16'
+        String lombok = 'org.projectlombok:lombok:1.18.26'
         compileOnly lombok
         annotationProcessor lombok
         testCompileOnly lombok
