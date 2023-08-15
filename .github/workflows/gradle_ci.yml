@@ -21,62 +21,65 @@ jobs:
           # 通过预定义的包管理器之一管理的依赖项的快速设置缓存
           # 它可以是maven、gradle或sbt之一
           cache: 'gradle'
-      - id: gradle_build
-        name: Build with Gradle
+      - name: Check project version
         run: |
           chmod +x gradlew
-          # 打包，并发布到一个路径为'[项目根目录]/build/temp-maven-repo'的临时maven仓库中
-          # 这个仓库将只会包含这一项目的打包好的当前版本
-          ./gradlew -PremoteMavenRepositoryUrl=$(pwd)/build/temp-maven-repo publish
-          # 读取当前gradle项目根模块的版本信息
-          # 通过output，为当前step声明一个能在其他地方通过${{ steps.gradle_build.outputs.project_version }}访问的变量
-          echo "project_version=$(./gradlew properties | grep 'version:\s')" >> "$GITHUB_OUTPUT"
-          #
-          # 传递给GITHUB_OUTPUT的project_version变量，不能在当前job中的当前step或其他step的run中，
-          # 通过${{ steps.gradle_build.outputs.project_version }}访问到，只可在所有step执行完成后，
-          # 在job的outputs项目中，通过'project_version: ${{ steps.gradle_build.outputs.project_version }}'的形式访问
-          #
-      - name: Upload temporary maven repository
-        uses: actions/upload-artifact@v3
-        with:
-          # 指定要上传的目录在上传到当前Actions运行实例的Artifacts当中时要使用的名字
-          name: temp-maven-repo
-          # 要上传的目录路径（以项目根目录为相对路径起始点）
-          path: build/temp-maven-repo
-    outputs:
-      # 为名为build的job定义一个名为project_version的变量，存储在outputs中
-      # 其他job可通过${{ needs.build.outputs.project_version }}获取到此变量的值
-      project_version: ${{ steps.gradle_build.outputs.project_version }}
-  publish:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Check project version
-        env:
-          project_version: ${{ needs.build.outputs.project_version }}
-        run: |
-          # 检查版本号是否符合要求
+          # 读取当前gradle项目根模块的版本信息，检查版本号是否符合要求
+          project_version=$(./gradlew properties | grep 'version:\s')
           echo "\$project_version: \"$project_version\""
-          # 若版本号包含dev，则阻止推送
+          # 版本号不能为空
+          if [ "$project_version" = '' ]; then
+            echo 'Cannot read version information of root project!'
+            exit 10
+          fi
+          # 若版本号包含dev，则阻止发布
           if [ "$(echo $project_version | grep -i dev)" != '' ]; then
             echo 'Cannot publish development versions!'
             exit 10
           fi
+      - name: Clone remote maven repository
+        run: |
+          # 将kosaka-bun/maven-repo的git仓库clone到项目根目录下
+          git clone ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+      - id: gradle_build
+        name: Build with Gradle
+        run: |
+          # 打包，并发布到远程maven仓库在本地的一个拷贝当中
+          ./gradlew -PremoteMavenRepositoryUrl=$(pwd)/maven-repo/repository publish
+          tar -zcvf maven-repo.tar.gz maven-repo/repository
+          mkdir remote-maven-repo-copy
+          mv maven-repo.tar.gz remote-maven-repo-copy/
+      - name: Upload remote maven repository as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          # 指定要上传的目录在上传到当前Actions运行实例的Artifacts当中时要使用的名字
+          name: remote-maven-repo-copy
+          # 要上传的目录路径（以项目根目录为相对路径起始点）
+          path: remote-maven-repo-copy
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Download temporary maven repository
         uses: actions/download-artifact@v3
         with:
           # 指定在之前的job当中，上传到Actions运行实例的Artifacts当中的目录所使用的名字
-          name: temp-maven-repo
+          name: remote-maven-repo-copy
           # 指定要将这一目录下的所有内容（即不包含目录本身）下载到哪个位置（以项目根目录为相对路径起始点）
-          path: build/temp-maven-repo
+          path: remote-maven-repo-copy
       - name: Clone remote maven repository
         run: |
           # 将kosaka-bun/maven-repo的git仓库clone到项目根目录下
           git clone ${{ secrets.REMOTE_MAVEN_REPO_URL }}
       - name: Merge maven repository and publish
         run: |
-          # 将[项目根目录]/build/temp-maven-repo下所有内容，复制到[项目根目录]/maven-repo/repository下，并替换已存在的内容
-          cp -rf build/temp-maven-repo/* maven-repo/repository/
+          # 解压maven-repo.tar.gz
+          cd remote-maven-repo-copy
+          tar -zxvf maven-repo.tar.gz
+          cd ..
+          # 将[项目根目录]/remote-maven-repo-copy/maven-repo/repository下所有内容，复制到[项目根目录]/maven-repo/repository下
+          # 并替换已存在的内容
+          cp -rf remote-maven-repo-copy/maven-repo/repository/* maven-repo/repository/
           # 进入名为maven-repo的git仓库，设置提交者信息，然后提交并推送
           cd maven-repo/repository
           git config --global user.name 'Kosaka Bun'
