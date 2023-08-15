@@ -46,7 +46,8 @@ jobs:
         run: |
           # 打包，并发布到远程maven仓库在本地的一个拷贝当中
           ./gradlew -PremoteMavenRepositoryUrl=$(pwd)/maven-repo/repository publish
-          tar -zcvf maven-repo.tar.gz maven-repo/repository
+          # 将maven-repo/repository目录打包，然后将tar移动到另一个单独的目录中
+          tar -zcf maven-repo.tar.gz maven-repo/repository
           mkdir remote-maven-repo-copy
           mv maven-repo.tar.gz remote-maven-repo-copy/
       - name: Upload remote maven repository as artifact
@@ -75,7 +76,7 @@ jobs:
         run: |
           # 解压maven-repo.tar.gz
           cd remote-maven-repo-copy
-          tar -zxvf maven-repo.tar.gz
+          tar -zxf maven-repo.tar.gz
           cd ..
           # 将[项目根目录]/remote-maven-repo-copy/maven-repo/repository下所有内容，复制到[项目根目录]/maven-repo/repository下
           # 并替换已存在的内容
