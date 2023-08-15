@@ -15,12 +15,6 @@ buildscript {
         }
     }
     setupRepositories(delegate)
-    repositories {
-        maven {
-            url 'https://maven.aliyun.com/repository/gradle-plugin'
-        }
-        gradlePluginPortal()
-    }
     ext {
         def d = delegate
         d.setupRepositories = setupRepositories
