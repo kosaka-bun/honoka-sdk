@@ -1,5 +1,13 @@
 # 更新日志
 
+## 1.1.7
+#### honoka-utils 1.0.8
+- 为`ConsoleWindow`添加新的`init`方法，以实现在不创建托盘图标的情况下，能够执行退出动作。
+- 为`ConsoleWindowBuilder`添加一些意义更为明确的配置项。
+
+#### honoka-framework-utils 1.0.2
+- 添加`SpringBootConsoleWindow`类，可实现在Spring Boot应用启动前，配置、创建和显示`ConsoleWindow`，然后根据指定的主类启动Spring Boot应用，并管理相应的`ApplicationContext`。
+
 ## 1.1.6
 #### honoka-json-api 1.1.3
 - 为`JsonObject`与`JsonObjectService`增加新的`of(Object obj)`方法。
