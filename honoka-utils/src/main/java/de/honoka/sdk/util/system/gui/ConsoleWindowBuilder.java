@@ -19,6 +19,8 @@ public class ConsoleWindowBuilder {
 
     private String windowName = "Untitled";
 
+    private boolean showOnBuild = true;
+
     private double screenZoomScale = 1.0;
 
     private int windowWidth = 1000;
@@ -49,24 +51,32 @@ public class ConsoleWindowBuilder {
             defaultTrayIconMenuLocationOffset.height
     );
 
+    /**
+     * 是否需要创建托盘图标
+     */
+    private boolean backgroundMode = false;
+
     private URL trayIconPath;
 
     private ThrowsRunnable onExit;
 
     private ConsoleWindowBuilder() {}
 
-    public static ConsoleWindowBuilder of() {
+    //package-private
+    static ConsoleWindowBuilder of() {
         return new ConsoleWindowBuilder();
     }
 
-    public static ConsoleWindowBuilder of(String windowName) {
+    //package-private
+    static ConsoleWindowBuilder of(String windowName) {
         return new ConsoleWindowBuilder().setWindowName(windowName);
     }
 
-    //width：为负表示左移，为正表示右移
-    //height：为负表示上移，为正表示下移
-    public ConsoleWindowBuilder setTrayIconMenuLocationOffset(
-            int width, int height) {
+    /**
+     * width：为负表示左移，为正表示右移
+     * height：为负表示上移，为正表示下移
+     */
+    public ConsoleWindowBuilder setTrayIconMenuLocationOffset(int width, int height) {
         width = defaultTrayIconMenuLocationOffset.width - width;
         height = defaultTrayIconMenuLocationOffset.height - height;
         trayIconMenuLocationOffset = new Dimension(width, height);
@@ -86,12 +96,14 @@ public class ConsoleWindowBuilder {
         consoleWindow.textPaneMaxLine = textPaneMaxLine;
         consoleWindow.trayIconMenuLocationOffset = trayIconMenuLocationOffset;
         //构建
-        if(onExit == null) {
-            consoleWindow.init();
+        if(backgroundMode) {
+            consoleWindow.initBackgroundMode(trayIconPath, onExit);
+            if(showOnBuild) consoleWindow.show();
         } else {
-            consoleWindow.init(trayIconPath, onExit);
+            if(onExit == null) consoleWindow.init();
+            else consoleWindow.init(onExit);
+            consoleWindow.show();
         }
-        consoleWindow.show();
         return consoleWindow;
     }
 }

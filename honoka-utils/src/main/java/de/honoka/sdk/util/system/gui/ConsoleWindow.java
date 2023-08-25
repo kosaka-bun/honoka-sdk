@@ -112,7 +112,7 @@ public class ConsoleWindow {
 
     //package-private
     /**
-     * 只加载窗口
+     * 只加载窗口，程序在窗口关闭时一并关闭
      */
     void init() {
         //初始化默认样式集
@@ -133,9 +133,30 @@ public class ConsoleWindow {
     }
 
     /**
-     * 加载窗口和系统托盘图标
+     * 只加载窗口，但是需要确认退出，并有退出动作
      */
-    void init(URL iconPath, ThrowsRunnable onExit) {
+    void init(ThrowsRunnable onExit) {
+        init();
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int option = JOptionPane.showConfirmDialog(
+                        frame, "确定退出吗？",
+                        windowName, JOptionPane.OK_CANCEL_OPTION
+                );
+                if(option != JOptionPane.OK_OPTION) return;
+                //通过新线程执行退出方法，避免卡住界面
+                new Thread(() -> exitApplication(onExit)).start();
+            }
+        });
+    }
+
+    /**
+     * 后台模式，加载窗口和系统托盘图标，窗口关闭后，程序继续运行，通过托盘图标退出
+     */
+    void initBackgroundMode(URL iconPath, ThrowsRunnable onExit) {
         init();
         //未提供图标则加载默认图标
         if(iconPath == null)
@@ -605,9 +626,10 @@ public class ConsoleWindow {
         exitItem.setFont(menuItemFont);
         exitItem.addActionListener(e -> {
             //点击菜单的退出按钮时，执行退出时方法，然后退出程序
-            int option = JOptionPane.showConfirmDialog(frame,
-                    "确定退出吗？", windowName,
-                    JOptionPane.OK_CANCEL_OPTION);
+            int option = JOptionPane.showConfirmDialog(
+                    frame, "确定退出吗？",
+                    windowName, JOptionPane.OK_CANCEL_OPTION
+            );
             //判断是否选择了“是”选项
             if(option == JOptionPane.OK_OPTION) {
                 //通过新线程执行退出方法，避免卡住界面
@@ -695,20 +717,26 @@ public class ConsoleWindow {
     private void exitApplication(JMenuItem exitItem, ThrowsRunnable onExit) {
         //在执行前先禁用此退出选项
         exitItem.setEnabled(false);
-        System.out.println("正在退出……");
         //执行退出方法
+        exitApplication(onExit);
+        //恢复退出选项
+        exitItem.setEnabled(true);
+    }
+
+    private void exitApplication(ThrowsRunnable onExit) {
+        System.out.println("正在退出……");
         try {
             if(onExit != null) onExit.throwsRun();
             System.exit(0);
         } catch(Throwable t) {
+            //noinspection CallToPrintStackTrace
             t.printStackTrace();
             //退出失败，询问是否强行退出
-            int option = JOptionPane.showConfirmDialog(frame,
-                    "退出时出现了异常，是否强制退出应用？",
-                    windowName, JOptionPane.OK_CANCEL_OPTION);
+            int option = JOptionPane.showConfirmDialog(
+                    frame, "退出时出现了异常，是否强制退出应用？",
+                    windowName, JOptionPane.OK_CANCEL_OPTION
+            );
             if(option == JOptionPane.OK_OPTION) System.exit(-1);
-            //不选择强制退出，则恢复退出选项
-            exitItem.setEnabled(true);
         }
     }
 }
