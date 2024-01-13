@@ -1,5 +1,5 @@
+import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 import de.honoka.gradle.buildsrc.Versions
-import de.honoka.gradle.buildsrc.setupVersionAndPublishing
 
 setupVersionAndPublishing("1.0.2")
 

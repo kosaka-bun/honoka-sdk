@@ -1,3 +1,5 @@
+import de.honoka.gradle.buildsrc.MavenPublish.checkVersionOfProjects
+
 plugins {
     java
     `maven-publish`
@@ -49,4 +51,9 @@ subprojects {
             }
         }
     }
+}
+
+tasks.register("checkVersionOfProjects") {
+    group = "publishing"
+    checkVersionOfProjects()
 }
