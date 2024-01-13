@@ -1,8 +1,0 @@
-setupVersionAndPublishing '1.1.3'
-
-dependencies {
-    String honokaJsonApi = 'de.honoka.sdk:honoka-json-api:1.1.3'
-    apiElements honokaJsonApi
-    implementation honokaJsonApi
-    implementation 'com.alibaba:fastjson:1.2.75'
-}
