@@ -5,6 +5,6 @@ object Versions {
 
     object HonokaFrameworkUtils {
 
-        const val springBootVersion = "2.7.5"
+        const val springBoot = "2.7.5"
     }
 }

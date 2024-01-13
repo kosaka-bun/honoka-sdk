@@ -5,7 +5,7 @@ setupVersionAndPublishing("1.0.2")
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.HonokaFrameworkUtils.springBootVersion}")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.HonokaFrameworkUtils.springBoot}")
     }
 }
 
