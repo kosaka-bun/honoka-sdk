@@ -1,5 +1,9 @@
 # 更新日志
 
+## 1.1.8
+#### honoka-framework-utils 1.0.3
+- 添加`ApiException`。
+
 ## 1.1.7
 #### honoka-utils 1.0.8
 - 为`ConsoleWindow`添加新的`init`方法，以实现在不创建托盘图标的情况下，能够执行退出动作。
