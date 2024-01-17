@@ -1,7 +1,7 @@
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 import de.honoka.gradle.buildsrc.Versions
 
-setupVersionAndPublishing("1.0.2")
+setupVersionAndPublishing("1.0.3")
 
 dependencyManagement {
     imports {
