@@ -6,18 +6,20 @@ import org.apache.commons.io.IOUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FileUtils {
 
-    private static volatile String CLASSPATH;
+    private static volatile String MAIN_CLASSPATH;
 
     /**
      * 检查当前运行的jar包外部是否含有指定的资源文件，若有则忽略此资源，若没有
@@ -29,14 +31,14 @@ public class FileUtils {
      * @return 指定的资源当中是否有某些资源原本不在jar包外部
      */
     @SneakyThrows
-    public static boolean copyResourceIfNotExists(Class<?> clazz,
-                                                  String... paths) {
+    public static boolean copyResourceIfNotExists(Class<?> clazz, String... paths) {
+        if(!isAppRunningInJar()) return false;
         boolean result = false;
-        String classpath = getClasspath();
+        String mainClasspath = getMainClasspath();
         for(String path : paths) {
             URL url = clazz.getResource(path);
             if(url == null) continue;
-            File file = new File(Paths.get(classpath, path).toString());
+            File file = new File(Paths.get(mainClasspath, path).toString());
             if(file.exists()) continue;
             //指定的资源不存在
             result = true;
@@ -63,19 +65,48 @@ public class FileUtils {
         }
     }
 
+    public static boolean isAppRunningInJar() {
+        URL rootResourceUrl = Thread.currentThread().getContextClassLoader().getResource("");
+        if(rootResourceUrl == null) {
+            throw new RuntimeException("Failed to get root resource");
+        }
+        return isAppRunningInJar(rootResourceUrl);
+    }
+
+    //package-private
+    static boolean isAppRunningInJar(URL rootResourceUrl) {
+        if(rootResourceUrl == null) {
+            throw new NullPointerException("rootResourceUrl is null");
+        }
+        return Objects.equals(rootResourceUrl.getProtocol(), "jar");
+    }
+
     /**
      * 获取当前运行环境的classpath
      */
-    public static String getClasspath() {
-        if(CLASSPATH != null) return CLASSPATH;
-        try {
-            CLASSPATH = new File(Objects.requireNonNull(Thread.currentThread()
-                    .getContextClassLoader().getResource("")).toURI())
-                    .getAbsolutePath();
-        } catch(Exception e) {
-            CLASSPATH = new File("").getAbsolutePath();
+    @SneakyThrows
+    public static String getMainClasspath() {
+        if(MAIN_CLASSPATH != null) return MAIN_CLASSPATH;
+        URL rootResourceUrl = Thread.currentThread().getContextClassLoader().getResource("");
+        if(isAppRunningInJar(rootResourceUrl)) {
+            String path = rootResourceUrl.getPath();
+            String pathEndSymbol = ".jar!/";
+            int lowercaseSymbolIndex = path.indexOf(pathEndSymbol);
+            int uppercaseSymbolIndex = path.indexOf(pathEndSymbol.toUpperCase());
+            List<Integer> symbolIndexes = new HashSet<>(Arrays.asList(
+                lowercaseSymbolIndex, uppercaseSymbolIndex
+            )).stream().filter(it -> it != -1).sorted().collect(Collectors.toList());
+            if(!path.startsWith("file:/") || symbolIndexes.isEmpty()) {
+                throw new RuntimeException("Root resource path is invalid: " + path);
+            }
+            path = path.substring(6, symbolIndexes.get(0) + 4);
+            path = path.substring(0, path.lastIndexOf("/"));
+            path = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
+            MAIN_CLASSPATH = Paths.get(path).normalize().toString();
+        } else {
+            MAIN_CLASSPATH = new File(Objects.requireNonNull(rootResourceUrl).toURI()).getAbsolutePath();
         }
-        return CLASSPATH;
+        return MAIN_CLASSPATH;
     }
 
     @SneakyThrows
