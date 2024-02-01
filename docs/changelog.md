@@ -1,5 +1,13 @@
 # 更新日志
 
+## 1.1.9
+#### honoka-utils 1.0.9
+- `FileUtils`
+  - 支持判断当前运行的Java应用程序是否位于JAR包中。
+  - `getClasspath`方法更名为`getMainClasspath`，并优化了当Java应用程序在JAR包中被运行时获取主classpath的逻辑。
+- `AbstractEnvironmentPathUtils`、`DefaultEnvironmentPathUtils`
+  - 某些应用可能会预先定义一些用于存放外部文件的基础路径，比如某些应用会自定义一个采用相对路径的工作目录，用于存放程序在运行时要输出的文件。应用在IDE中直接运行时，我们可能希望这个相对路径是`./[工程编译目录（如target或build）]/data/out`，而在JAR包中被运行时，我们可能希望这个路径是`./data/out`。可以通过继承`AbstractEnvironmentPathUtils`的方式来定义一些在不同环境下会返回不同路径的方法，来实现上述需求。
+
 ## 1.1.8
 #### honoka-framework-utils 1.0.3
 - 添加`ApiException`。
