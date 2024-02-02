@@ -1,7 +1,6 @@
 package de.honoka.sdk.util.framework.database;
 
 import de.honoka.sdk.util.file.AbstractEnvironmentPathUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -42,8 +41,10 @@ public abstract class AbstractEmbeddedDatabaseUtils {
         }
     }
 
-    public String[] appendJdbcUrlRelatedWithDataDirToSpringAppArgs(Database database, String databaseFilePath, String[] args) {
+    public void setJdbcUrlRelatedWithDataDirInJvmProps(Database database, String databaseFilePath) {
+        String propKey = "spring.datasource.url";
+        if(StringUtils.isNotBlank(System.getProperty(propKey))) return;
         String jdbcUrl = getJdbcUrlRelatedWithDataDir(database, databaseFilePath);
-        return ArrayUtils.add(args, "--spring.datasource.url=" + jdbcUrl);
+        System.setProperty(propKey, jdbcUrl);
     }
 }
