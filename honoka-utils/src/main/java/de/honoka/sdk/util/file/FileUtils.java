@@ -73,8 +73,7 @@ public class FileUtils {
         return isAppRunningInJar(rootResourceUrl);
     }
 
-    //package-private
-    static boolean isAppRunningInJar(URL rootResourceUrl) {
+    private static boolean isAppRunningInJar(URL rootResourceUrl) {
         if(rootResourceUrl == null) {
             throw new NullPointerException("rootResourceUrl is null");
         }
@@ -82,7 +81,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取当前运行环境的classpath
+     * 获取当前运行环境的主classpath的绝对路径
+     * <p>
+     * 当Java应用程序在jar包中被运行时，此路径为jar包所在目录的路径。在IDE中直接运行时，此路径为
+     * 项目构建目录中的java源代码编译输出路径（如Maven中为“[项目目录]/target/classes”）。
      */
     @SneakyThrows
     public static String getMainClasspath() {
@@ -127,7 +129,7 @@ public class FileUtils {
     }
 
     @SneakyThrows
-    public static String urlToString(URL url) {
+    public static String fetchUrlResourceAndToString(URL url) {
         try(InputStream is = url.openStream()) {
             return new String(IOUtils.toByteArray(is));
         }

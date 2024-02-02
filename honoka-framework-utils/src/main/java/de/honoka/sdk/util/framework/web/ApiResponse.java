@@ -29,6 +29,10 @@ public class ApiResponse<T> {
         return success(null, data);
     }
 
+    public static ApiResponse<?> success() {
+        return success(null);
+    }
+
     public static ApiResponse<?> fail(int httpStatus, String msg) {
         return new ApiResponse<>()
                 .setCode(httpStatus)

@@ -1,6 +1,8 @@
 package de.honoka.sdk.util.framework.spring.task;
 
 import de.honoka.sdk.util.various.ReflectUtils;
+import lombok.Getter;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -14,6 +16,7 @@ import java.util.concurrent.ScheduledFuture;
 /**
  * 实现类可作为任务使用
  */
+@Getter
 public abstract class Task implements SchedulingConfigurer {
 
     /**
@@ -21,10 +24,6 @@ public abstract class Task implements SchedulingConfigurer {
      * 均需定义getter和setter
      */
     protected String cron;
-
-    public String getCron() {
-        return cron;
-    }
 
     /**
      * 由Spring框架代理的此类的实例（用于传递给外部调用，使切面类生效）
@@ -55,6 +54,7 @@ public abstract class Task implements SchedulingConfigurer {
      * 任务执行时调用此方法，此方法将被对应的切面类所监视
      * 要使此方法被切面类所监视，必须在子类中重写此方法，但不需要额外实现，保持默认实现即可
      */
+    @SuppressWarnings("UnusedReturnValue")
     public synchronized String run() throws Exception {
         if(doneInAdvance) {
             doneInAdvance = false;    //表示忽略此次执行，然后指定下一次任务未被提前执行
@@ -115,7 +115,7 @@ public abstract class Task implements SchedulingConfigurer {
      * 构建计划任务，加入spring任务列表中（由spring自动调用）
      */
     @Override
-    public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
+    public void configureTasks(@NonNull ScheduledTaskRegistrar scheduledTaskRegistrar) {
         this.scheduledTaskRegistrar = scheduledTaskRegistrar;
         //加载并启动此计划任务
 		/* scheduledTaskRegistrar中的scheduler在容器加载完成前可能为null，

@@ -31,7 +31,7 @@ public class ImageUtils {
         URL textHtml = ImageUtils.class.getResource("/text.html");
         if(textHtml == null) return null;
         str = str.replace("\n", "<br>");
-        return String.format(FileUtils.urlToString(textHtml), str);
+        return String.format(FileUtils.fetchUrlResourceAndToString(textHtml), str);
     }
 
     /**

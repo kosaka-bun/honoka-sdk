@@ -17,7 +17,7 @@ public abstract class AbstractEnvironmentPathUtils {
         this.buildTool = buildTool;
     }
 
-    public String getDataDirectoryOfApp() {
+    public String getDataDirPathOfApp() {
         String mainClasspath = FileUtils.getMainClasspath();
         if(FileUtils.isAppRunningInJar()) return mainClasspath;
         switch(buildTool) {
