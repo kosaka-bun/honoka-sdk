@@ -104,7 +104,11 @@ public class FileUtils {
             path = path.substring(6, symbolIndexes.get(0) + 4);
             path = path.substring(0, path.lastIndexOf("/"));
             path = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
-            MAIN_CLASSPATH = Paths.get(path).normalize().toString();
+            String result = Paths.get(path).normalize().toString();
+            if(!System.getProperty("os.name").toLowerCase().contains("windows") && !result.startsWith("/")) {
+                result = "/" + result;
+            }
+            MAIN_CLASSPATH = result;
         } else {
             MAIN_CLASSPATH = new File(Objects.requireNonNull(rootResourceUrl).toURI()).getAbsolutePath();
         }

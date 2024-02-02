@@ -1,5 +1,14 @@
 # 更新日志
 
+## 1.1.10
+#### honoka-utils 1.0.10
+- 移除`DefaultEnvironmentPathUtils`。
+- 优化`FileUtils`中的部分注释和方法定义。
+
+#### honoka-framework-utils 1.0.4
+- 添加`AbstractEmbeddedDatabaseUtils`，借助`AbstractEnvironmentPathUtils`快速拼接嵌入式数据库的JDBC URL。
+- 移除过时的Hibernate相关类。
+
 ## 1.1.9
 #### honoka-utils 1.0.9
 - `FileUtils`

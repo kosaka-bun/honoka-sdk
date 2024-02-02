@@ -2,7 +2,7 @@
 
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 
-setupVersionAndPublishing("1.0.10-dev")
+setupVersionAndPublishing("1.0.10")
 
 dependencies {
     arrayOf(
