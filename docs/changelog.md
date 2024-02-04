@@ -1,5 +1,9 @@
 # 更新日志
 
+## 1.2.0
+#### honoka-android-utils 1.0.0
+- 初始版本。包含`GlobalData`与`java.beans.Transient`。
+
 ## 1.1.10
 #### honoka-utils 1.0.10
 - 移除`DefaultEnvironmentPathUtils`。
