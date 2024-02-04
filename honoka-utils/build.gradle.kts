@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 
 setupVersionAndPublishing("1.0.10")
@@ -12,7 +10,7 @@ dependencies {
         "org.jsoup:jsoup:1.11.3"
     ).forEach {
         implementation(it)
-        apiElements(it)
+        api(it)
     }
     implementation("gui.ava:html2image:2.0.1")
 }

@@ -7,4 +7,11 @@ object Versions {
 
         const val springBoot = "2.7.5"
     }
+
+    object AndroidUtils {
+
+        const val libraryPluginVersion = "8.0.0"
+
+        const val kotlinVersion = "1.8.0"
+    }
 }
