@@ -2,7 +2,7 @@ package de.honoka.sdk.util.android.common
 
 import android.app.Application
 
-object GlobalData {
+object GlobalComponents {
 
     lateinit var application: Application
 }

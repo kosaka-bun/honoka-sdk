@@ -50,8 +50,7 @@ object MavenPublish {
                                         mapOf(
                                             "groupId" to it.group,
                                             "artifactId" to it.name,
-                                            "version" to it.version,
-                                            "scope" to "runtime"
+                                            "version" to it.version
                                         ).forEach { (k, v) ->
                                             appendNode(k, v)
                                         }

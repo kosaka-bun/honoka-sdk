@@ -13,5 +13,7 @@ object Versions {
         const val libraryPluginVersion = "8.0.0"
 
         const val kotlinVersion = "1.8.0"
+
+        const val kotlinCoroutinesVersion = "1.6.1"
     }
 }
