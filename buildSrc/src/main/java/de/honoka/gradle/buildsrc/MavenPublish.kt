@@ -4,7 +4,9 @@ import com.android.build.api.dsl.LibraryExtension
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
@@ -38,27 +40,7 @@ object MavenPublish {
                     groupId = group as String
                     artifactId = project.name
                     this.version = version
-                    pom.withXml {
-                        asNode().appendNode("dependencies").run {
-                            configurations.implementation.configure {
-                                allDependencies.forEach {
-                                    val isInvalidDependency = it.group == null ||
-                                        it.name.lowercase() == "unspecified" ||
-                                        it.version == null
-                                    if(isInvalidDependency) return@forEach
-                                    appendNode("dependency").run {
-                                        mapOf(
-                                            "groupId" to it.group,
-                                            "artifactId" to it.name,
-                                            "version" to it.version
-                                        ).forEach { (k, v) ->
-                                            appendNode(k, v)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    pom.setAndroidAarPomDependencies(project)
                     afterEvaluate {
                         val artifacts = listOf(
                             tasks["bundleReleaseAar"],
@@ -70,6 +52,37 @@ object MavenPublish {
             }
         }
         projectsWillPublish.add(this)
+    }
+
+    private fun MavenPom.setAndroidAarPomDependencies(project: Project)  = withXml {
+        val apiDependencies = ArrayList<String>()
+        project.configurations["api"].allDependencies.forEach {
+            apiDependencies.add("${it.group}:${it.name}")
+        }
+        asNode().appendNode("dependencies").run {
+            project.configurations.implementation.configure {
+                allDependencies.forEach {
+                    val isInvalidDependency = it.group == null ||
+                        it.name.lowercase() == "unspecified" ||
+                        it.version == null
+                    if(isInvalidDependency) return@forEach
+                    val moduleName = "${it.group}:${it.name}"
+                    appendNode("dependency").run {
+                        val subNodes = hashMapOf(
+                            "groupId" to it.group,
+                            "artifactId" to it.name,
+                            "version" to it.version
+                        )
+                        if(!apiDependencies.contains(moduleName)) {
+                            subNodes["scope"] = "runtime"
+                        }
+                        subNodes.forEach {
+                            appendNode(it.key, it.value)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun checkVersionOfProjects() {
