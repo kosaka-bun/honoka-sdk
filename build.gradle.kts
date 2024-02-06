@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "de.honoka.sdk"
-version = "1.2.2-dev"
+version = "1.2.2"
 
 subprojectCustomConfigurations {
     java {
