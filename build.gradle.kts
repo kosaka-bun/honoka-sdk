@@ -15,9 +15,9 @@ plugins {
 }
 
 group = "de.honoka.sdk"
-version = "1.2.1"
+version = "1.2.2-dev"
 
-subprojectsCustomConfigurations {
+subprojectCustomConfigurations {
     java {
         apply(plugin = "java")
         apply(plugin = "java-library")
@@ -29,12 +29,6 @@ subprojectsCustomConfigurations {
         }
 
         dependencies {
-            compileOnly("org.projectlombok:lombok:1.18.26".also {
-                annotationProcessor(it)
-                testCompileOnly(it)
-                testAnnotationProcessor(it)
-            })
-            //Test
             testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
             testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
         }
@@ -96,6 +90,14 @@ subprojectsCustomConfigurations {
         apply(plugin = "io.spring.dependency-management")
 
         group = rootProject.group
+
+        dependencies {
+            compileOnly("org.projectlombok:lombok:1.18.26".also {
+                annotationProcessor(it)
+                testCompileOnly(it)
+                testAnnotationProcessor(it)
+            })
+        }
 
         publishing {
             repositories {

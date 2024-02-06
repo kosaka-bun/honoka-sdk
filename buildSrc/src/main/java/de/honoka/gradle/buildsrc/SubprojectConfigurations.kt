@@ -1,9 +1,8 @@
 package de.honoka.gradle.buildsrc
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
 
-class SubprojectsConfigurations(val rootProject: Project) {
+class SubprojectConfigurations(private val rootProject: Project) {
 
     companion object {
 
@@ -40,6 +39,6 @@ class SubprojectsConfigurations(val rootProject: Project) {
     }
 }
 
-fun Project.subprojectsCustomConfigurations(block: SubprojectsConfigurations.() -> Unit) {
-    SubprojectsConfigurations(this).block()
+fun Project.subprojectCustomConfigurations(block: SubprojectConfigurations.() -> Unit) {
+    SubprojectConfigurations(this).block()
 }
