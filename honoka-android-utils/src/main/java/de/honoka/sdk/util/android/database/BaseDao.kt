@@ -2,13 +2,16 @@ package de.honoka.sdk.util.android.database
 
 import cn.hutool.core.util.ObjectUtil
 import com.j256.ormlite.dao.Dao
+import com.j256.ormlite.field.DatabaseField
+import com.j256.ormlite.stmt.QueryBuilder
 import com.j256.ormlite.table.DatabaseTable
+import java.lang.reflect.Field
 
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseDao<T>(internal val entityClass: Class<T>) {
 
     private val databaseHelper: DatabaseHelper
 
-    @Suppress("MemberVisibilityCanBePrivate")
     val rawDao: Dao<T, Any>
 
     init {
@@ -41,4 +44,43 @@ abstract class BaseDao<T>(internal val entityClass: Class<T>) {
          */
         return newHelper()
     }
+
+    private fun newQueryBuilder(condition: QueryBuilder<T, Any>.() -> Unit) = rawDao.queryBuilder().apply {
+        condition()
+    }
+
+    private fun newPreparedQueryBuilder(condition: QueryBuilder<T, Any>.() -> Unit) = newQueryBuilder(condition).prepare()
+
+    fun listAll(): List<T> = rawDao.queryForAll()
+
+    fun getById(id: Any?): T? = rawDao.queryForId(id)
+
+    fun query(condition: QueryBuilder<T, Any>.() -> Unit): List<T> = rawDao.query(newPreparedQueryBuilder(condition))
+
+    fun queryOne(condition: QueryBuilder<T, Any>.() -> Unit): T? {
+        val results = rawDao.query(newQueryBuilder(condition).limit(1).prepare())
+        return if(results.isEmpty()) null else results[0]
+    }
+
+    fun save(entity: T) = rawDao.create(entity)
+
+    fun updateById(entity: T) = rawDao.update(entity)
+
+    fun saveOrUpdate(entity: T) {
+        var idField: Field? = null
+        for(field in entityClass.declaredFields) {
+            val annotation = field.getAnnotation(DatabaseField::class.java)
+            if(annotation == null || !annotation.id) continue
+            idField = field
+            break
+        }
+        idField ?: run {
+            save(entity)
+            return
+        }
+        val id = idField.get(entity)
+        if(getById(id) == null) save(entity) else updateById(entity)
+    }
+
+    fun deleteById(id: Any) = rawDao.deleteById(id)
 }

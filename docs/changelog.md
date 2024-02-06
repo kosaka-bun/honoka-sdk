@@ -9,6 +9,7 @@
 #### honoka-android-utils 1.0.1
 - 支持快速创建和启动内部HTTP服务器，根据请求URL匹配和获取`[assets]/web`目录下的静态资源，也支持获取应用私有目录下的图片。
 - 支持异步JavaScript Interface，避免WebView中的JS代码调用Android层方法时产生线程阻塞和UI无响应。
+- `GlobalData`更名为`GlobalComponents`。
 
 ## 1.2.0
 #### honoka-android-utils 1.0.0

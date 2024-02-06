@@ -1,6 +1,6 @@
 import de.honoka.gradle.buildsrc.MavenPublish.setupAndroidAarVersionAndPublishing
 
-setupAndroidAarVersionAndPublishing("1.0.2")
+setupAndroidAarVersionAndPublishing("1.0.3-dev")
 
 android {
     namespace = "de.honoka.sdk.util.android"
