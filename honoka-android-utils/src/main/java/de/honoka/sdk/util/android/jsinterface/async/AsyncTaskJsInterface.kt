@@ -1,9 +1,11 @@
 package de.honoka.sdk.util.android.jsinterface.async
 
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import cn.hutool.core.thread.BlockPolicy
 import cn.hutool.core.util.ClassUtil
+import cn.hutool.core.util.StrUtil
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
 import cn.hutool.json.JSONObject
@@ -11,6 +13,7 @@ import cn.hutool.json.JSONUtil
 import de.honoka.sdk.util.android.code.evaluateJavascriptOnUiThread
 import de.honoka.sdk.util.android.jsinterface.JavascriptInterfaceContainer
 import java.io.Serializable
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import java.util.concurrent.LinkedBlockingQueue
@@ -77,9 +80,13 @@ class AsyncTaskJsInterface(
                     isResolve = true
                 }
             } catch(t: Throwable) {
+                val throwable = if(t is InvocationTargetException) t.cause ?: t else t
+                Log.e("", "", throwable)
                 result.run {
                     isResolve = false
-                    message = t.message
+                    message = throwable.message.let {
+                        if(StrUtil.isBlank(it)) throwable.javaClass.simpleName else it
+                    }
                 }
             }
             val resultStr = JSONUtil.toJsonStr(result)

@@ -1,11 +1,6 @@
 package de.honoka.gradle.buildsrc
 
-import com.android.build.api.dsl.LibraryExtension
-import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
-import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ModuleVersionSelector
-import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.create
@@ -44,7 +39,7 @@ object MavenPublish {
                     afterEvaluate {
                         val artifacts = listOf(
                             tasks["bundleReleaseAar"],
-                            tasks["sourceJar"]
+                            tasks["releaseSourcesJar"]
                         )
                         setArtifacts(artifacts)
                     }
@@ -76,8 +71,8 @@ object MavenPublish {
                         if(!apiDependencies.contains(moduleName)) {
                             subNodes["scope"] = "runtime"
                         }
-                        subNodes.forEach {
-                            appendNode(it.key, it.value)
+                        subNodes.forEach { entry ->
+                            appendNode(entry.key, entry.value)
                         }
                     }
                 }
@@ -85,7 +80,7 @@ object MavenPublish {
         }
     }
 
-    fun checkVersionOfProjects() {
+    private fun checkVersionOfProjects() {
         var passed = true
         println("Versions:\n")
         projectsWillPublish.forEach {

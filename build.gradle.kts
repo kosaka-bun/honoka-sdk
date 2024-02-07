@@ -75,8 +75,6 @@ subprojectCustomConfigurations {
             }
         }
 
-        defineSourceJarTask()
-
         dependencies {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.AndroidUtils.kotlinCoroutinesVersion}")
             testImplementation("junit:junit:4.13.2")
