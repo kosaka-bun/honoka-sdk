@@ -4,10 +4,15 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import cn.hutool.core.thread.BlockPolicy
 import cn.hutool.core.util.ClassUtil
+import cn.hutool.json.JSON
+import cn.hutool.json.JSONArray
+import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import de.honoka.sdk.util.android.code.evaluateJavascriptOnUiThread
 import de.honoka.sdk.util.android.jsinterface.JavascriptInterfaceContainer
+import java.io.Serializable
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -36,14 +41,38 @@ class AsyncTaskJsInterface(
                     }
                     throw Exception("Unknown method name \"$methodName\" of interface name: $jsInterfaceName")
                 }
-                val annotation = method.getAnnotation(AsyncJavascriptInterface::class.java).also {
+                method.getAnnotation(AsyncJavascriptInterface::class.java).also {
                     it ?: throw Exception("Method \"$methodName\" in interface \"$jsInterfaceName\" is not asynchronous")
                 }
                 result.run {
-                    isPlainText = annotation!!.isPlainText
-                    val methodArgs = JSONUtil.parseArray(args).map { it?.toString() }.toTypedArray()
-                    this.result = method.invoke(jsInterface, *methodArgs)?.let {
-                        if(ClassUtil.isBasicType(it.javaClass)) it.toString() else JSONUtil.toJsonStr(it)
+                    val rawMethodArgs = JSONUtil.parseArray(args)
+                    val methodArgs = ArrayList<Any>().apply {
+                        rawMethodArgs.forEachIndexed { i, arg ->
+                            val type = method.genericParameterTypes[i]
+                            val shouldAddDirectly = type is Class<*> && (
+                                ClassUtil.isBasicType(type) || arrayOf(
+                                    JSONObject::class.java,
+                                    JSONArray::class.java,
+                                    String::class.java
+                                ).contains(type)
+                            )
+                            if(shouldAddDirectly) {
+                                add(arg)
+                                return@forEachIndexed
+                            }
+                            val rawType = if(type is Class<*>) type else (type as ParameterizedType).rawType as Class<*>
+                            val canBeTransfered = Serializable::class.java.isAssignableFrom(rawType) ||
+                                Collection::class.java.isAssignableFrom(rawType)
+                            if(canBeTransfered) {
+                                add(JSONUtil.toBean(arg as JSON, type, false))
+                                return@forEachIndexed
+                            }
+                            throw Exception("Unsupported parameter type \"$type\" of $method")
+                        }
+                    }
+                    this.result = method.invoke(jsInterface, *methodArgs.toTypedArray())?.let {
+                        isPlainText = ClassUtil.isBasicType(it.javaClass) || it is String
+                        if(isPlainText!!) it.toString() else JSONUtil.toJsonStr(it)
                     }
                     isResolve = true
                 }
