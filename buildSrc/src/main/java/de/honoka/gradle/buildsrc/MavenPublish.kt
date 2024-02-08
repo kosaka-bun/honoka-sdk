@@ -39,6 +39,7 @@ object MavenPublish {
                     afterEvaluate {
                         val artifacts = listOf(
                             tasks["bundleReleaseAar"],
+                            tasks["jar"],
                             tasks["releaseSourcesJar"]
                         )
                         setArtifacts(artifacts)
