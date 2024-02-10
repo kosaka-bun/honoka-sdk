@@ -14,5 +14,6 @@ dependencies {
         implementation(it)
         api(it)
     }
+    implementation("de.honoka.sdk:honoka-framework-utils:1.0.4")
     implementation("org.nanohttpd:nanohttpd:2.3.1")
 }

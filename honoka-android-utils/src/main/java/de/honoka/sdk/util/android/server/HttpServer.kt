@@ -114,7 +114,7 @@ class HttpServer(port: Int = HttpServerVariables.webServerPort) : NanoHTTPD(port
 
 object HttpServerUtils {
 
-    private fun getOneAvaliablePort(startPort: Int): Int {
+    fun getOneAvaliablePort(startPort: Int): Int {
         var port = startPort
         var successful = false
         //验证端口可用性

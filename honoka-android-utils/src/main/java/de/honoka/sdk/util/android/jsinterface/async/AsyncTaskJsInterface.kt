@@ -10,7 +10,7 @@ import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
-import de.honoka.sdk.util.android.code.evaluateJavascriptOnUiThread
+import de.honoka.sdk.util.android.common.evaluateJavascriptOnUiThread
 import de.honoka.sdk.util.android.jsinterface.JavascriptInterfaceContainer
 import java.io.Serializable
 import java.lang.reflect.InvocationTargetException
