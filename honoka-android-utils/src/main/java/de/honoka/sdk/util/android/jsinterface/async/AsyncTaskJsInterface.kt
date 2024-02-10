@@ -73,10 +73,7 @@ class AsyncTaskJsInterface(
                             throw Exception("Unsupported parameter type \"$type\" of $method")
                         }
                     }
-                    this.result = method.invoke(jsInterface, *methodArgs.toTypedArray())?.let {
-                        isPlainText = ClassUtil.isBasicType(it.javaClass) || it is String
-                        if(isPlainText!!) it.toString() else JSONUtil.toJsonStr(it)
-                    }
+                    this.result = method.invoke(jsInterface, *methodArgs.toTypedArray())
                     isResolve = true
                 }
             } catch(t: Throwable) {

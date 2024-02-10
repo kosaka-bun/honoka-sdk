@@ -8,7 +8,6 @@ android {
 
 dependencies {
     arrayOf(
-        "de.honoka.sdk:honoka-framework-utils:1.0.4",
         "cn.hutool:hutool-all:5.8.18",
         "com.j256.ormlite:ormlite-android:5.1"
     ).forEach {
