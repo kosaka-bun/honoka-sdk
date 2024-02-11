@@ -19,9 +19,9 @@ object HttpServerVariables {
 
     const val imageUrlPrefix = "/android/img"
 
-    fun getUrlByWebServerPrefix(path: String) = "http://localhost:$webServerPort$path"
+    fun getUrlByPrefix(path: String) = "http://localhost:$webServerPort$path"
 
-    fun getImageUrlByWebServerPrefix(path: String) = getUrlByWebServerPrefix("$imageUrlPrefix$path")
+    fun getImageUrlByPrefix(path: String) = getUrlByPrefix("$imageUrlPrefix$path")
 }
 
 class HttpServer(port: Int = HttpServerVariables.webServerPort) : NanoHTTPD(port) {
