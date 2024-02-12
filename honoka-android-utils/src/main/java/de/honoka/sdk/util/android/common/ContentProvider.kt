@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import cn.hutool.core.util.StrUtil
 import cn.hutool.json.JSON
+import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 
 abstract class BaseContentProvider : ContentProvider() {
@@ -33,28 +34,47 @@ abstract class BaseContentProvider : ContentProvider() {
     override fun call(method: String, arg: String?, extras: Bundle?): Bundle = Bundle().apply {
         val args = if(StrUtil.isNotBlank(arg)) JSONUtil.parse(arg) else null
         val result = call(args)?.let { if(it !is Unit) it else null }
-        putString("result", result?.let { JSONUtil.toJsonStr(it) })
+        putString("json", JSONObject().also {
+            it["result"] = result
+        }.toString())
     }
 
     abstract fun call(args: JSON?): Any?
 }
 
-fun ContentResolver.call(authority: String, args: Any? = null): JSON? {
-    val uri = Uri.parse("content://$authority")
-    val argsStr = args?.let { JSONUtil.toJsonStr(args) }
-    return call(uri, "", argsStr, null)?.let {
-        it.getString("result")?.let { res -> JSONUtil.parse(res) }
+object ContentProviderUtils {
+
+    inline fun <reified T> getTypedResult(result: Any): T = result.let {
+        when {
+            T::class.java.isAssignableFrom(it.javaClass) -> it as T
+            it is JSON -> it.toBean(T::class.java)
+            else -> throw ClassCastException("Cannot cast ${it.javaClass.name} to ${T::class.java.name}")
+        }
     }
 }
 
-inline fun <reified T> ContentResolver.call(authority: String, args: Any? = null): T? = run {
-    call(authority, args)?.toBean(T::class.java)
+fun ContentResolver.call(authority: String, args: Any? = null): Any? {
+    val uri = Uri.parse("content://$authority")
+    val argsStr = args?.let { JSONUtil.toJsonStr(args) }
+    return call(uri, "", argsStr, null)?.let {
+        it.getString("json").let { json -> JSONUtil.parseObj(json)["result"] }
+    }
 }
 
-fun contentResolverCall(authority: String, args: Any? = null): JSON? = run {
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified T> ContentResolver.call(authority: String, args: Any? = null, clazz: Class<T>? = null): T = run {
+    call(authority, args).let {
+        ContentProviderUtils.getTypedResult<T>(it!!)
+    }
+}
+
+fun contentResolverCall(authority: String, args: Any? = null): Any? = run {
     GlobalComponents.application.contentResolver.call(authority, args)
 }
 
-inline fun <reified T> contentResolverCall(authority: String, args: Any? = null): T? = run {
-    contentResolverCall(authority, args)?.toBean(T::class.java)
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified T> contentResolverCall(authority: String, args: Any? = null, clazz: Class<T>? = null): T = run {
+    contentResolverCall(authority, args).let {
+        ContentProviderUtils.getTypedResult<T>(it!!)
+    }
 }
