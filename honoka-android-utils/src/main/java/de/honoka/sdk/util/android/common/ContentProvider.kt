@@ -13,7 +13,10 @@ import cn.hutool.json.JSONUtil
 
 abstract class BaseContentProvider : ContentProvider() {
 
-    override fun onCreate(): Boolean = false
+    override fun onCreate(): Boolean {
+        GlobalComponents.initApplicationFieldByContextIfNotInited(context!!)
+        return true
+    }
 
     override fun query(
         uri: Uri, projection: Array<String>?, selection: String?,
