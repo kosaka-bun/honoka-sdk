@@ -3,19 +3,19 @@ package de.honoka.sdk.util.android.common
 import android.webkit.WebView
 import cn.hutool.core.io.FileUtil
 import cn.hutool.core.io.IoUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 
-fun launchCoroutineOnUiThread(block: suspend () -> Unit) {
-    CoroutineScope(Dispatchers.Main).launch {
-        block()
-    }
+private fun launchCoroutine(block: suspend () -> Unit, dispatcher: CoroutineDispatcher): Job {
+    return CoroutineScope(dispatcher).launch { block() }
 }
+
+fun launchCoroutineOnUiThread(block: suspend () -> Unit): Job = launchCoroutine(block, Dispatchers.Main)
+
+fun launchCoroutineOnIoThread(block: suspend () -> Unit): Job = launchCoroutine(block, Dispatchers.IO)
 
 fun WebView.evaluateJavascriptOnUiThread(script: String, callback: (String) -> Unit = {}) {
     launchCoroutineOnUiThread {
