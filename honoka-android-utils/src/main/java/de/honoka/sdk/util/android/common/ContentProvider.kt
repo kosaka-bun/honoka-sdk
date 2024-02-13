@@ -36,13 +36,13 @@ abstract class BaseContentProvider : ContentProvider() {
 
     override fun call(method: String, arg: String?, extras: Bundle?): Bundle = Bundle().apply {
         val args = if(StrUtil.isNotBlank(arg)) JSONUtil.parse(arg) else null
-        val result = call(args)?.let { if(it !is Unit) it else null }
+        val result = call(method.ifBlank { null }, args)?.let { if(it !is Unit) it else null }
         putString("json", JSONObject().also {
             it["result"] = result
         }.toString())
     }
 
-    abstract fun call(args: JSON?): Any?
+    abstract fun call(method: String?, args: JSON?): Any?
 }
 
 object ContentProviderUtils {
@@ -56,28 +56,29 @@ object ContentProviderUtils {
     }
 }
 
-fun ContentResolver.call(authority: String, args: Any? = null): Any? {
+fun ContentResolver.call(authority: String, method: String? = null, args: Any? = null): Any? {
     val uri = Uri.parse("content://$authority")
     val argsStr = args?.let { JSONUtil.toJsonStr(args) }
-    return call(uri, "", argsStr, null)?.let {
+    return call(uri, method ?: "", argsStr, null)?.let {
         it.getString("json").let { json -> JSONUtil.parseObj(json)["result"] }
     }
 }
 
+//该方法上的clazz参数仅用于防止与返回Any类型的call函数的签名产生冲突，不实际使用
 @Suppress("UNUSED_PARAMETER")
-inline fun <reified T> ContentResolver.call(authority: String, args: Any? = null, clazz: Class<T>? = null): T = run {
-    call(authority, args).let {
-        ContentProviderUtils.getTypedResult<T>(it!!)
-    }
+inline fun <reified T> ContentResolver.call(
+    authority: String, method: String? = null, args: Any? = null, clazz: Class<T>? = null
+): T = call(authority, method, args).let {
+    ContentProviderUtils.getTypedResult<T>(it!!)
 }
 
-fun contentResolverCall(authority: String, args: Any? = null): Any? = run {
-    GlobalComponents.application.contentResolver.call(authority, args)
+fun contentResolverCall(authority: String, method: String? = null, args: Any? = null): Any? = run {
+    GlobalComponents.application.contentResolver.call(authority, method, args)
 }
 
 @Suppress("UNUSED_PARAMETER")
-inline fun <reified T> contentResolverCall(authority: String, args: Any? = null, clazz: Class<T>? = null): T = run {
-    contentResolverCall(authority, args).let {
-        ContentProviderUtils.getTypedResult<T>(it!!)
-    }
+inline fun <reified T> contentResolverCall(
+    authority: String, method: String? = null, args: Any? = null, clazz: Class<T>? = null
+): T = contentResolverCall(authority, method, args).let {
+    ContentProviderUtils.getTypedResult<T>(it!!)
 }
