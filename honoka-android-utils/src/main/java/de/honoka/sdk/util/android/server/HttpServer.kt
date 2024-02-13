@@ -15,16 +15,16 @@ import java.io.File
 @Suppress("ConstPropertyName")
 object HttpServerVariables {
 
-    var webServerPort = 38081
+    var serverPort = 38081
 
     const val imageUrlPrefix = "/android/img"
 
-    fun getUrlByPrefix(path: String) = "http://localhost:$webServerPort$path"
+    fun getUrlByPrefix(path: String) = "http://localhost:$serverPort$path"
 
     fun getImageUrlByPrefix(path: String) = getUrlByPrefix("$imageUrlPrefix$path")
 }
 
-class HttpServer(port: Int = HttpServerVariables.webServerPort) : NanoHTTPD(port) {
+class HttpServer(port: Int = HttpServerVariables.serverPort) : NanoHTTPD(port) {
 
     companion object {
 
@@ -135,6 +135,6 @@ object HttpServerUtils {
     }
 
     fun initServerPorts() {
-        HttpServerVariables.webServerPort = getOneAvaliablePort(HttpServerVariables.webServerPort)
+        HttpServerVariables.serverPort = getOneAvaliablePort(HttpServerVariables.serverPort)
     }
 }
