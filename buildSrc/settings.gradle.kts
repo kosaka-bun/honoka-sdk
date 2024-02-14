@@ -5,7 +5,6 @@ dependencyResolutionManagement {
         maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
         maven("https://mirrors.honoka.de/maven-repo")
-        google()
     }
 }
 
@@ -14,6 +13,5 @@ pluginManagement {
         maven("https://maven.aliyun.com/repository/gradle-plugin")
         mavenCentral()
         gradlePluginPortal()
-        google()
     }
 }
