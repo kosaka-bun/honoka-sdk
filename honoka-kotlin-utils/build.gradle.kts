@@ -12,6 +12,13 @@ setupVersionAndPublishing("1.0.0-dev")
 
 dependencies {
     kotlin()
+    arrayOf(
+        "de.honoka.sdk:honoka-utils:1.0.10",
+        "cn.hutool:hutool-all:5.8.18"
+    ).forEach {
+        implementation(it)
+        api(it)
+    }
 }
 
 tasks {
