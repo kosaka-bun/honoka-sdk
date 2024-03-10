@@ -14,9 +14,12 @@ dependencies {
     kotlin()
     arrayOf(
         "de.honoka.sdk:honoka-utils:1.0.10",
+        "org.dom4j:dom4j:2.1.3",
         "cn.hutool:hutool-all:5.8.18"
     ).forEach {
-        implementation(it)
+        implementation(it) {
+            exclude("gui.ava", "html2image")
+        }
         api(it)
     }
 }
