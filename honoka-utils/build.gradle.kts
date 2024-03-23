@@ -16,4 +16,5 @@ dependencies {
     implementation("gui.ava:html2image:2.0.1") {
         exclude("xml-apis", "xml-apis")
     }
+    compileOnly("org.jetbrains:annotations:24.0.0")
 }
