@@ -8,6 +8,8 @@ import org.gradle.kotlin.dsl.get
 
 object MavenPublish {
 
+    private lateinit var rootProject: Project
+
     private val projectsWillPublish = ArrayList<Project>()
 
     fun Project.setupVersionAndPublishing(version: String) {
@@ -29,7 +31,7 @@ object MavenPublish {
     private fun checkVersionOfProjects() {
         var passed = true
         println("Versions:\n")
-        projectsWillPublish.forEach {
+        listOf(rootProject, *projectsWillPublish.toTypedArray()).forEach {
             if(!passed) return@forEach
             //若project未设置version，则这里取到的version值为unspecified
             println("${it.name}=${it.version}")
@@ -43,6 +45,7 @@ object MavenPublish {
     }
 
     fun Project.defineCheckVersionOfProjectsTask() {
+        this@MavenPublish.rootProject = rootProject
         tasks.register("checkVersionOfProjects") {
             group = "publishing"
             doLast {
