@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "de.honoka.sdk"
-version = "1.3.0-dev"
+version = "1.3.0"
 
 subprojects {
     apply(plugin = "java")

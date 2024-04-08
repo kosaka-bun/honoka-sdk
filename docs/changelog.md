@@ -1,5 +1,15 @@
 # 更新日志
 
+## 1.3.0
+#### 工程
+- 移除honoka-android-utils子项目，改造为独立的工程。
+
+#### honoka-utils 1.0.11
+- 调整工程依赖项配置，解决xml-apis库与pull-parser库的依赖冲突问题。
+
+#### honoka-kotlin-utils 1.0.0
+- 起始版本。包含`PartialAbstract`、`XmlUtils`，以及对hutool库与Collection的一些扩展方法。
+
 ## 1.2.2
 - 原有子项目honoka-android-utils 1.0.2版本相关更新。
 
@@ -90,7 +100,7 @@
 - 移除`web`与`framework`包，将其独立到honoka-framework-utils模块中。
 
 #### honoka-framework-utils 1.0.0
-- 起始版本
+- 起始版本。
 
 #### honoka-json-api 1.1.1
 - 更新了`JsonObject`类中部分方法所使用的内部API。
@@ -126,13 +136,13 @@
 
 ## 1.0.0
 #### honoka-json-fastjson 1.0.0
-- 起始版本
+- 起始版本。
 
 #### honoka-json-gson 1.0.0
-- 起始版本
+- 起始版本。
 
 #### honoka-json-api 1.0.0
-- 起始版本
+- 起始版本。
 
 #### honoka-utils 1.0.0
-- 起始版本
+- 起始版本。

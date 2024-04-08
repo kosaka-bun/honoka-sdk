@@ -1,6 +1,6 @@
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 
-setupVersionAndPublishing("1.0.11-dev")
+setupVersionAndPublishing("1.0.11")
 
 dependencies {
     arrayOf(

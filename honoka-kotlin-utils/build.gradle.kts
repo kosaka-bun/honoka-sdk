@@ -8,12 +8,12 @@ plugins {
     kotlin("jvm") version versions.kotlinVersion
 }
 
-setupVersionAndPublishing("1.0.0-dev")
+setupVersionAndPublishing("1.0.0")
 
 dependencies {
     kotlin()
     arrayOf(
-        "de.honoka.sdk:honoka-utils:1.0.11-dev",
+        "de.honoka.sdk:honoka-utils:1.0.11",
         "cn.hutool:hutool-all:5.8.18"
     ).forEach {
         implementation(it)
