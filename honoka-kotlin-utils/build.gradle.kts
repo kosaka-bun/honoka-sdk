@@ -8,7 +8,7 @@ plugins {
     kotlin("jvm") version versions.kotlinVersion
 }
 
-setupVersionAndPublishing("1.0.0")
+setupVersionAndPublishing("1.0.1-dev")
 
 dependencies {
     kotlin()

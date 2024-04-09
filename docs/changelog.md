@@ -11,13 +11,13 @@
 - 起始版本。包含`PartialAbstract`、`XmlUtils`，以及对hutool库与Collection的一些扩展方法。
 
 ## 1.2.2
-- 原有子项目honoka-android-utils 1.0.2版本相关更新。
+原有子项目honoka-android-utils 1.0.2版本相关更新。
 
 ## 1.2.1
-- 原有子项目honoka-android-utils 1.0.1版本相关更新。
+原有子项目honoka-android-utils 1.0.1版本相关更新。
 
 ## 1.2.0
-- 原有子项目honoka-android-utils 1.0.0版本相关更新。
+原有子项目honoka-android-utils 1.0.0版本相关更新。
 
 ## 1.1.10
 #### honoka-utils 1.0.10
