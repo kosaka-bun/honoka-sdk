@@ -8,9 +8,9 @@ object Versions {
         const val springBoot = "2.7.5"
     }
 
-    const val kotlinVersion = "1.6.21"
+    const val kotlin = "1.6.21"
 
-    const val kotlinCoroutinesVersion = "1.6.3"
+    const val kotlinCoroutines = "1.6.3"
 
-    const val lombokVersion = "1.18.26"
+    const val lombok = "1.18.26"
 }

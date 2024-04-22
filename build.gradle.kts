@@ -27,7 +27,7 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("org.projectlombok:lombok:${Versions.lombokVersion}".also {
+        compileOnly("org.projectlombok:lombok:${Versions.lombok}".also {
             annotationProcessor(it)
             testCompileOnly(it)
             testAnnotationProcessor(it)

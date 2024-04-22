@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     val versions = de.honoka.gradle.buildsrc.Versions
     //plugins
-    kotlin("jvm") version versions.kotlinVersion
+    kotlin("jvm") version versions.kotlin
 }
 
 setupVersionAndPublishing("1.0.1-dev")
