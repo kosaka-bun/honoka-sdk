@@ -1,6 +1,6 @@
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 
-setupVersionAndPublishing("1.0.11")
+setupVersionAndPublishing(libs.versions.honoka.utils.get())
 
 dependencies {
     arrayOf(

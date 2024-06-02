@@ -1,3 +1,3 @@
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 
-setupVersionAndPublishing("1.1.3")
+setupVersionAndPublishing(libs.versions.honoka.json.api.get())

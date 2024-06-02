@@ -1,16 +1,16 @@
 import de.honoka.gradle.buildsrc.MavenPublish.defineCheckVersionOfProjectsTask
-import de.honoka.gradle.buildsrc.Versions
 import java.nio.charset.StandardCharsets
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     java
     `java-library`
     `maven-publish`
-    id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
+    alias(libs.plugins.dependency.management) apply false
 }
 
 group = "de.honoka.sdk"
-version = "1.3.0"
+version = libs.versions.root.get()
 
 subprojects {
     apply(plugin = "java")
@@ -27,7 +27,8 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("org.projectlombok:lombok:${Versions.lombok}".also {
+        val libs = rootProject.libs
+        compileOnly(libs.lombok.also {
             annotationProcessor(it)
             testCompileOnly(it)
             testAnnotationProcessor(it)

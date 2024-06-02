@@ -2,16 +2,15 @@ import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
 import de.honoka.gradle.buildsrc.kotlin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    val versions = de.honoka.gradle.buildsrc.Versions
-    //plugins
-    kotlin("jvm") version versions.kotlin
+    alias(libs.plugins.kotlin)
 }
 
-setupVersionAndPublishing("1.0.1-dev")
+setupVersionAndPublishing(libs.versions.honoka.kotlin.utils.get())
 
 dependencies {
-    kotlin()
+    kotlin(project)
     arrayOf(
         "de.honoka.sdk:honoka-utils:1.0.11",
         "cn.hutool:hutool-all:5.8.18"

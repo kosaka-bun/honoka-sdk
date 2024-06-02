@@ -1,11 +1,10 @@
 import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
-import de.honoka.gradle.buildsrc.Versions
 
-setupVersionAndPublishing("1.0.4")
+setupVersionAndPublishing(libs.versions.honoka.framework.utils.get())
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.HonokaFrameworkUtils.springBoot}")
+        mavenBom(libs.spring.boot.dependencies.get().toString())
     }
 }
 
