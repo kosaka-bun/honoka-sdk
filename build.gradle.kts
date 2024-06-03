@@ -50,9 +50,6 @@ subprojects {
     publishing {
         repositories {
             mavenLocal()
-            if(hasProperty("remoteMavenRepositoryUrl")) {
-                maven(properties["remoteMavenRepositoryUrl"]!!)
-            }
         }
     }
 }

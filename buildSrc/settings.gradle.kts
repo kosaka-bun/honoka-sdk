@@ -4,7 +4,7 @@ dependencyResolutionManagement {
     repositories {
         maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
-        maven("https://mirrors.honoka.de/maven-repo")
+        maven("https://mirrors.honoka.de/maven-repo/release")
     }
 }
 

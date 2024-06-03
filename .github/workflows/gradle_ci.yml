@@ -2,9 +2,9 @@ name: Gradle CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dev ]
 
 jobs:
   build:
@@ -21,30 +21,10 @@ jobs:
           # 通过预定义的包管理器之一管理的依赖项的快速设置缓存
           # 它可以是maven、gradle或sbt之一
           cache: 'gradle'
-      - name: Check project version
+      - name: Build with Gradle
         run: |
-          chmod +x gradlew
-          # 读取当前gradle项目根模块的版本信息，检查版本号是否符合要求
-          check_version_of_projects_out=$(./gradlew checkVersionOfProjects)
-          echo -e "check_version_of_projects_out:\n\n$check_version_of_projects_out"
-          # 若版本号检测不通过，则阻止发布
-          if [ "$(echo "$check_version_of_projects_out" | grep -i "results.passed=true")" == '' ]; then
-            echo 'Cannot publish development versions!'
-            exit 10
-          fi
-      - name: Clone remote maven repository
-        run: |
-          # 将kosaka-bun/maven-repo的git仓库clone到项目根目录下
-          git clone ${{ secrets.REMOTE_MAVEN_REPO_URL }}
-      - id: gradle_build
-        name: Build with Gradle
-        run: |
-          # 打包，并发布到远程maven仓库在本地的一个拷贝当中
-          ./gradlew -PremoteMavenRepositoryUrl=$(pwd)/maven-repo/repository publish
-          # 将maven-repo/repository目录打包，然后将tar移动到另一个单独的目录中
-          tar -zcf maven-repo.tar.gz maven-repo/repository
-          mkdir remote-maven-repo-copy
-          mv maven-repo.tar.gz remote-maven-repo-copy/
+          chmod +x ./scripts/*.sh
+          ./scripts/build.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
       - name: Upload remote maven repository as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -56,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
       - name: Download temporary maven repository
         uses: actions/download-artifact@v4
         with:
@@ -63,23 +46,7 @@ jobs:
           name: remote-maven-repo-copy
           # 指定要将这一目录下的所有内容（即不包含目录本身）下载到哪个位置（以项目根目录为相对路径起始点）
           path: remote-maven-repo-copy
-      - name: Clone remote maven repository
-        run: |
-          # 将kosaka-bun/maven-repo的git仓库clone到项目根目录下
-          git clone ${{ secrets.REMOTE_MAVEN_REPO_URL }}
       - name: Merge maven repository and publish
         run: |
-          # 解压maven-repo.tar.gz
-          cd remote-maven-repo-copy
-          tar -zxf maven-repo.tar.gz
-          cd ..
-          # 将[项目根目录]/remote-maven-repo-copy/maven-repo/repository下所有内容，复制到[项目根目录]/maven-repo/repository下
-          # 并替换已存在的内容
-          cp -rf remote-maven-repo-copy/maven-repo/repository/* maven-repo/repository/
-          # 进入名为maven-repo的git仓库，设置提交者信息，然后提交并推送
-          cd maven-repo/repository
-          git config --global user.name 'Kosaka Bun'
-          git config --global user.email 'kosaka-bun@qq.com'
-          git add .
-          git commit -m 'Update honoka-sdk'
-          git push
+          chmod +x ./scripts/*.sh
+          ./scripts/publish.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
