@@ -31,8 +31,8 @@ val Project.rawDependencies: Set<Dependency>
         }
         val set = HashSet<Dependency>()
         configurationContainer.forEach {
-            it.dependencies.forEach {
-                set.add(it as Dependency)
+            it.dependencies.forEach { dep ->
+                set.add(dep as Dependency)
             }
         }
         return set
