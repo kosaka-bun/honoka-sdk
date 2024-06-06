@@ -8,8 +8,8 @@ PROJECT_PATH="$(pwd)"
 chmod +x gradlew
 
 # 读取当前gradle项目根模块的版本信息，检查版本号是否符合要求
+./gradlew checkVersionOfProjects
 check_version_of_projects_out=$(./gradlew checkVersionOfProjects)
-echo -e "check_version_of_projects_out:\n\n$check_version_of_projects_out"
 # 若版本号检测不通过，则添加开发版标记
 if [ "$(echo "$check_version_of_projects_out" | grep -i "results.passed=true")" == '' ]; then
   touch dev_flag.txt
@@ -19,6 +19,7 @@ fi
 git clone $1
 
 # 打包，并发布到远程maven仓库在本地的一个拷贝当中
+./gradlew build
 if [ -f dev_flag.txt ]; then
   ./gradlew -PremoteMavenRepositoryUrl=$PROJECT_PATH/maven-repo/repository/development \
             -PisDevelopmentRepository=true \
