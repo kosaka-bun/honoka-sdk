@@ -21,6 +21,10 @@ dependencies {
 }
 
 tasks {
+    compileJava {
+        dependsOn(":honoka-utils:publish")
+    }
+
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs += "-Xjsr305=strict"
