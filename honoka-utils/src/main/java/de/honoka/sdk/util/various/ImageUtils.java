@@ -18,8 +18,7 @@ public class ImageUtils {
 
     @SneakyThrows
     public static InputStream htmlToImage(String html, int width) {
-        ImageRenderer render = Html2Image.fromHtml(html).getImageRenderer()
-                .setWidth(width).setAutoHeight(true);
+        ImageRenderer render = Html2Image.fromHtml(html).getImageRenderer().setWidth(width).setAutoHeight(true);
         BufferedImage img = render.getBufferedImage();
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         ImageIO.write(img, "png", bytes);
@@ -30,7 +29,8 @@ public class ImageUtils {
     private static String getTextImageHtml(String str) {
         URL textHtml = ImageUtils.class.getResource("/text.html");
         if(textHtml == null) return null;
-        str = str.replace("\n", "<br>");
+        str = "<pre>" + str + "</pre>";
+        str = str.replace("\t", "    ");
         return String.format(FileUtils.fetchUrlResourceAndToString(textHtml), str);
     }
 
@@ -56,9 +56,7 @@ public class ImageUtils {
                 //根据最大长度依次截取为多行，除最后一行外，均添加换行符
                 for(int j = 0; j < lineNum; j++) {
                     if(j != lineNum - 1) {
-                        textBuilder.append(lines[i],
-                                j * lineLength,
-                                (j + 1) * lineLength).append("\n");
+                        textBuilder.append(lines[i], j * lineLength, (j + 1) * lineLength).append("\n");
                     } else {
                         textBuilder.append(lines[i].substring(j * lineLength));
                     }
@@ -82,8 +80,7 @@ public class ImageUtils {
      * 文本图片默认图片大小 imageSize = lineLength * 50
      */
     public static InputStream textToImageByLength(String text, int lineLength) {
-        return htmlToImage(getTextImageHtml(forceWarp(text, lineLength)),
-                lineLength * 53);
+        return htmlToImage(getTextImageHtml(forceWarp(text, lineLength)), lineLength * 53);
     }
 
     public static InputStream textToImage(String text) {
