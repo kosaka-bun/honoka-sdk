@@ -138,4 +138,12 @@ public class FileUtils {
             return new String(IOUtils.toByteArray(is));
         }
     }
+    
+    public static String toUriPath(String filePath) {
+        String uriPath = new File(filePath).toURI().toASCIIString();
+        if(uriPath.startsWith("file:/") && !uriPath.startsWith("file:///")) {
+            uriPath = uriPath.replaceFirst("file:/", "file:///");
+        }
+        return uriPath;
+    }
 }
