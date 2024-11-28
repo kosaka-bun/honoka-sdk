@@ -96,58 +96,6 @@ Object invokeMethod(Object obj, String methodName, Class<?>[] parameterType, Obj
 ```
 使用此工具类，可以避免手动查找获取字段和方法，以及调用`setAccessible()`的麻烦。
 
-### [JsonObject](./honoka-json/honoka-json-api/src/main/java/de/honoka/sdk/json/api/JsonObject.java)
-强大的JsonObject API，支持按路径查找、按类型取值、转化为格式化与非格式化字符串等功能。
-
-设有如下json对象：
-```json
-{
-  "a": 1,
-  "level1": {
-    "b": 2,
-    "level2": {
-      "c": 3
-    }
-  }
-}
-```
-要解析此字符串，并获取`level1.level2.c`的值，只需：
-```java
-JsonObject.of(str).getInt("level1.level2.c");
-```
-
-### [JsonArray](./honoka-json/honoka-json-api/src/main/java/de/honoka/sdk/json/api/JsonArray.java)
-强大的JsonArray API，支持泛型、按泛型取值、按泛型类型遍历等功能。
-
-设有如下json对象：
-```json
-[
-  {
-    "a": 1,
-    "b": 2
-  },
-  {
-    "a": 3,
-    "b": 4
-  }
-]
-```
-另有以下Java类定义：
-```java
-class Entity {
-    int a, b;
-}
-```
-要将其中的每个对象转化为`Entity`实例后遍历，只需：
-```java
-JsonArray<Entity> array = JsonArray.of(str, Entity.class);
-for(Entity e : array) {
-    System.out.println(e.a);
-    System.out.println(e.b);
-}
-```
-不再需要像常见的json框架一样，将从`JsonArray`中取出来的值，做一次强转。
-
 ### 更多实用工具
 请阅读源代码以了解更多实用工具类的功能。
 

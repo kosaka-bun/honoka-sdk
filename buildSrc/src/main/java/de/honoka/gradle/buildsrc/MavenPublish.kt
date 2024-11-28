@@ -47,20 +47,21 @@ object MavenPublish {
     }
 
     private fun checkVersionOfProjects() {
-        var passed = true
+        var projectsPassed = true
         val dependencies = HashSet<Dependency>()
         println("Versions:\n")
         listOf(rootProject, *projectsWillPublish.toTypedArray()).forEach {
-            if(!passed) return@forEach
+            if(!projectsPassed) return@forEach
             //若project未设置version，则这里取到的version值为unspecified
             println("${it.name}=${it.version}")
             dependencies.addAll(it.rawDependencies)
-            passed = it.version.isReleaseVersion()
+            projectsPassed = it.version.isReleaseVersion()
         }
-        if(passed) passed = checkVersionOfDependencies(dependencies)
+        val dependenciesPassed = checkVersionOfDependencies(dependencies)
         println("\nResults:\n")
-        println("results.passed=$passed")
-        println()
+        println("results.projectsPassed=$projectsPassed")
+        println("results.dependenciesPassed=$dependenciesPassed")
+        println("results.passed=${projectsPassed && dependenciesPassed}")
     }
 
     private fun Any?.isReleaseVersion(): Boolean = toString().lowercase().run {

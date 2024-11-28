@@ -21,9 +21,5 @@ pluginManagement {
 rootProject.name = "honoka-sdk"
 
 include("honoka-utils")
-include("honoka-framework-utils")
 include("honoka-kotlin-utils")
-include("honoka-json")
-include("honoka-json:honoka-json-api")
-include("honoka-json:honoka-json-gson")
-include("honoka-json:honoka-json-fastjson")
+include("honoka-spring-boot-starter")

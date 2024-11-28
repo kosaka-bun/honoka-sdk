@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * 用于获取内存使用信息
  */
-public strictfp class SystemInfoBean {
+public class SystemInfoBean {
 
     /**
      * 堆、非堆内存用量
