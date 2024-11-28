@@ -27,7 +27,7 @@ dependencies {
 }
 
 tasks {
-    compileJava {
+    compileKotlin {
         dependsOn(":honoka-kotlin-utils:publish")
     }
 }
