@@ -1,12 +1,12 @@
 # Honoka SDK
-![Java](./docs/img/Java-8-brightgreen.svg)
-![Kotlin](https://img.shields.io/badge/Kotlin-1.6.21-brightgreen?logo=Kotlin)<br />
+![Java](./docs/img/Java-17-brightgreen.svg)
+![Kotlin](https://img.shields.io/badge/Kotlin-1.8.10-brightgreen?logo=Kotlin)<br />
 [![License](https://img.shields.io/github/license/kosaka-bun/honoka-sdk?label=License&color=blue&logo=GitHub)](./LICENSE)
 ![GitHub Stars](https://img.shields.io/github/stars/kosaka-bun/honoka-sdk?label=Stars&logo=GitHub&style=flat)
 [![Release](https://img.shields.io/github/release/kosaka-bun/honoka-sdk?label=Release&logo=GitHub)](../../releases)
 
 ## 简介
-Honoka SDK是一款包含了各式各样实用工具的Java与Kotlin工具包，主要包含honoka-utils、honoka-json等模块。提供了包括简写代码、读取文件、后台运行jar包、读取CSV表格、处理Emoji、文字转图片、反射操作、方便易用的统一的JSON API等功能的诸多工具类。
+Honoka SDK是一款包含了各式各样实用工具的Java与Kotlin工具包，主要包含honoka-utils、honoka-kotlin-utils等模块。提供了包括简写代码、读取文件、后台运行jar包、读取CSV表格、处理Emoji、文字转图片、反射操作等功能的诸多工具类。
 
 本项目采用Apache-2.0 License，使用本项目时，请遵守此开源许可证的相关规定。
 
@@ -119,8 +119,7 @@ Object invokeMethod(Object obj, String methodName, Class<?>[] parameterType, Obj
 
     <dependency>
         <groupId>de.honoka.sdk</groupId>
-        <artifactId>honoka-json-gson</artifactId>
-        <!-- 或：<artifactId>honoka-json-fastjson</artifactId> -->
+        <artifactId>honoka-kotlin-utils</artifactId>
         <version>版本号</version>
     </dependency>
 </dependencies>
@@ -131,8 +130,6 @@ Object invokeMethod(Object obj, String methodName, Class<?>[] parameterType, Obj
 ```groovy
 dependencies {
     implementation 'de.honoka.sdk:honoka-utils:版本号'
-    implementation 'de.honoka.sdk:honoka-json-gson:版本号'
-    //或：implementation 'de.honoka.sdk:honoka-json-fastjson:版本号'
 }
 ```
 
@@ -140,7 +137,6 @@ dependencies {
 ```kotlin
 dependencies {
     implementation("de.honoka.sdk:honoka-utils:版本号")
-    implementation("de.honoka.sdk:honoka-json-gson:版本号")
-    //或：implementation("de.honoka.sdk:honoka-json-fastjson:版本号")
+    implementation("de.honoka.sdk:honoka-kotlin-gson:版本号")
 }
 ```
