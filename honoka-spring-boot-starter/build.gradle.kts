@@ -21,13 +21,14 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")
+    compileOnly("org.springframework.boot:spring-boot-starter-security")
     compileOnly("org.springframework.boot:spring-boot-configuration-processor".also {
         annotationProcessor(it)
     })
 }
 
 tasks {
-    compileKotlin {
+    processResources {
         dependsOn(":honoka-kotlin-utils:publish")
     }
 }

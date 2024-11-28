@@ -1,6 +1,8 @@
 package de.honoka.sdk.spring.starter.core.web
 
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpHeaders
 
 /**
  * Web相关工具
@@ -9,6 +11,13 @@ object WebUtils {
 
     val HttpServletRequest.clientRealIp: String?
         get() = getRealIp( this)
+    
+    val HttpServletRequest.authorization: List<String?>
+        get() = run {
+            getHeader(HttpHeaders.AUTHORIZATION)?.split(" ")?.run {
+                if(size < 2) listOf(null, first()) else this
+            } ?: listOf(null, null)
+        }
 
     /**
      * 从请求中获取请求方的真实IP，忽略反向代理
@@ -31,4 +40,6 @@ object WebUtils {
         }
         return ip
     }
+    
+    operator fun Array<Cookie>?.get(name: String): String? = this?.firstOrNull { it.name == name }?.value
 }

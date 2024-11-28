@@ -14,9 +14,7 @@ public class MainProperties {
     @Getter
     public enum Module {
         
-        ;
-        
-        private final String name;
+        SECURITY
     }
     
     private Module[] enabledModules;

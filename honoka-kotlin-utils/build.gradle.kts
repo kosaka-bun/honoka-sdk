@@ -9,7 +9,7 @@ dependencies {
 }
 
 tasks {
-    compileKotlin {
+    processResources {
         dependsOn(":honoka-utils:publish")
     }
 }

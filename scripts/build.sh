@@ -28,6 +28,7 @@ git clone $1
 # 打包，并发布到远程maven仓库在本地的一个拷贝当中
 ./gradlew build
 if [ -n $projects_passed ]; then
+  echo 'Using development repository to publish artifacts.'
   ./gradlew -PremoteMavenRepositoryUrl=$PROJECT_PATH/maven-repo/repository/development \
             -PisDevelopmentRepository=true \
             publish
