@@ -28,11 +28,13 @@ git clone $1
 # 打包，并发布到远程maven仓库在本地的一个拷贝当中
 ./gradlew build
 if [ -n $projects_passed ]; then
-  echo 'Using development repository to publish artifacts.'
+  echo -e '\n\nUsing development repository to publish artifacts.\n'
+  echo "IS_DEVELOPMENT_VERSION=true" >> "$GITHUB_OUTPUT"
   ./gradlew -PremoteMavenRepositoryUrl=$PROJECT_PATH/maven-repo/repository/development \
             -PisDevelopmentRepository=true \
             publish
 else
+  echo "IS_DEVELOPMENT_VERSION=false" >> "$GITHUB_OUTPUT"
   ./gradlew -PremoteMavenRepositoryUrl=$PROJECT_PATH/maven-repo/repository/release publish
 fi
 # 将maven-repo/repository目录打包，然后将tar移动到另一个单独的目录中

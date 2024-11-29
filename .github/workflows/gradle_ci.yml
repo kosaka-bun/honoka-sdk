@@ -1,14 +1,10 @@
 name: Gradle CI
 
-on:
-  push:
-    branches: [ dev ]
-  pull_request:
-    branches: [ dev ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      IS_DEVELOPMENT_VERSION: ${{ steps.gradle_build.outputs.is_development_version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,7 +17,8 @@ jobs:
           # 通过预定义的包管理器之一管理的依赖项的快速设置缓存
           # 它可以是maven、gradle或sbt之一
           cache: 'gradle'
-      - name: Build with Gradle
+      - id: gradle_build
+        name: Build with Gradle
         run: |
           chmod +x ./scripts/*.sh
           ./scripts/build.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
@@ -47,6 +44,32 @@ jobs:
           # 指定要将这一目录下的所有内容（即不包含目录本身）下载到哪个位置（以项目根目录为相对路径起始点）
           path: remote-maven-repo-copy
       - name: Merge maven repository and publish
+        env:
+          IS_DEVELOPMENT_VERSION: ${{ needs.build.outputs.IS_DEVELOPMENT_VERSION }}
         run: |
           chmod +x ./scripts/*.sh
           ./scripts/publish.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - 'docs/**'
+      - 'gradle/wrapper/**'
+      - '**src/test/**'
+      - '.gitignore'
+      - 'gradlew*'
+      - 'LICENSE'
+      - 'README.md'
+  pull_request:
+    branches:
+      - dev
+    paths-ignore:
+      - 'docs/**'
+      - 'gradle/wrapper/**'
+      - '**src/test/**'
+      - '.gitignore'
+      - 'gradlew*'
+      - 'LICENSE'
+      - 'README.md'
