@@ -2,8 +2,6 @@ package de.honoka.sdk.spring.starter.security
 
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
-import de.honoka.sdk.spring.starter.config.property.SecurityProperties
-import de.honoka.sdk.spring.starter.core.ApplicationContextHolder.Companion.springBean
 import de.honoka.sdk.spring.starter.core.web.WebUtils.authorization
 import de.honoka.sdk.spring.starter.core.web.WebUtils.get
 import de.honoka.sdk.spring.starter.security.token.JwtUtils
@@ -20,9 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter
  * 用于手动为SecurityContextHolder的context添加authentication信息
  */
 @Suppress("MemberVisibilityCanBePrivate")
-object CustomAuthorizationFilter : OncePerRequestFilter() {
-    
-    private val securityProperties = SecurityProperties::class.springBean
+object DefaultAuthorizationFilter : OncePerRequestFilter() {
     
     var tokenName = "token"
     
@@ -40,7 +36,7 @@ object CustomAuthorizationFilter : OncePerRequestFilter() {
     
     private fun tokenAuthentication(token: String) {
         val jwt = try {
-            JwtUtils.parseAvaliableJwt(token, securityProperties.jwtKey)
+            JwtUtils.parseAvaliableJwt(token)
         } catch(t: Throwable) {
             return
         }
@@ -65,11 +61,19 @@ object CustomAuthorizationFilter : OncePerRequestFilter() {
     }
 }
 
+/**
+ * 通过临时token获取的临时登录态。
+ *
+ * 注意：若authenticated被设置为true，则此登录态能够访问到在SecurityConfig中被设置为authenticated
+ * 的URL路径，需额外考虑如何避免持有此登录态的用户访问需要普通登录态的URL路径。
+ */
 @Suppress("unused")
-class TempAuthenticationToken(val token: String) : AbstractAuthenticationToken(null) {
+class TempAuthenticationToken(
+    val token: String, authenticated: Boolean = false
+) : AbstractAuthenticationToken(null) {
     
     init {
-        isAuthenticated = true
+        isAuthenticated = authenticated
     }
     
     override fun getCredentials(): Any? = null

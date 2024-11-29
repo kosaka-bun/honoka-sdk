@@ -6,7 +6,7 @@ import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateTime
 import cn.hutool.jwt.JWT
 import de.honoka.sdk.spring.starter.config.property.SecurityProperties
-import de.honoka.sdk.spring.starter.core.ApplicationContextHolder.Companion.springBean
+import de.honoka.sdk.spring.starter.core.context.ApplicationContextHolder.Companion.springBean
 import de.honoka.sdk.spring.starter.security.DefaultUser
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException
@@ -29,7 +29,7 @@ object JwtUtils {
     }
     
     private val JWT.cacheKey
-        get() = "${payloads["id"]}-${payloads["iat"]}"
+        get() = "${payloads.getByPath("user.id")}-${payloads["iat"]}"
     
     fun newJwt(user: DefaultUser, periodDays: Int = 7): String = JWT.create().run {
         setKey(key.toByteArray())
@@ -45,7 +45,7 @@ object JwtUtils {
         sign()
     }
     
-    fun parseAvaliableJwt(token: String, key: String): JWT = JWT(token).run {
+    fun parseAvaliableJwt(token: String): JWT = JWT(token).run {
         setKey(key.toByteArray())
         val avaliable = validate(0) && tokenCache.containsKey(cacheKey)
         if(!avaliable) throw InvalidCookieException("JWT无效或已过期")

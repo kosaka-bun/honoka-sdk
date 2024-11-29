@@ -3,10 +3,11 @@ package de.honoka.sdk.spring.starter.config
 import de.honoka.sdk.spring.starter.config.property.SecurityProperties
 import de.honoka.sdk.spring.starter.security.AccessDeniedHandlerImpl
 import de.honoka.sdk.spring.starter.security.AuthenticationEntryPointImpl
-import de.honoka.sdk.spring.starter.security.CustomAuthorizationFilter
+import de.honoka.sdk.spring.starter.security.DefaultAuthorizationFilter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -21,8 +22,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @EnableMethodSecurity
 @EnableWebSecurity
+@ComponentScan("de.honoka.sdk.spring.starter.security")
 @EnableConfigurationProperties(SecurityProperties::class)
-@ConditionalOnProperty(prefix = "honoka.starter", name = ["enabled-modules"], havingValue = "SECURITY")
+@ConditionalOnProperty(prefix = SecurityProperties.PREFIX, name = ["enabled"])
 @Configuration
 class SecurityConfig(private val securityProperties: SecurityProperties) {
     
@@ -54,7 +56,10 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
             it.disable()
         }
         //添加能够识别自定义登录态，并将其放入SecurityContextHolder中的处理器
-        addFilterBefore(CustomAuthorizationFilter, AuthorizationFilter::class.java)
+        addFilterBefore(DefaultAuthorizationFilter, AuthorizationFilter::class.java)
+        logout {
+            it.disable()
+        }
         //设置自定义的Security异常处理器，用于处理未登录、无权访问等情况
         exceptionHandling {
             /*

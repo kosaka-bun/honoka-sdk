@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.core
+package de.honoka.sdk.spring.starter.core.context
 
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware

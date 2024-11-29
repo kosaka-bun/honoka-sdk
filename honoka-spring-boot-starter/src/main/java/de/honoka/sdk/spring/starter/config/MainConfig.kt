@@ -8,4 +8,4 @@ import org.springframework.context.annotation.Configuration
 @ComponentScan("de.honoka.sdk.spring.starter.core")
 @EnableConfigurationProperties(MainProperties::class)
 @Configuration
-class MainConfig 
+class MainConfig
