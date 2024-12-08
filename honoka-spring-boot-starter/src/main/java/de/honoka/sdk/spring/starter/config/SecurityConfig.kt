@@ -25,7 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @ComponentScan("de.honoka.sdk.spring.starter.security")
 @EnableConfigurationProperties(SecurityProperties::class)
 @ConditionalOnProperty(prefix = SecurityProperties.PREFIX, name = ["enabled"])
-@Configuration
+@Configuration("honokaStarterSecurityConfig")
 class SecurityConfig(private val securityProperties: SecurityProperties) {
     
     @Bean

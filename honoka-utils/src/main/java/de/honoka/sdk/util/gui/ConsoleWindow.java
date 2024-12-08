@@ -1,11 +1,11 @@
-package de.honoka.sdk.util.system.gui;
+package de.honoka.sdk.util.gui;
 
+import cn.hutool.core.util.StrUtil;
 import de.honoka.sdk.util.code.ActionUtils;
 import de.honoka.sdk.util.code.ThrowsRunnable;
 import de.honoka.sdk.util.text.TextUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
@@ -31,6 +31,7 @@ import java.util.Objects;
 /**
  * 用于在可执行jar包运行时以窗口形式显示控制台，和可最小化到托盘
  */
+@SuppressWarnings("ExtractMethodRecommender")
 public class ConsoleWindow {
 
     //全局初始化，先于所有类型的初始化执行
@@ -240,15 +241,14 @@ public class ConsoleWindow {
                                 content.append(line.substring(indent));
                             } catch(Exception e) {
                                 //字符不足缩进，去除左侧空格，保留右侧空格
-                                content.append(StringUtils.stripStart(
-                                        line, null));
+                                content.append(StrUtil.trimStart(line));
                             }
                         } else break;
                     }
                     //转义<>符号，然后添加到列表中，表示一个span标签的文本内容
                     String contentStr = content.toString()
-                            .replaceAll("<", "&lt;")
-                            .replaceAll(">", "&gt;");
+                        .replaceAll("<", "&lt;")
+                        .replaceAll(">", "&gt;");
                     contents.add(contentStr);
                 } else if(trimedLine.startsWith("</p")) {
                     //遇到结束p标签，为文本内容列表中的最后一个元素添加html换行符
@@ -273,15 +273,17 @@ public class ConsoleWindow {
         }
         //判断是否需要截取
         String resultStr = result.toString();
-        int lineCount = StringUtils.countMatches(resultStr, "<br>") + 1;
+        int lineCount = StrUtil.count(resultStr, "<br>") + 1;
         //最后一行为空行，故实际限制数量应为limit + 1
         limit += 1;
         if(lineCount > limit) {
             int removeLineCount = lineCount - limit;
-            resultStr = resultStr.substring(resultStr.indexOf(
-                    "<pre", StringUtils.ordinalIndexOf(resultStr,
-                            "<br>", removeLineCount)
-            ));
+            resultStr = resultStr.substring(
+                resultStr.indexOf(
+                    "<pre",
+                    StrUtil.ordinalIndexOf(resultStr, "<br>", removeLineCount)
+                )
+            );
         }
         return resultStr;
     }
@@ -308,8 +310,7 @@ public class ConsoleWindow {
         ));
     }
 
-    public void addTrayIconMenuItem(String name, boolean needConfirm,
-                                    ThrowsRunnable action) {
+    public void addTrayIconMenuItem(String name, boolean needConfirm, ThrowsRunnable action) {
         if(trayIconMenu == null) return;
         JMenuItem item = new JMenuItem(name);
         item.setFont(menuItemFont);
@@ -456,16 +457,12 @@ public class ConsoleWindow {
      */
     @SneakyThrows
     private void changeSystemOut() {
-        ConsoleOutputStream newOut = new ConsoleOutputStream(System.out,
-                defaultFontColor);
-        ConsoleOutputStream newErr = new ConsoleOutputStream(System.err,
-                new Color(255, 107, 103, 255));
+        ConsoleOutputStream newOut = new ConsoleOutputStream(System.out, defaultFontColor);
+        ConsoleOutputStream newErr = new ConsoleOutputStream(System.err, new Color(255, 107, 103, 255));
         newOut.setPrintMethod(bytes -> writeToTextPane(newOut, bytes));
         newErr.setPrintMethod(bytes -> writeToTextPane(newErr, bytes));
-        PrintStream newOutPrintStream = new PrintStream(newOut,
-                false, "UTF-8");
-        PrintStream newErrPrintStream = new PrintStream(newErr,
-                false, "UTF-8");
+        PrintStream newOutPrintStream = new PrintStream(newOut, false, StandardCharsets.UTF_8.name());
+        PrintStream newErrPrintStream = new PrintStream(newErr, false, StandardCharsets.UTF_8.name());
         System.setOut(newOutPrintStream);
         System.setErr(newErrPrintStream);
     }
@@ -542,8 +539,7 @@ public class ConsoleWindow {
      * 加载系统托盘图标
      */
     @SneakyThrows
-    private void initSystemTrayIcon(Image systemTrayIcon,
-                                    ThrowsRunnable onExit) {
+    private void initSystemTrayIcon(Image systemTrayIcon, ThrowsRunnable onExit) {
         if(!SystemTray.isSupported())
             throw new RuntimeException("不支持系统托盘");
         //获取当前平台的系统托盘
@@ -613,8 +609,7 @@ public class ConsoleWindow {
         tray.add(trayIcon);
     }
 
-    private void initTrayIconMenu(JPopupMenu popupMenu,
-                                  ThrowsRunnable onExit) {
+    private void initTrayIconMenu(JPopupMenu popupMenu, ThrowsRunnable onExit) {
         //应用名项
         JMenuItem applicationNameItem = new JMenuItem(windowName);
         applicationNameItem.setFont(menuItemFont);
@@ -644,8 +639,7 @@ public class ConsoleWindow {
 
     //endregion
 
-    private synchronized void writeToTextPane(
-            ConsoleOutputStream out, List<Byte> buffer) {
+    private synchronized void writeToTextPane(ConsoleOutputStream out, List<Byte> buffer) {
         byte[] bytes = new byte[buffer.size()];
         for(int i = 0; i < buffer.size(); i++) {
             bytes[i] = buffer.get(i);
@@ -666,8 +660,7 @@ public class ConsoleWindow {
     }
 
     @SneakyThrows
-    private synchronized void writeToTextPane(
-            String str, AttributeSet attributeSet) {
+    private synchronized void writeToTextPane(String str, AttributeSet attributeSet) {
         StyledDocument doc = textPane.getStyledDocument();
         if(attributeSet == null) attributeSet = defaultAttributeSet;
         doc.insertString(doc.getLength(), str, attributeSet);
@@ -695,9 +688,9 @@ public class ConsoleWindow {
         ).size();
         if(lineCount <= textPaneMaxLine) return;
         //清除多余的行
-        int offset = StringUtils.ordinalIndexOf(
-                doc.getText(0, doc.getLength()), "\n",
-                lineCount - textPaneMaxLine
+        int offset = StrUtil.ordinalIndexOf(
+            doc.getText(0, doc.getLength()), "\n",
+            lineCount - textPaneMaxLine
         ) + 1;
         textPane.getDocument().remove(0, offset);
     }

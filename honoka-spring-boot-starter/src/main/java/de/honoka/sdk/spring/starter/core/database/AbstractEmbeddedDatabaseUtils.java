@@ -1,7 +1,7 @@
 package de.honoka.sdk.spring.starter.core.database;
 
+import cn.hutool.core.util.StrUtil;
 import de.honoka.sdk.util.file.AbstractEnvironmentPathUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -26,7 +26,7 @@ public abstract class AbstractEmbeddedDatabaseUtils {
     public String getJdbcUrlRelatedWithDataDir(DbType dbType, String databaseFilePath) {
         String dataDirPath = environmentPathUtils.getDataDirPathOfApp().replace("\\", "/");
         if(!dataDirPath.endsWith("/")) dataDirPath += "/";
-        databaseFilePath = StringUtils.stripStart(databaseFilePath, "/\\");
+        databaseFilePath = StrUtil.strip(databaseFilePath, "/\\", "");
         String absoluteDatabaseFilePath = dataDirPath + databaseFilePath;
         String absoluteDatabaseFileDirPath = absoluteDatabaseFilePath.substring(0, absoluteDatabaseFilePath.lastIndexOf("/"));
         File absoluteDatabaseFileDir = Paths.get(absoluteDatabaseFileDirPath).toFile();
@@ -41,7 +41,7 @@ public abstract class AbstractEmbeddedDatabaseUtils {
 
     public void setJdbcUrlRelatedWithDataDirInJvmProps(DbType dbType, String databaseFilePath) {
         String propKey = "spring.datasource.url";
-        if(StringUtils.isNotBlank(System.getProperty(propKey))) return;
+        if(StrUtil.isNotBlank(System.getProperty(propKey))) return;
         String jdbcUrl = getJdbcUrlRelatedWithDataDir(dbType, databaseFilePath);
         System.setProperty(propKey, jdbcUrl);
     }

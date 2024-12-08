@@ -2,7 +2,7 @@ package de.honoka.sdk.util.test.gui;
 
 import de.honoka.sdk.util.code.CodeUtils;
 import de.honoka.sdk.util.code.ColorfulText;
-import de.honoka.sdk.util.system.gui.ConsoleWindow;
+import de.honoka.sdk.util.gui.ConsoleWindow;
 import lombok.SneakyThrows;
 
 import javax.swing.*;

@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.system.gui;
+package de.honoka.sdk.util.gui;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -47,6 +47,7 @@ public class ConsoleOutputStream extends OutputStream {
         originalPrintStream.write(b);
     }
 
+    @SuppressWarnings("NullableProblems")
     @SneakyThrows
     @Override
     public synchronized void write(byte[] b, int off, int len) {

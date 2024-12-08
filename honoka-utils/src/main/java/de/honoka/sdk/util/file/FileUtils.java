@@ -1,10 +1,10 @@
 package de.honoka.sdk.util.file;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +42,8 @@ public class FileUtils {
             if(file.exists()) continue;
             //指定的资源不存在
             result = true;
-            org.apache.commons.io.FileUtils.copyURLToFile(url, file);
+            FileUtil.touch(file);
+            FileUtil.writeFromStream(url.openStream(), file);
         }
         return result;
     }
@@ -128,15 +129,13 @@ public class FileUtils {
     @SneakyThrows
     public static void checkOrTouch(File... files) {
         for(File f : files) {
-            org.apache.commons.io.FileUtils.touch(f);
+            FileUtil.touch(f);
         }
     }
 
     @SneakyThrows
     public static String fetchUrlResourceAndToString(URL url) {
-        try(InputStream is = url.openStream()) {
-            return new String(IOUtils.toByteArray(is));
-        }
+        return new String(IoUtil.readBytes(url.openStream()));
     }
     
     public static String toUriPath(String filePath) {

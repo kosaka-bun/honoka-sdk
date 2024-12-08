@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.system.gui;
+package de.honoka.sdk.util.gui;
 
 import javax.swing.*;
 import javax.swing.text.*;

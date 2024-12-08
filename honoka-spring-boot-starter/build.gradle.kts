@@ -8,6 +8,11 @@ plugins {
 
 setupVersionAndPublishing(libs.versions.honoka.spring.boot.starter.get())
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = sourceCompatibility
+}
+
 dependencyManagement {
     imports {
         //必须按照顺序导入，后导入的依赖配置将覆盖先导入的相同依赖的配置
@@ -17,7 +22,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementationApi("de.honoka.sdk:honoka-kotlin-utils:2.0.0-dev")
+    implementationApi("de.honoka.sdk:honoka-kotlin-utils:1.0.1")
     compileOnly("org.springframework.boot:spring-boot-starter")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")
@@ -28,7 +33,7 @@ dependencies {
 }
 
 tasks {
-    processResources {
+    compileKotlin {
         dependsOn(":honoka-kotlin-utils:publish")
     }
 }

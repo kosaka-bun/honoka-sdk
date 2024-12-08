@@ -37,3 +37,7 @@ val Project.rawDependencies: Set<Dependency>
         }
         return set
     }
+
+fun Project.projects(vararg names: String): List<Project> = run {
+    listOf(*names).map { project(":$it") }
+}

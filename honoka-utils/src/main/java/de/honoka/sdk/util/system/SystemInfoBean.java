@@ -118,7 +118,6 @@ public class SystemInfoBean {
         return getPercentUsage(nonHeap);
     }
 
-    //此值无效，始终为-1
     public String getNonHeapMax() {
         return getMax(nonHeap);
     }

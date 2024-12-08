@@ -1,8 +1,8 @@
 package de.honoka.sdk.spring.starter.core.gui;
 
 import de.honoka.sdk.util.code.ThrowsRunnable;
-import de.honoka.sdk.util.system.gui.ConsoleWindow;
-import de.honoka.sdk.util.system.gui.ConsoleWindowBuilder;
+import de.honoka.sdk.util.gui.ConsoleWindow;
+import de.honoka.sdk.util.gui.ConsoleWindowBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

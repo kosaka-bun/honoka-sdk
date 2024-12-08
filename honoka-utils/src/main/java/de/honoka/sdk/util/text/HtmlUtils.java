@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.text;
 
-import org.apache.commons.text.StringEscapeUtils;
+import cn.hutool.core.util.EscapeUtil;
 
 //@SuppressWarnings("deprecation")
 public class HtmlUtils {
@@ -32,7 +32,7 @@ public class HtmlUtils {
             html = html.replace(tag, "");
         }
         //解码最终结果中的html转义字符
-        html = StringEscapeUtils.unescapeHtml4(html);
+        html = EscapeUtil.unescapeHtml4(html);
         return html;
     }
 }

@@ -1,5 +1,6 @@
 import de.honoka.gradle.buildsrc.MavenPublish.defineCheckVersionOfProjectsTask
 import de.honoka.gradle.buildsrc.kotlin
+import de.honoka.gradle.buildsrc.projects
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.charset.StandardCharsets
 
@@ -16,9 +17,11 @@ plugins {
 group = "de.honoka.sdk"
 version = libs.versions.root.get()
 
-//纯Java项目的名称列表
-val javaProjectNames = listOf("honoka-utils")
-val javaProjects = javaProjectNames.map { project(":$it") }
+//纯Java项目
+val javaProjects = projects("honoka-utils")
+
+//非Java 8项目
+val notJava8Projects = projects("honoka-spring-boot-starter")
 
 subprojects {
     apply(plugin = "java")
@@ -29,8 +32,10 @@ subprojects {
     group = rootProject.group
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = sourceCompatibility
+        if(project !in notJava8Projects) {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = sourceCompatibility
+        }
         withSourcesJar()
     }
     

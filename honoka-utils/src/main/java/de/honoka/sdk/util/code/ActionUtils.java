@@ -5,8 +5,7 @@ public class ActionUtils {
     /**
      * 忽略异常执行一段代码
      */
-    public static void doIgnoreException(boolean printStackTrace,
-                                         ThrowsRunnable action) {
+    public static void doIgnoreException(boolean printStackTrace, ThrowsRunnable action) {
         try {
             action.throwsRun();
         } catch(Throwable t) {

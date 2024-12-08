@@ -1,12 +1,10 @@
 package de.honoka.sdk.spring.starter.core.web
 
 import cn.hutool.core.exceptions.ExceptionUtil
-import de.honoka.sdk.spring.starter.security.AccessDeniedHandlerImpl
-import jakarta.servlet.http.HttpServletRequest
+import de.honoka.sdk.util.web.ApiResponse
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -28,11 +26,6 @@ class GlobalExceptionHandler {
     
     @ExceptionHandler
     fun handle(t: Throwable, response: HttpServletResponse): ApiResponse<*> = handle(t, response, true)
-    
-    @ExceptionHandler
-    fun handle(e: AccessDeniedException, request: HttpServletRequest, response: HttpServletResponse) = run {
-        AccessDeniedHandlerImpl.handle(request, response, e)
-    }
     
     @ExceptionHandler
     fun handle(e: MethodArgumentNotValidException, response: HttpServletResponse): ApiResponse<*> {

@@ -7,5 +7,5 @@ import org.springframework.context.annotation.Configuration
 
 @ComponentScan("de.honoka.sdk.spring.starter.core")
 @EnableConfigurationProperties(MainProperties::class)
-@Configuration
+@Configuration("honokaStarterMainConfig")
 class MainConfig

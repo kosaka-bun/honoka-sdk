@@ -1,5 +1,25 @@
 # 更新日志
 
+## 2.0.0
+#### 工程
+- 移除honoka-framework-utils与honoka-json子项目。
+- 引入honoka-spring-boot-starter子项目，最低支持Java 17。
+- 需要引入Kotlin的项目统一采用Kotlin 1.8.10与Kotlin Coroutines 1.6.4版本。
+
+#### honoka-utils 1.1.0
+- 更改了一些类的包路径。
+- 移除了一些工具包依赖，使用hutool作为代替。
+- 适配hutool 5.8.25版本。
+
+#### honoka-kotlin-utils 1.0.1
+- 新增了一些扩展函数。
+- 实现`JsonWrapper`，用于快速根据JSON路径获取指定类型的值。
+
+#### honoka-spring-boot-starter 1.0.0
+- 初始版本，最低支持Spring Boot 3.2.5版本。
+- 迁移原honoka-framework-utils项目中的大部分功能作为core包，并新增了一些工具类。
+- 实现security包，用于快速实现基于JWT的单体应用的登录认证功能。
+
 ## 1.3.0
 #### 工程
 - 移除honoka-android-utils子项目，改造为独立的工程。

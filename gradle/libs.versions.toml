@@ -1,9 +1,9 @@
 [versions]
 # project modules version
 root = "2.0.0-dev"
-honoka-utils = "2.0.0-dev"
-honoka-kotlin-utils = "2.0.0-dev"
-honoka-spring-boot-starter = "2.0.0-dev"
+honoka-utils = "1.1.0"
+honoka-kotlin-utils = "1.0.1"
+honoka-spring-boot-starter = "1.0.0-dev"
 
 # dependencies version
 spring-boot = "3.2.5"
@@ -15,9 +15,10 @@ lombok = "1.18.26"
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
-dependency-management = "io.spring.dependency-management:1.0.11.RELEASE"
+dependency-management = "io.spring.dependency-management:1.1.6"
 
 [libraries]
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
+slf4j-api = "org.slf4j:slf4j-api:2.0.13"
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }

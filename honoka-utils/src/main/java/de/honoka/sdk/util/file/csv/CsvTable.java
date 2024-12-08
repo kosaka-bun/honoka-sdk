@@ -1,12 +1,13 @@
 package de.honoka.sdk.util.file.csv;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.StrUtil;
 import de.honoka.sdk.util.code.ActionUtils;
 import de.honoka.sdk.util.various.ReflectUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStream;
@@ -33,7 +34,7 @@ public class CsvTable<T> implements Iterable<T> {
     @SneakyThrows
     public CsvTable(File f, Class<T> dataType) {
         setDataType(dataType);
-        loadTable(FileUtils.readFileToString(f, StandardCharsets.UTF_8));
+        loadTable(FileUtil.readString(f, StandardCharsets.UTF_8));
     }
 
     @SneakyThrows
@@ -60,7 +61,7 @@ public class CsvTable<T> implements Iterable<T> {
     //该方法不关闭流
     @SneakyThrows
     private void loadByInputStream(InputStream is) {
-        loadTable(new String(IOUtils.toByteArray(is), StandardCharsets.UTF_8));
+        loadTable(new String(IoUtil.readBytes(is, false), StandardCharsets.UTF_8));
     }
 
     private void loadTable(String csvText) {
@@ -92,7 +93,7 @@ public class CsvTable<T> implements Iterable<T> {
             Class<?> fieldType = field.getType();
             String value = row.get(fieldName);
             //表格中是空串，一律视为null值
-            if(StringUtils.isEmpty(value)) {
+            if(StrUtil.isEmpty(value)) {
                 ActionUtils.doIgnoreException(() -> field.set(bean, null));
                 continue;
             }
@@ -126,7 +127,7 @@ public class CsvTable<T> implements Iterable<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public @NotNull Iterator<T> iterator() {
         Iterator<Map<String, String>> realIterator = rows.iterator();
         return new Iterator<T>() {
 

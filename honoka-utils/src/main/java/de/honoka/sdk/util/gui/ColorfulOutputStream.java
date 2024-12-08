@@ -1,11 +1,10 @@
-package de.honoka.sdk.util.system;
+package de.honoka.sdk.util.gui;
 
+import cn.hutool.core.util.ArrayUtil;
 import de.honoka.sdk.util.code.ActionUtils;
-import de.honoka.sdk.util.system.gui.ColorAttributeSets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.awt.*;
 import java.io.OutputStream;
@@ -30,8 +29,7 @@ public class ColorfulOutputStream extends OutputStream {
     @Setter
     private Consumer<byte[]> printMethod;
 
-    public ColorfulOutputStream(PrintStream originalPrintStream,
-                                Color defaultPrintColor) {
+    public ColorfulOutputStream(PrintStream originalPrintStream, Color defaultPrintColor) {
         this.originalPrintStream = originalPrintStream;
         this.defaultPrintColor = defaultPrintColor;
         printColor = defaultPrintColor;
@@ -43,12 +41,13 @@ public class ColorfulOutputStream extends OutputStream {
         originalPrintStream.write(b);
     }
 
+    @SuppressWarnings("NullableProblems")
     @SneakyThrows
     @Override
     public synchronized void write(byte[] b, int off, int len) {
         super.write(b, off, len);
         //这里在字节数组输出完成后将缓存中的字节传递给消费者
-        printMethod.accept(ArrayUtils.toPrimitive(buffer.toArray(new Byte[0])));
+        printMethod.accept(ArrayUtil.unWrap(buffer.toArray(new Byte[0])));
         buffer.clear();
     }
 

@@ -1,5 +1,5 @@
 # Honoka SDK
-![Java](./docs/img/Java-17-brightgreen.svg)
+![Java](./docs/img/badge/Java-8-brightgreen.svg)
 ![Kotlin](https://img.shields.io/badge/Kotlin-1.8.10-brightgreen?logo=Kotlin)<br />
 [![License](https://img.shields.io/github/license/kosaka-bun/honoka-sdk?label=License&color=blue&logo=GitHub)](./LICENSE)
 ![GitHub Stars](https://img.shields.io/github/stars/kosaka-bun/honoka-sdk?label=Stars&logo=GitHub&style=flat)
@@ -22,7 +22,7 @@ ColorfulText.of().red("red ").green("green ").blue("blue").println();
 ```
 ![](./docs/img/1.png)
 
-### [ConsoleWindow](./honoka-utils/src/main/java/de/honoka/sdk/util/system/gui/ConsoleWindow.java)
+### [ConsoleWindow](./honoka-utils/src/main/java/de/honoka/sdk/util/gui/ConsoleWindow.java)
 这是一个使用Java AWT与Swing等组件编写的一个控制台窗口，它可以通过系统托盘图标的方式，使任何可执行jar包能够在系统后台运行。
 
 控制台窗口关闭后，jar包将继续保持在后台运行，点击jar包对应的系统托盘图标，可再次打开控制台窗口。
@@ -130,6 +130,7 @@ Object invokeMethod(Object obj, String methodName, Class<?>[] parameterType, Obj
 ```groovy
 dependencies {
     implementation 'de.honoka.sdk:honoka-utils:版本号'
+    implementation 'de.honoka.sdk:honoka-kotlin-utils:版本号'
 }
 ```
 
@@ -137,6 +138,6 @@ dependencies {
 ```kotlin
 dependencies {
     implementation("de.honoka.sdk:honoka-utils:版本号")
-    implementation("de.honoka.sdk:honoka-kotlin-gson:版本号")
+    implementation("de.honoka.sdk:honoka-kotlin-utils:版本号")
 }
 ```

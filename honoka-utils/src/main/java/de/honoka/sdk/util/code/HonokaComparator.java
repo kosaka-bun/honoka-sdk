@@ -15,8 +15,11 @@ public interface HonokaComparator<T> extends Comparator<T> {
     @Override
     default int compare(T o1, T o2) {
         T bigger = getBigger(o1, o2);
-        if(bigger == o1) return 1;
-        else if(bigger == o2) return -1;
+        if(bigger == o1) {
+            return 1;
+        } else if(bigger == o2) {
+            return -1;
+        }
         return 0;
     }
 
@@ -24,8 +27,7 @@ public interface HonokaComparator<T> extends Comparator<T> {
         HonokaComparator<T> superComparator = this;
         return (o1, o2) -> {
             T bigger = superComparator.getBigger(o1, o2);
-            return bigger == null ? null :
-                    bigger == o1 ? o2 : o1;
+            return bigger == null ? null : bigger == o1 ? o2 : o1;
         };
     }
 }
