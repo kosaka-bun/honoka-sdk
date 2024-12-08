@@ -1,6 +1,8 @@
 package de.honoka.sdk.util.various;
 
 import de.honoka.sdk.util.code.ThrowsRunnable;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.util.Arrays;
@@ -16,6 +18,8 @@ public class Retrier {
     /**
      * 默认尝试次数
      */
+    @Setter
+    @Getter
     protected int defaultRetryingTimes = 3;
 
     /**
@@ -23,8 +27,7 @@ public class Retrier {
      */
     private final List<Class<? extends Throwable>> ignoredThrowableTypes;
 
-    public Retrier(List<Class<? extends Throwable>> types,
-                   int defaultRetryingTimes) {
+    public Retrier(List<Class<? extends Throwable>> types, int defaultRetryingTimes) {
         this(types);
         this.defaultRetryingTimes = defaultRetryingTimes;
     }
@@ -42,15 +45,7 @@ public class Retrier {
     public Retrier() {
         this(Collections.singletonList(Throwable.class));
     }
-
-    public int getDefaultRetryingTimes() {
-        return defaultRetryingTimes;
-    }
-
-    public void setDefaultRetryingTimes(int defaultRetryingTimes) {
-        this.defaultRetryingTimes = defaultRetryingTimes;
-    }
-
+    
     /**
      * 指定尝试次数，多次尝试执行一段代码，返回指定类型的返回值
      */

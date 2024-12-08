@@ -42,8 +42,7 @@ public class ReflectUtils {
      * 获取某个定义的方法，并调整可访问性
      */
     @SneakyThrows(NoSuchMethodException.class)
-    public static Method getMethod(Class<?> clazz, String methodName,
-                                   Class<?>... parameterTypes) {
+    public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
         Method m = clazz.getDeclaredMethod(methodName, parameterTypes);
         m.setAccessible(true);
         return m;
@@ -52,8 +51,7 @@ public class ReflectUtils {
     /**
      * 从某个对象的类或父类中获取方法，并调整可访问性
      */
-    public static Method getMethod(Object obj, String methodName,
-                                   Class<?>... parameterTypes) {
+    public static Method getMethod(Object obj, String methodName, Class<?>... parameterTypes) {
         Class<?> clazz = obj.getClass();
         for(; ; ) {
             try {
@@ -87,8 +85,7 @@ public class ReflectUtils {
      * 设置某个对象的一个成员的值
      */
     @SneakyThrows
-    public static void setFieldValue(Object obj, String fieldName,
-                                     Object value) {
+    public static void setFieldValue(Object obj, String fieldName, Object value) {
         Field f = getField(obj, fieldName);
         f.set(obj, value);
     }
@@ -97,8 +94,7 @@ public class ReflectUtils {
      * 设置static字段的值
      */
     @SneakyThrows
-    public static void setFieldValue(Class<?> clazz, String fieldName,
-                                     Object value) {
+    public static void setFieldValue(Class<?> clazz, String fieldName, Object value) {
         Field f = getField(clazz, fieldName);
         f.set(null, value);
     }
@@ -130,29 +126,23 @@ public class ReflectUtils {
      */
     @SuppressWarnings("UnusedReturnValue")
     @SneakyThrows
-    public static Object invokeMethod(Object obj, String methodName,
-                                      Object... args) {
+    public static Object invokeMethod(Object obj, String methodName, Object... args) {
         return invokeMethod(obj, methodName, getParameterTypeList(args), args);
     }
 
     @SneakyThrows
-    public static Object invokeMethod(Object obj, String methodName,
-                                      Class<?>[] parameterType,
-                                      Object... args) {
+    public static Object invokeMethod(Object obj, String methodName, Class<?>[] parameterType, Object... args) {
         Method m = getMethod(obj, methodName, parameterType);
         return m.invoke(obj, args);
     }
 
     @SneakyThrows
-    public static Object invokeMethod(Class<?> clazz, String methodName,
-                                      Object... args) {
+    public static Object invokeMethod(Class<?> clazz, String methodName, Object... args) {
         return invokeMethod(clazz, methodName, getParameterTypeList(args), args);
     }
 
     @SneakyThrows
-    public static Object invokeMethod(Class<?> clazz, String methodName,
-                                      Class<?>[] parameterType,
-                                      Object... args) {
+    public static Object invokeMethod(Class<?> clazz, String methodName, Class<?>[] parameterType, Object... args) {
         Method m = getMethod(clazz, methodName, parameterType);
         return m.invoke(null, args);
     }

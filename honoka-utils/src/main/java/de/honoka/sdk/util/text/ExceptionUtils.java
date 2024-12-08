@@ -4,11 +4,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class ExceptionUtils {
-
+    
+    //不推荐使用此方法，因为如果抛出的异常是RuntimeException或它的子类，则不用声明抛弃此异常
     /**
      * 隐式抛出一个异常，不用在方法签名处声明抛弃此异常，或使用try-catch捕获此异常
      */
-    //不推荐使用此方法，因为如果抛出的异常是RuntimeException或它的子类，则不用声明抛弃此异常
     @SuppressWarnings("unchecked")
     public static <T extends Throwable> void sneakyThrow(Throwable t) throws T {
         throw (T) t;

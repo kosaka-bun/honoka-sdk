@@ -2,7 +2,6 @@ package de.honoka.sdk.util.text;
 
 import cn.hutool.core.util.EscapeUtil;
 
-//@SuppressWarnings("deprecation")
 public class HtmlUtils {
 
     /**

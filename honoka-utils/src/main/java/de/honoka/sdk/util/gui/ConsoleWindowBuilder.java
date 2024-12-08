@@ -42,13 +42,12 @@ public class ConsoleWindowBuilder {
     private int textPaneMaxLine = 200;
 
     @Getter(AccessLevel.NONE)
-    private final Dimension defaultTrayIconMenuLocationOffset =
-            new Dimension(21, 17);
+    private final Dimension defaultTrayIconMenuLocationOffset = new Dimension(21, 17);
 
     @Setter(AccessLevel.NONE)
     private Dimension trayIconMenuLocationOffset = new Dimension(
-            defaultTrayIconMenuLocationOffset.width,
-            defaultTrayIconMenuLocationOffset.height
+        defaultTrayIconMenuLocationOffset.width,
+        defaultTrayIconMenuLocationOffset.height
     );
 
     /**
