@@ -5,18 +5,18 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
-@Component
-class ApplicationContextHolder : ApplicationContextAware {
+object ApplicationContextHolder {
     
-    companion object {
+    @Component
+    class Injector : ApplicationContextAware {
         
-        lateinit var context: ApplicationContext
-        
-        val <T : Any> KClass<T>.springBean: T
-            get() = context.getBean(java)
+        override fun setApplicationContext(applicationContext: ApplicationContext) {
+            context = applicationContext
+        }
     }
     
-    override fun setApplicationContext(applicationContext: ApplicationContext) {
-        context = applicationContext
-    }
+    lateinit var context: ApplicationContext
+    
+    val <T : Any> KClass<T>.springBean: T
+        get() = context.getBean(java)
 }
