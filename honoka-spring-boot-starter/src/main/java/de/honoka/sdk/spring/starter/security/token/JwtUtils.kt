@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 object JwtUtils {
     
     @Suppress("MemberVisibilityCanBePrivate")
-    var key: String = SecurityProperties::class.springBean.jwtKey
+    var key: String = SecurityProperties::class.springBean.token.jwtKey
     
     private val tokenCache = CacheUtil.newTimedCache<String, String?>(0).apply {
         /**

@@ -6,7 +6,6 @@ import de.honoka.sdk.spring.starter.security.ExceptionHandler.Companion.respondE
 import de.honoka.sdk.util.web.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
@@ -56,18 +55,7 @@ object AuthenticationEntryPointImpl : AuthenticationEntryPoint {
         request: HttpServletRequest,
         response: HttpServletResponse,
         authException: AuthenticationException?
-    ) {
-        val accept = request.getHeader(HttpHeaders.ACCEPT)
-        val shouldRespondJson = listOf(MediaType.ALL_VALUE, MediaType.APPLICATION_JSON_VALUE).run {
-            forEach { if(accept.contains(it)) return@run true }
-            false
-        } && !accept.contains(MediaType.TEXT_HTML_VALUE)
-        if(shouldRespondJson) {
-            response.respondError(HttpStatus.UNAUTHORIZED, "未登录或Token已失效", authException)
-        } else {
-            response.sendRedirect("/")
-        }
-    }
+    ) = response.respondError(HttpStatus.UNAUTHORIZED, "未登录或Token已失效", authException)
 }
 
 /**
