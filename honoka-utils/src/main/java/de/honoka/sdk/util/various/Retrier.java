@@ -52,7 +52,8 @@ public class Retrier {
     @SneakyThrows
     public <T> T tryCode(int times, Callable<T> callable) {
         outerLoop:
-        for(int i = 1; ; i++) {        //i表示第几次尝试
+        //i表示第几次尝试
+        for(int i = 1; ; i++) {
             try {
                 return callable.call();
             } catch(Throwable t) {
