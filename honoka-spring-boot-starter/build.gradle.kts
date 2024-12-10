@@ -27,9 +27,10 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")
     compileOnly("org.springframework.boot:spring-boot-starter-security")
-    compileOnly("org.springframework.boot:spring-boot-configuration-processor".also {
+    "org.springframework.boot:spring-boot-configuration-processor".let {
+        compileOnly(it)
         annotationProcessor(it)
-    })
+    }
 }
 
 tasks {
