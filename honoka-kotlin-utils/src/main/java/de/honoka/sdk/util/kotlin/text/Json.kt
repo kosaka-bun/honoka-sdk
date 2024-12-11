@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.code.json
+package de.honoka.sdk.util.kotlin.text
 
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
