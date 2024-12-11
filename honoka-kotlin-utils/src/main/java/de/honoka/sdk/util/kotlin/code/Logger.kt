@@ -10,9 +10,15 @@ internal object LoggerCache {
     val cache: MutableMap<KClass<*>, Logger> = ConcurrentHashMap()
 }
 
-val <T : Any> KClass<T>.log: Logger
-    get() = LoggerCache.cache[this] ?: LoggerFactory.getLogger(java).also {
-        LoggerCache.cache[this] = it
+val KClass<*>.log: Logger
+    get() = LoggerCache.cache[this] ?: run {
+        var clazz = java
+        if(clazz.simpleName.lowercase().contains("\$\$springcglib")) {
+            java.superclass?.let { clazz = it }
+        }
+        LoggerFactory.getLogger(clazz).also {
+            LoggerCache.cache[this] = it
+        }
     }
 
 val Any.log: Logger
