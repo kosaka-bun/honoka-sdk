@@ -21,3 +21,5 @@ fun Any?.toJsonString(pretty: Boolean = false): String {
     }
     return result
 }
+
+inline fun JSONArray.forEachWrapper(block: (JsonWrapper) -> Unit) = forEach { block((it as JSON).wrapper()) }

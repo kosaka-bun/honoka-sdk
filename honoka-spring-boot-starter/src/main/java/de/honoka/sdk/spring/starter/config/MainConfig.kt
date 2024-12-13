@@ -7,5 +7,11 @@ import org.springframework.context.annotation.Configuration
 
 @ComponentScan("de.honoka.sdk.spring.starter.core")
 @EnableConfigurationProperties(MainProperties::class)
-@Configuration("honokaStarterMainConfig")
-class MainConfig
+@Configuration("${MainConfig.CONFIG_CLASS_BEAN_NAME_PREFIX}MainConfig")
+class MainConfig {
+    
+    companion object {
+        
+        const val CONFIG_CLASS_BEAN_NAME_PREFIX = "honokaStarter"
+    }
+}

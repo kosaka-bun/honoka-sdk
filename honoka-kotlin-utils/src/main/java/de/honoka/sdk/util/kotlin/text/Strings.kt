@@ -44,3 +44,5 @@ fun String?.simpleSingleLine(whiteSpaceOnEnd: Boolean = false): String {
     }
     return builder.toString()
 }
+
+fun String.toStringBuilder(): StringBuilder = StringBuilder(this)
