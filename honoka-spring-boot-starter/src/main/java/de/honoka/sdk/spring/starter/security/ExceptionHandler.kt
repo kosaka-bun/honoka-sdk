@@ -55,7 +55,9 @@ object AuthenticationEntryPointImpl : AuthenticationEntryPoint {
         request: HttpServletRequest,
         response: HttpServletResponse,
         authException: AuthenticationException?
-    ) = response.respondError(HttpStatus.UNAUTHORIZED, "未登录或Token已失效", authException)
+    ) {
+        response.respondError(HttpStatus.UNAUTHORIZED, "未登录或Token已失效", authException)
+    }
 }
 
 /**
@@ -70,5 +72,7 @@ object AccessDeniedHandlerImpl : AccessDeniedHandler {
         request: HttpServletRequest,
         response: HttpServletResponse,
         accessDeniedException: AccessDeniedException?
-    ) = response.respondError(HttpStatus.FORBIDDEN, "访问被拒绝", accessDeniedException)
+    ) {
+        response.respondError(HttpStatus.FORBIDDEN, "访问被拒绝", accessDeniedException)
+    }
 }

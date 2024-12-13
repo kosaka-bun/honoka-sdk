@@ -71,14 +71,7 @@ public class FileUtils {
         if(rootResourceUrl == null) {
             throw new RuntimeException("Failed to get root resource");
         }
-        return isAppRunningInJar(rootResourceUrl);
-    }
-
-    private static boolean isAppRunningInJar(URL rootResourceUrl) {
-        if(rootResourceUrl == null) {
-            throw new NullPointerException("rootResourceUrl is null");
-        }
-        return Objects.equals(rootResourceUrl.getProtocol(), "jar");
+        return Objects.equals(rootResourceUrl.getProtocol().toLowerCase(Locale.ROOT), "jar");
     }
 
     /**
@@ -91,11 +84,11 @@ public class FileUtils {
     public static String getMainClasspath() {
         if(MAIN_CLASSPATH != null) return MAIN_CLASSPATH;
         URL rootResourceUrl = Thread.currentThread().getContextClassLoader().getResource("");
-        if(isAppRunningInJar(rootResourceUrl)) {
-            String path = rootResourceUrl.getPath();
+        if(isAppRunningInJar()) {
+            String path = Objects.requireNonNull(rootResourceUrl).getPath();
             String pathEndSymbol = ".jar!/";
             int lowercaseSymbolIndex = path.indexOf(pathEndSymbol);
-            int uppercaseSymbolIndex = path.indexOf(pathEndSymbol.toUpperCase());
+            int uppercaseSymbolIndex = path.indexOf(pathEndSymbol.toUpperCase(Locale.ROOT));
             List<Integer> symbolIndexes = new HashSet<>(Arrays.asList(
                 lowercaseSymbolIndex, uppercaseSymbolIndex
             )).stream().filter(it -> it != -1).sorted().collect(Collectors.toList());
@@ -106,7 +99,8 @@ public class FileUtils {
             path = path.substring(0, path.lastIndexOf("/"));
             path = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
             String result = Paths.get(path).normalize().toString();
-            if(!System.getProperty("os.name").toLowerCase().contains("windows") && !result.startsWith("/")) {
+            String osName = System.getProperty("os.name").toLowerCase(Locale.ROOT);
+            if(!osName.contains("windows") && !result.startsWith("/")) {
                 result = "/" + result;
             }
             MAIN_CLASSPATH = result;

@@ -5,7 +5,7 @@ package de.honoka.sdk.util.kotlin.code
  * 最后返回代码块的返回值。
  * 用于在线程池中的线程使用ThreadLocal时，防止未正确释放ThreadLocal中的内容。
  */
-fun <T> ThreadLocal<T>.use(t: T, block: () -> Any?): Any? {
+inline fun <T> ThreadLocal<T>.use(t: T, block: () -> Any?): Any? {
     try {
         set(t)
         return block()

@@ -45,11 +45,14 @@ object JwtUtils {
         sign()
     }
     
-    fun parseAvaliableJwt(token: String): JWT = JWT(token).run {
-        setKey(key.toByteArray())
-        val avaliable = validate(0) && tokenCache.containsKey(cacheKey)
-        if(!avaliable) throw InvalidCookieException("JWT无效或已过期")
-        this
+    fun parseAvaliableJwt(token: String): JWT {
+        val jwt = JWT(token)
+        jwt.run {
+            setKey(key.toByteArray())
+            val avaliable = validate(0) && tokenCache.containsKey(cacheKey)
+            if(!avaliable) throw InvalidCookieException("JWT无效或已过期")
+        }
+        return jwt
     }
     
     fun cancelJwt() {

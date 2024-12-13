@@ -45,11 +45,11 @@ open class DefaultUserDetails(private val user: DefaultUser) : UserDetails {
     
     override fun isAccountNonLocked(): Boolean = user.locked == false
     
-    override fun isAccountNonExpired(): Boolean = run {
-        System.currentTimeMillis() < (user.expireTime?.time ?: Long.MAX_VALUE)
+    override fun isAccountNonExpired(): Boolean {
+        return System.currentTimeMillis() < (user.expireTime?.time ?: Long.MAX_VALUE)
     }
     
-    override fun isCredentialsNonExpired(): Boolean = run {
-        System.currentTimeMillis() < (user.credentialsExpireTime?.time ?: Long.MAX_VALUE)
+    override fun isCredentialsNonExpired(): Boolean {
+        return System.currentTimeMillis() < (user.credentialsExpireTime?.time ?: Long.MAX_VALUE)
     }
 }

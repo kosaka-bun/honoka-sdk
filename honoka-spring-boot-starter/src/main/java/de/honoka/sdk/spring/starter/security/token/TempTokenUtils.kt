@@ -26,5 +26,7 @@ object TempTokenUtils {
         Assert.isTrue(tokenCache.containsKey(token), "token不存在或已过期")
     }
     
-    fun cancelToken(token: String) = tokenCache.remove(token)
+    fun cancelToken(token: String) {
+        tokenCache.remove(token)
+    }
 }
