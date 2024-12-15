@@ -31,9 +31,9 @@ class JsonWrapper internal constructor(private val json: JSON) {
     
     //nullable
     
-    fun getObjOrNull(path: String): JSONObject? = json.getByPath(path) as? JSONObject
+    fun getObjOrNull(path: String): JSONObject? = json.getByPath(path) as JSONObject?
     
-    fun getArrayOrNull(path: String): JSONArray? = json.getByPath(path) as? JSONArray
+    fun getArrayOrNull(path: String): JSONArray? = json.getByPath(path) as JSONArray?
     
     inline fun <reified T> getBeanOrNull(path: String): T? = getObjOrNull(path)?.toBean(T::class.java)
     
@@ -41,11 +41,11 @@ class JsonWrapper internal constructor(private val json: JSON) {
     
     fun getStrOrNull(path: String): String? = json.getByPath(path)?.toString()
     
-    fun getIntOrNull(path: String): Int? = (json.getByPath(path) as? Number)?.toInt()
+    fun getIntOrNull(path: String): Int? = (json.getByPath(path) as Number?)?.toInt()
     
-    fun getLongOrNull(path: String): Long? = (json.getByPath(path) as? Number)?.toLong()
+    fun getLongOrNull(path: String): Long? = (json.getByPath(path) as Number?)?.toLong()
     
-    fun getBoolOrNull(path: String): Boolean? = json.getByPath(path) as? Boolean
+    fun getBoolOrNull(path: String): Boolean? = json.getByPath(path) as Boolean?
     
-    fun getDoubleOrNull(path: String): Double? = (json.getByPath(path) as? Number)?.toDouble()
+    fun getDoubleOrNull(path: String): Double? = (json.getByPath(path) as Number?)?.toDouble()
 }

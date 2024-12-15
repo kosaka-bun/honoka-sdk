@@ -13,13 +13,14 @@ fun JSON.wrapper(): JsonWrapper = JsonWrapper(this)
 
 fun String.toJsonWrapper(): JsonWrapper = JSONUtil.parse(this).wrapper()
 
-fun Any?.toJsonString(pretty: Boolean = false): String {
-    val result = if(pretty) {
+fun Any?.toJsonString(pretty: Boolean = false): String = run {
+    if(pretty) {
         JSONUtil.toJsonPrettyStr(this)
     } else {
         JSONUtil.toJsonStr(this)
     }
-    return result
 }
 
-inline fun JSONArray.forEachWrapper(block: (JsonWrapper) -> Unit) = forEach { block((it as JSON).wrapper()) }
+inline fun JSONArray.forEachWrapper(block: (JsonWrapper) -> Unit) {
+    forEach { block((it as JSON).wrapper()) }
+}

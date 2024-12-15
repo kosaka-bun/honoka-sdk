@@ -11,15 +11,14 @@ internal object LoggerCache {
 }
 
 val KClass<*>.log: Logger
-    get() {
-        LoggerCache.cache[this]?.let { return it }
+    get() = LoggerCache.cache[this] ?: run {
         var clazz = java
         if(clazz.simpleName.lowercase().contains("\$\$springcglib")) {
             java.superclass?.let { clazz = it }
         }
-        val log = LoggerFactory.getLogger(clazz)
-        LoggerCache.cache[this] = log
-        return log
+        LoggerFactory.getLogger(clazz).also {
+            LoggerCache.cache[this] = it
+        }
     }
 
 val Any.log: Logger

@@ -13,11 +13,10 @@ object WebUtils {
         get() = getRealIp( this)
     
     val HttpServletRequest.authorization: List<String?>
-        get() {
+        get() = run {
             getHeader(HttpHeaders.AUTHORIZATION)?.split(" ")?.run {
-                return if(size < 2) listOf(null, first()) else this
-            }
-            return listOf(null, null)
+                if(size < 2) listOf(null, first()) else this
+            } ?: listOf(null, null)
         }
 
     /**
