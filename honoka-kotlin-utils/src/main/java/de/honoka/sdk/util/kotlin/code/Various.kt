@@ -2,7 +2,14 @@ package de.honoka.sdk.util.kotlin.code
 
 import kotlin.reflect.KClass
 
-fun <T : Any, U : Any> KClass<T>.isSubClassOf(clazz: KClass<U>): Boolean = clazz.java.isAssignableFrom(java)
+fun <T : Any> KClass<*>.isSubClassOf(clazz: KClass<T>): Boolean = clazz.java.isAssignableFrom(java)
+
+fun <T : Any> KClass<*>.isSubClassOfAny(vararg classes: KClass<T>): Boolean {
+    classes.forEach {
+        if(this.isSubClassOf(it)) return true
+    }
+    return false
+}
 
 inline fun <T> tryBlockNullable(
     times: Int,

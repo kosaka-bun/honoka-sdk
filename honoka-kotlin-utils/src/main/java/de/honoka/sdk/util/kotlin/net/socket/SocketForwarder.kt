@@ -1,7 +1,7 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.kotlin.code.exception
-import de.honoka.sdk.util.kotlin.code.isSubClassOf
+import de.honoka.sdk.util.kotlin.code.isAnyType
 import de.honoka.sdk.util.kotlin.code.log
 import de.honoka.sdk.util.kotlin.code.tryBlockNullable
 import java.io.Closeable
@@ -75,13 +75,10 @@ class SocketForwarder(
         executor.submit {
             runCatching {
                 socket.use { handleConnection(it) }
-            }.getOrElse { e ->
-                listOf(
-                    SocketException::class
-                ).forEach {
-                    if(e::class.isSubClassOf(it)) return@getOrElse
-                }
-                log.debug("Exception when handling connection: $socket", e)
+            }.getOrElse {
+                val ignoreTypes = arrayOf(SocketException::class)
+                if(it.isAnyType(*ignoreTypes)) return@getOrElse
+                log.debug("Exception when handling connection: $socket", it)
                 return@submit
             }
             log.debug("Forward ended: Client = $socket")
