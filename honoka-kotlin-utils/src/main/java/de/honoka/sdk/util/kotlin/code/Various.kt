@@ -4,8 +4,7 @@ import kotlin.reflect.KClass
 
 fun <T : Any, U : Any> KClass<T>.isSubClassOf(clazz: KClass<U>): Boolean = clazz.java.isAssignableFrom(java)
 
-@JvmName("tryBlockNullable")
-inline fun <T> tryBlock(
+inline fun <T> tryBlockNullable(
     times: Int,
     throwOnExceedTimes: Boolean = true,
     exceptionTypesToIgnore: List<KClass<out Throwable>> = listOf(Throwable::class),
@@ -30,7 +29,7 @@ inline fun <T : Any> tryBlock(
     throwOnExceedTimes: Boolean = true,
     exceptionTypesToIgnore: List<KClass<out Throwable>> = listOf(Throwable::class),
     block: (Int) -> T
-): T = tryBlock<T?>(times, throwOnExceedTimes, exceptionTypesToIgnore, block)!!
+): T = tryBlockNullable(times, throwOnExceedTimes, exceptionTypesToIgnore, block)!!
 
 inline fun repeatRunCatching(times: Int, block: (Int) -> Unit) {
     repeat(times) {

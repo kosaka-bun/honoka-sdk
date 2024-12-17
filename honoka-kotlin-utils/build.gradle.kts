@@ -5,7 +5,7 @@ setupVersionAndPublishing(libs.versions.honoka.kotlin.utils.get())
 
 dependencies {
     implementationApi("de.honoka.sdk:honoka-utils:1.1.1-dev")
-    compileOnly(libs.slf4j.api)
+    compileOnly(libs.logback)
 }
 
 tasks {

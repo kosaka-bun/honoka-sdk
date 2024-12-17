@@ -38,7 +38,7 @@ fun HttpRequest.browserApiHeaders() {
 }
 
 fun HttpRequest.randomProxy(autoInitPool: Boolean = true) {
-    if(autoInitPool) ProxyPool.init()
-    val proxy = ProxyPool.randomProxy?.split(":")
+    if(autoInitPool) ProxyPool.instance.init()
+    val proxy = ProxyPool.instance.randomProxy?.split(":")
     proxy?.let { setHttpProxy(proxy[0], proxy[1].toInt()) }
 }

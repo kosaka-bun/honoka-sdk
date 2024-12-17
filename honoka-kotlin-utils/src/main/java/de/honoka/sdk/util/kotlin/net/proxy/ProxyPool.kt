@@ -5,22 +5,40 @@ import cn.hutool.core.lang.Assert
 import cn.hutool.http.HttpStatus
 import cn.hutool.http.HttpUtil
 import de.honoka.sdk.util.kotlin.code.ThreadPoolUtils
-import de.honoka.sdk.util.kotlin.code.tryBlock
+import de.honoka.sdk.util.kotlin.code.log
+import de.honoka.sdk.util.kotlin.code.tryBlockNullable
 import de.honoka.sdk.util.kotlin.net.http.browserApiHeaders
+import de.honoka.sdk.util.kotlin.net.socket.SocketForwarder
 import de.honoka.sdk.util.kotlin.text.toJsonWrapper
+import java.io.Closeable
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
-object ProxyPool {
+class ProxyPool : Closeable {
+    
+    companion object {
+        
+        val instance = ProxyPool()
+    }
     
     private val pool = ConcurrentHashSet<String>()
     
     private val invalidProxySet = ConcurrentHashSet<String>()
     
     val randomProxy: String?
-        get() = tryBlock<String?>(3) { pool.randomOrNull() }
+        get() = tryBlockNullable(3) { pool.randomOrNull() }
     
     private val executor = ThreadPoolUtils.newScheduledPool(1)
+    
+    @Volatile
+    private var forwarderOrNull: SocketForwarder? = null
+    
+    val forwarder: SocketForwarder
+        get() = forwarderOrNull ?: synchronized(this) {
+            forwarderOrNull ?: SocketForwarder(pool).also {
+                forwarderOrNull = it
+            }
+        }
     
     @Volatile
     private var runningTask: Future<*>? = null
@@ -31,9 +49,11 @@ object ProxyPool {
     @Synchronized
     fun init() {
         if(inited) return
+        log.info("Starting ${javaClass.name}...")
         flushProxies(true)
         startMonitoring()
         inited = true
+        log.info("The ${javaClass.name} has been started.")
     }
     
     private fun flushProxies(warmUp: Boolean = false) {
@@ -57,6 +77,7 @@ object ProxyPool {
     
     private fun checkProxyAndPutInPool(proxy: String) {
         runCatching { checkProxy(proxy) }.getOrElse {
+            log.debug("The proxy $proxy is invalid.", it)
             invalidProxySet.add(proxy)
             throw it
         }
@@ -89,10 +110,17 @@ object ProxyPool {
     
     private fun removeInvalidProxies() {
         pool.toList().forEach {
-            runCatching { checkProxy(it) }.getOrElse { _ ->
+            runCatching { checkProxy(it) }.getOrElse { t ->
+                log.debug("The proxy $it is invalid.", t)
                 pool.remove(it)
                 invalidProxySet.add(it)
             }
         }
+    }
+    
+    override fun close() {
+        runningTask?.cancel(true)
+        forwarderOrNull?.close()
+        executor.shutdownNow()
     }
 }
