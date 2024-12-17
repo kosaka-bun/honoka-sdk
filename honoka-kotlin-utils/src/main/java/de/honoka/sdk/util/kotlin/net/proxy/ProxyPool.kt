@@ -35,7 +35,7 @@ class ProxyPool : Closeable {
     
     val forwarder: SocketForwarder
         get() = forwarderOrNull ?: synchronized(this) {
-            forwarderOrNull ?: SocketForwarder(pool).also {
+            forwarderOrNull ?: SocketForwarder(pool, timeoutOnEmptyForward = 2 * 1000).also {
                 forwarderOrNull = it
             }
         }
