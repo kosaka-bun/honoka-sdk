@@ -1,5 +1,7 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
+import cn.hutool.core.date.DateTime
+import cn.hutool.core.date.DateUnit
 import de.honoka.sdk.util.kotlin.code.exception
 import de.honoka.sdk.util.kotlin.text.singleLine
 import java.io.Closeable
@@ -25,6 +27,10 @@ class SocketConnection(
     @Volatile
     var writable: Boolean = false
         internal set
+    
+    @Volatile
+    var lastReadOrWriteTime: DateTime = DateTime.now()
+        private set
     
     @Volatile
     var closed: Boolean = false
@@ -53,6 +59,7 @@ class SocketConnection(
             close()
             throw it
         }
+        lastReadOrWriteTime = DateTime.now()
         return buffer.array().sliceArray(0 until readCount)
     }
     
@@ -65,6 +72,17 @@ class SocketConnection(
         }.getOrElse {
             close()
             throw it
+        }
+        lastReadOrWriteTime = DateTime.now()
+    }
+    
+    fun checkOrClose() {
+        channel?.run {
+            val isValid = isOpen && (isConnected || isConnectionPending) && run {
+                DateTime.now().between(lastReadOrWriteTime, DateUnit.SECOND) < 180
+            }
+            if(isValid) return
+            close()
         }
     }
     

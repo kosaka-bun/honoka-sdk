@@ -1,6 +1,5 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
-import de.honoka.sdk.util.kotlin.code.exception
 import de.honoka.sdk.util.kotlin.code.forEachCatching
 import de.honoka.sdk.util.kotlin.code.log
 import java.io.Closeable
@@ -19,10 +18,11 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     private val connections = ConcurrentHashMap<SocketChannel, SocketConnection>()
     
     @Volatile
-    private var closed = false
+    var closed = false
+        private set
     
     fun register(channel: SocketChannel): SocketConnection {
-        if(closed) exception("closed")
+        if(closed) throw SelectorClosedException()
         val events = SelectionKey.OP_CONNECT or SelectionKey.OP_READ or SelectionKey.OP_WRITE
         channel.register(selector, events)
         val connection = SocketConnection(channel.remoteAddress.toString(), channel, selector)
@@ -31,13 +31,13 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     }
     
     fun registerServer(serverChannel: ServerSocketChannel, onAccepted: (SocketConnection) -> Unit) {
-        if(closed) exception("closed")
+        if(closed) throw SelectorClosedException()
         serverChannel.register(selector, SelectionKey.OP_ACCEPT)
         servers[serverChannel] = onAccepted
     }
     
     fun select() {
-        if(closed) exception("closed")
+        if(closed) throw SelectorClosedException()
         selector.run {
             if(blocking) {
                 select()
@@ -46,7 +46,10 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
             }
             selectedKeys().run {
                 forEachCatching {
-                    if(!it.isValid) return@forEachCatching
+                    if(!it.isValid) {
+                        connections[it.channel()]?.close()
+                        return@forEachCatching
+                    }
                     when {
                         it.isAcceptable -> onChannelAcceptable(it)
                         it.isConnectable -> onChannelConnectable(it)
@@ -64,7 +67,11 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
         val serverChannel = key.channel() as ServerSocketChannel
         val connection = register(serverChannel.accept())
         log.debug("Connection accepted: ${connection.channel}")
-        servers[serverChannel]!!(connection)
+        runCatching {
+            servers[serverChannel]!!(connection)
+        }.getOrElse {
+            connection.close()
+        }
     }
     
     private fun onChannelConnectable(key: SelectionKey) {
@@ -91,11 +98,14 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     }
     
     private fun removeClosedConnection() {
+        //由于connections是可并发读写的，因此遍历此集合前需要先创建其keys的副本
         connections.keys().toList().forEachCatching {
-            val connection = connections[it]!!
-            if(connection.closed) {
-                connections.remove(it)
-                log.debug("Connection ${connection.channel} has been removed.")
+            connections[it]!!.run {
+                checkOrClose()
+                if(closed) {
+                    connections.remove(it)
+                    log.debug("Connection $channel has been removed.")
+                }
             }
         }
     }
@@ -109,3 +119,5 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
         selector.close()
     }
 }
+
+class SelectorClosedException(message: String? = null) : RuntimeException(message)
