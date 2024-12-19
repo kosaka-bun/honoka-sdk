@@ -4,13 +4,12 @@ import de.honoka.sdk.util.kotlin.code.exception
 import de.honoka.sdk.util.kotlin.code.forEachCatching
 import de.honoka.sdk.util.kotlin.code.log
 import java.io.Closeable
-import java.net.InetSocketAddress
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
 import java.nio.channels.SocketChannel
 import java.util.concurrent.ConcurrentHashMap
 
-class SocketConnectionContainer : Closeable {
+class StatusSelector(private val blocking: Boolean = false) : Closeable {
     
     private val selector: Selector = Selector.open()
     
@@ -19,25 +18,22 @@ class SocketConnectionContainer : Closeable {
     @Volatile
     private var closed = false
     
-    fun connect(address: String): SocketConnection {
-        if(closed) exception("closed")
-        val channel = SocketChannel.open().apply {
-            val addressPart = address.split(":")
-            configureBlocking(false)
-            connect(InetSocketAddress(addressPart[0], addressPart[1].toInt()))
-            val events = SelectionKey.OP_CONNECT or SelectionKey.OP_READ or SelectionKey.OP_WRITE
-            register(selector, events)
-        }
-        val connection = SocketConnection(address, channel, selector)
+    fun register(channel: SocketChannel): SocketConnection {
+        val events = SelectionKey.OP_CONNECT or SelectionKey.OP_READ or SelectionKey.OP_WRITE
+        channel.register(selector, events)
+        val connection = SocketConnection(channel.remoteAddress.toString(), channel, selector)
         connections[channel] = connection
         return connection
     }
     
-    @Synchronized
-    fun refresh() {
+    fun select() {
         if(closed) exception("closed")
         selector.run {
-            selectNow()
+            if(blocking) {
+                select()
+            } else {
+                selectNow()
+            }
             selectedKeys().run {
                 forEachCatching {
                     when {

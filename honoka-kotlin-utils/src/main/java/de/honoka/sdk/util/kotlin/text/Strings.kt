@@ -28,7 +28,7 @@ fun String?.singleLine(borderChar: Char = '|', whiteSpaceOnEnd: Boolean = false)
             if(whiteSpaceOnEnd) append(" ")
         }
     }
-    return builder.toString()
+    return builder.toString().trim()
 }
 
 /**

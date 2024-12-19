@@ -1,31 +1,37 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.kotlin.code.exception
+import de.honoka.sdk.util.kotlin.text.singleLine
 import java.io.Closeable
 import java.nio.ByteBuffer
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
 import java.nio.channels.SocketChannel
 
-data class SocketConnection(
+@Suppress("MemberVisibilityCanBePrivate")
+class SocketConnection(
     
-    var address: String? = null,
+    val address: String? = null,
     
-    var channel: SocketChannel? = null,
+    val channel: SocketChannel? = null,
     
-    var selector: Selector? = null,
+    val selector: Selector? = null
+) : Closeable {
     
     @Volatile
-    var readable: Boolean = false,
+    var readable: Boolean = false
+        internal set
     
     @Volatile
-    var writable: Boolean = false,
+    var writable: Boolean = false
+        internal set
     
     @Volatile
     var closed: Boolean = false
-) : Closeable {
+        private set
     
     fun register() {
+        if(closed) return
         val operations = run {
             var it = 0
             if(!readable) it += SelectionKey.OP_READ
@@ -44,7 +50,7 @@ data class SocketConnection(
             register()
             c
         }.getOrElse {
-            closed = true
+            close()
             throw it
         }
         return buffer.array().sliceArray(0 until readCount)
@@ -57,12 +63,21 @@ data class SocketConnection(
             writable = false
             register()
         }.getOrElse {
-            closed = true
+            close()
             throw it
         }
     }
     
+    override fun toString(): String = run {
+        """
+            SocketConnection(address=$address, channel=$channel, |
+            selector=$selector, readable=$readable, |
+            writable=$writable, closed=$closed)
+        """.singleLine()
+    }
+    
     override fun close() {
+        if(closed) return
         closed = true
         channel?.close()
     }
