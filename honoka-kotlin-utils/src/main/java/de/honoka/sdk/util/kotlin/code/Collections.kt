@@ -1,18 +1,18 @@
 package de.honoka.sdk.util.kotlin.code
 
-inline fun <T> Iterable<T>.iterate(block: (T, Iterator<T>) -> Unit) {
+inline fun <T> MutableIterable<T>.iterate(block: MutableIterator<T>.(T) -> Unit) {
     iterator().run {
         while(hasNext()) {
-            block(next(), this)
+            block(next())
         }
     }
 }
 
-inline fun <K, V> MutableMap<K, V>.removeIf(block: (Map.Entry<K, V>) -> Boolean) {
+inline fun <K, V> MutableMap<K, V>.removeIf(block: (K, V) -> Boolean) {
     iterator().run {
         while(hasNext()) {
             val entry = next()
-            if(block(entry)) remove()
+            if(block(entry.key, entry.value)) remove()
         }
     }
 }

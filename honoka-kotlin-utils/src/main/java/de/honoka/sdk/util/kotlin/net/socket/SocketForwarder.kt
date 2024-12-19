@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
-@Suppress("MemberVisibilityCanBePrivate", "LoggingStringTemplateAsArgument")
+@Suppress("MemberVisibilityCanBePrivate")
 class SocketForwarder(
     private val targets: Set<String>,
     executorThreads: Int = 1,

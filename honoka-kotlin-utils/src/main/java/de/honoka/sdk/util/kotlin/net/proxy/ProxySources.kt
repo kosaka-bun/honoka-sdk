@@ -1,7 +1,7 @@
 package de.honoka.sdk.util.kotlin.net.proxy
 
 import cn.hutool.http.HttpUtil
-import de.honoka.sdk.util.kotlin.code.repeatRunCatching
+import de.honoka.sdk.util.kotlin.code.repeatCatching
 import de.honoka.sdk.util.kotlin.code.tryBlock
 import de.honoka.sdk.util.kotlin.net.http.browserApiHeaders
 import de.honoka.sdk.util.kotlin.net.http.browserHeaders
@@ -51,7 +51,7 @@ object ProxySources {
         portIndex: Int = 1
     ): List<String> {
         val list = ArrayList<String>()
-        repeatRunCatching(5) { i ->
+        repeatCatching(5) { i ->
             val doc = tryBlock(3) {
                 val res = httpGet(urlTemplate(i + 1))
                 Jsoup.parse(res)

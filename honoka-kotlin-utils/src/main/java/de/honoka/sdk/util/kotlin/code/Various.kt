@@ -11,6 +11,9 @@ fun <T : Any> KClass<*>.isSubClassOfAny(vararg classes: KClass<T>): Boolean {
     return false
 }
 
+@Suppress("UNCHECKED_CAST")
+fun <T> Any?.cast(): T = this as T
+
 inline fun <T> tryBlockNullable(
     times: Int,
     throwOnExceedTimes: Boolean = true,
@@ -38,8 +41,16 @@ inline fun <T : Any> tryBlock(
     block: (Int) -> T
 ): T = tryBlockNullable(times, throwOnExceedTimes, exceptionTypesToIgnore, block)!!
 
-inline fun repeatRunCatching(times: Int, block: (Int) -> Unit) {
+inline fun repeatCatching(times: Int, block: (Int) -> Unit) {
     repeat(times) {
         runCatching { block(times) }
+    }
+}
+
+inline fun <T> Iterable<T>.forEachCatching(action: (T) -> Unit) {
+    forEach {
+        runCatching {
+            action(it)
+        }
     }
 }
