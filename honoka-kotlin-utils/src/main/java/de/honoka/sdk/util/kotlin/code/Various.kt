@@ -26,7 +26,11 @@ inline fun <T> tryBlockNullable(
             return block(i)
         } catch(t: Throwable) {
             //若不是应当忽略的异常类型
-            exceptionTypesToIgnore.filter { t::class.isSubClassOf(it) }.ifEmpty { throw t }
+            exceptionTypesToIgnore.filter {
+                t::class.isSubClassOf(it)
+            }.ifEmpty {
+                throw t
+            }
             throwable = t
         }
     }

@@ -31,7 +31,7 @@ class SocketConnection(
         private set
     
     fun register() {
-        if(closed) return
+        if(closed) exception("closed")
         val operations = run {
             var it = 0
             if(!readable) it += SelectionKey.OP_READ

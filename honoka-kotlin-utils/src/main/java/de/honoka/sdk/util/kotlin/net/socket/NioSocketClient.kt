@@ -19,7 +19,7 @@ class NioSocketClient : Closeable {
         val connection = channel.runCatching {
             configureBlocking(false)
             connect(InetSocketAddress(addressPart[0], addressPart[1].toInt()))
-            selector.register(this)
+            register(selector)
         }.getOrElse {
             channel.close()
             throw it
@@ -29,12 +29,14 @@ class NioSocketClient : Closeable {
     
     @Synchronized
     fun refresh() {
+        if(closed) exception("closed")
         selector.select()
     }
-    
+
     @Synchronized
     override fun close() {
-        if(!closed) closed = true
+        if(closed) return
+        closed = true
         selector.close()
     }
 }
