@@ -15,7 +15,7 @@ class NioSocketClient : Closeable {
         val connection = channel.runCatching {
             configureBlocking(false)
             connect(InetSocketAddress(addressPart[0], addressPart[1].toInt()))
-            register(selector)
+            selector.register(this)
         }.getOrElse {
             channel.close()
             throw it

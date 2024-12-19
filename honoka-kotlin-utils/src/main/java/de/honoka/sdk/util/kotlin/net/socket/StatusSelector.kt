@@ -13,7 +13,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     
     private val selector: Selector = Selector.open()
     
-    private val servers = ConcurrentHashMap<ServerSocketChannel, (SocketConnection) -> Unit>()
+    private val servers = ConcurrentHashMap<ServerSocketChannel, StatusSelectorEventCallback>()
     
     private val connections = ConcurrentHashMap<SocketChannel, SocketConnection>()
     
@@ -21,19 +21,19 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     var closed = false
         private set
     
-    fun register(channel: SocketChannel): SocketConnection {
+    fun register(channel: SocketChannel, fromChannel: ServerSocketChannel? = null): SocketConnection {
         if(closed) throw SelectorClosedException()
         val events = SelectionKey.OP_CONNECT or SelectionKey.OP_READ or SelectionKey.OP_WRITE
         channel.register(selector, events)
-        val connection = SocketConnection(channel.remoteAddress.toString(), channel, selector)
+        val connection = SocketConnection(channel.remoteAddress.toString(), fromChannel, channel, selector)
         connections[channel] = connection
         return connection
     }
     
-    fun registerServer(serverChannel: ServerSocketChannel, onAccepted: (SocketConnection) -> Unit) {
+    fun registerServer(serverChannel: ServerSocketChannel, callback: StatusSelectorEventCallback) {
         if(closed) throw SelectorClosedException()
         serverChannel.register(selector, SelectionKey.OP_ACCEPT)
-        servers[serverChannel] = onAccepted
+        servers[serverChannel] = callback
     }
     
     fun select() {
@@ -65,10 +65,10 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     
     private fun onChannelAcceptable(key: SelectionKey) {
         val serverChannel = key.channel() as ServerSocketChannel
-        val connection = register(serverChannel.accept())
+        val connection = register(serverChannel.accept(), serverChannel)
         log.debug("Connection accepted: ${connection.channel}")
         runCatching {
-            servers[serverChannel]!!(connection)
+            servers[serverChannel]!!.onAccpeted(connection)
         }.getOrElse {
             connection.close()
         }
@@ -104,6 +104,11 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
                 checkOrClose()
                 if(closed) {
                     connections.remove(it)
+                    runCatching {
+                        fromChannel?.let { c ->
+                            servers[c]!!.onClosed(this)
+                        }
+                    }
                     log.debug("Connection $channel has been removed.")
                 }
             }
@@ -113,11 +118,18 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     override fun close() {
         if(closed) return
         closed = true
-        connections.entries.forEachCatching {
-            it.value.close()
+        connections.forEachCatching { _, v ->
+            v.close()
         }
         selector.close()
     }
+}
+
+interface StatusSelectorEventCallback {
+    
+    fun onAccpeted(connection: SocketConnection)
+    
+    fun onClosed(connection: SocketConnection)
 }
 
 class SelectorClosedException(message: String? = null) : RuntimeException(message)

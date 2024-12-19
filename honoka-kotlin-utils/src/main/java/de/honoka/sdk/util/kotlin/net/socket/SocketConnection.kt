@@ -8,12 +8,15 @@ import java.io.Closeable
 import java.nio.ByteBuffer
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
+import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
 
 @Suppress("MemberVisibilityCanBePrivate")
 class SocketConnection(
     
     val address: String? = null,
+    
+    val fromChannel: ServerSocketChannel? = null,
     
     val channel: SocketChannel? = null,
     
@@ -77,6 +80,7 @@ class SocketConnection(
     }
     
     fun checkOrClose() {
+        if(closed) return
         channel?.run {
             val isValid = isOpen && (isConnected || isConnectionPending) && run {
                 DateTime.now().between(lastReadOrWriteTime, DateUnit.SECOND) < 180

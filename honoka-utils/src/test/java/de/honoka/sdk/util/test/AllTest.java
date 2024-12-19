@@ -7,7 +7,6 @@ import de.honoka.sdk.util.text.ExceptionUtils;
 import de.honoka.sdk.util.text.TextUtils;
 import de.honoka.sdk.util.various.ReflectUtils;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -102,7 +101,7 @@ public class AllTest {
 
     //@Test
     public void test4() {
-        System.out.println(StringUtils.countMatches("abababa", "aba"));
+        //System.out.println(StrUtil.countMatches("abababa", "aba"));
     }
 
     //@Test

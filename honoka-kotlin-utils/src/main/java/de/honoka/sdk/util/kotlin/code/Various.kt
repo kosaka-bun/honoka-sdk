@@ -58,3 +58,9 @@ inline fun <T> Iterable<T>.forEachCatching(action: (T) -> Unit) {
         }
     }
 }
+
+inline fun <K, V> Map<K, V>.forEachCatching(action: (K, V) -> Unit) {
+    entries.forEachCatching {
+        action(it.key, it.value)
+    }
+}
