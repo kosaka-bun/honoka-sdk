@@ -13,14 +13,10 @@ import java.nio.channels.SocketChannel
 
 @Suppress("MemberVisibilityCanBePrivate")
 class SocketConnection(
-    
-    val address: String? = null,
-    
+    val address: String,
     val fromChannel: ServerSocketChannel? = null,
-    
-    val channel: SocketChannel? = null,
-    
-    val selector: Selector? = null
+    val channel: SocketChannel,
+    val selector: Selector
 ) : Closeable {
     
     @Volatile
@@ -47,14 +43,14 @@ class SocketConnection(
             if(!writable) it += SelectionKey.OP_WRITE
             it
         }
-        channel?.register(selector, operations)
+        channel.register(selector, operations)
     }
     
     fun read(bufferSize: Int = 10 * 1024): ByteArray {
         if(!readable || closed) exception("Not readable")
         val buffer = ByteBuffer.allocate(bufferSize)
         val readCount = runCatching {
-            val c = channel!!.read(buffer)
+            val c = channel.read(buffer)
             readable = false
             register()
             c
@@ -69,7 +65,7 @@ class SocketConnection(
     fun write(bytes: ByteArray) {
         if(!writable || closed) exception("Not writable")
         runCatching {
-            channel!!.write(ByteBuffer.wrap(bytes))
+            channel.write(ByteBuffer.wrap(bytes))
             writable = false
             register()
         }.getOrElse {
@@ -81,7 +77,7 @@ class SocketConnection(
     
     fun checkOrClose() {
         if(closed) return
-        channel?.run {
+        channel.run {
             val isValid = isOpen && (isConnected || isConnectionPending) && run {
                 DateTime.now().between(lastReadOrWriteTime, DateUnit.SECOND) < 180
             }
@@ -101,6 +97,6 @@ class SocketConnection(
     override fun close() {
         if(closed) return
         closed = true
-        channel?.close()
+        channel.close()
     }
 }

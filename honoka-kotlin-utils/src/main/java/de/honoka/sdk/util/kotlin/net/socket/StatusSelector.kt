@@ -76,7 +76,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     
     private fun onChannelConnectable(key: SelectionKey) {
         connections[key.channel()]?.run {
-            channel?.finishConnect()
+            channel.finishConnect()
             log.debug("Connection established: $channel")
         }
     }
