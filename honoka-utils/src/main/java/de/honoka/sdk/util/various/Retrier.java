@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.various;
 
-import de.honoka.sdk.util.code.ThrowsRunnable;
+import de.honoka.sdk.util.basic.ThrowsRunnable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;

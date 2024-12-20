@@ -1,8 +1,8 @@
 package de.honoka.sdk.util.gui;
 
 import cn.hutool.core.util.StrUtil;
-import de.honoka.sdk.util.code.ActionUtils;
-import de.honoka.sdk.util.code.ThrowsRunnable;
+import de.honoka.sdk.util.basic.ActionUtils;
+import de.honoka.sdk.util.basic.ThrowsRunnable;
 import de.honoka.sdk.util.text.TextUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;

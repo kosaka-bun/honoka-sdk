@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.code;
+package de.honoka.sdk.util.basic;
 
 @SuppressWarnings("unused")
 public class ColorfulText {

@@ -1,7 +1,7 @@
 package de.honoka.sdk.util.test.gui;
 
-import de.honoka.sdk.util.code.CodeUtils;
-import de.honoka.sdk.util.code.ColorfulText;
+import de.honoka.sdk.util.basic.CodeUtils;
+import de.honoka.sdk.util.basic.ColorfulText;
 import de.honoka.sdk.util.gui.ConsoleWindow;
 import lombok.SneakyThrows;
 

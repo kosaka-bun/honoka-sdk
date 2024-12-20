@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.various;
 
-import de.honoka.sdk.util.code.ThrowsRunnable;
+import de.honoka.sdk.util.basic.ThrowsRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;

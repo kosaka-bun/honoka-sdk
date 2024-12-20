@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.gui;
 
-import de.honoka.sdk.util.code.ThrowsRunnable;
+import de.honoka.sdk.util.basic.ThrowsRunnable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
