@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.code
+package de.honoka.sdk.util.kotlin.basic
 
 /**
  * “部分抽象”设计模式。

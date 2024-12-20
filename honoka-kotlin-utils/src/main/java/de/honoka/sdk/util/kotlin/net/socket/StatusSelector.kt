@@ -1,7 +1,7 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
-import de.honoka.sdk.util.kotlin.code.forEachCatching
-import de.honoka.sdk.util.kotlin.code.log
+import de.honoka.sdk.util.kotlin.basic.forEachCatching
+import de.honoka.sdk.util.kotlin.basic.log
 import java.io.Closeable
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector

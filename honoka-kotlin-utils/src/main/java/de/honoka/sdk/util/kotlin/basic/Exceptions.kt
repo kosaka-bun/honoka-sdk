@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.code
+package de.honoka.sdk.util.kotlin.basic
 
 import kotlin.reflect.KClass
 

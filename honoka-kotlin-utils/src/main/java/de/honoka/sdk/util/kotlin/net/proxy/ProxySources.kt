@@ -1,8 +1,8 @@
 package de.honoka.sdk.util.kotlin.net.proxy
 
 import cn.hutool.http.HttpUtil
-import de.honoka.sdk.util.kotlin.code.repeatCatching
-import de.honoka.sdk.util.kotlin.code.tryBlock
+import de.honoka.sdk.util.kotlin.basic.repeatCatching
+import de.honoka.sdk.util.kotlin.basic.tryBlock
 import de.honoka.sdk.util.kotlin.net.http.browserApiHeaders
 import de.honoka.sdk.util.kotlin.net.http.browserHeaders
 import de.honoka.sdk.util.kotlin.net.http.randomProxy

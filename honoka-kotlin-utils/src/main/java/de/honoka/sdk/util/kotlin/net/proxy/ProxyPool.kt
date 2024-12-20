@@ -4,9 +4,9 @@ import cn.hutool.core.collection.ConcurrentHashSet
 import cn.hutool.core.lang.Assert
 import cn.hutool.http.HttpStatus
 import cn.hutool.http.HttpUtil
-import de.honoka.sdk.util.kotlin.code.ThreadPoolUtils
-import de.honoka.sdk.util.kotlin.code.log
-import de.honoka.sdk.util.kotlin.code.tryBlockNullable
+import de.honoka.sdk.util.kotlin.basic.ThreadPoolUtils
+import de.honoka.sdk.util.kotlin.basic.log
+import de.honoka.sdk.util.kotlin.basic.tryBlockNullable
 import de.honoka.sdk.util.kotlin.net.http.browserApiHeaders
 import de.honoka.sdk.util.kotlin.net.socket.SocketForwarder
 import de.honoka.sdk.util.kotlin.text.toJsonWrapper
@@ -14,6 +14,7 @@ import java.io.Closeable
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
+@Suppress("MemberVisibilityCanBePrivate")
 class ProxyPool : Closeable {
     
     companion object {
@@ -30,15 +31,9 @@ class ProxyPool : Closeable {
     
     private val executor = ThreadPoolUtils.newScheduledPool(1)
     
-    @Volatile
-    private var forwarderOrNull: SocketForwarder? = null
+    private var forwarderLazy = lazy { SocketForwarder(pool) }
     
-    val forwarder: SocketForwarder
-        get() = forwarderOrNull ?: synchronized(this) {
-            forwarderOrNull ?: SocketForwarder(pool).also {
-                forwarderOrNull = it
-            }
-        }
+    val forwarder: SocketForwarder by forwarderLazy
     
     @Volatile
     private var runningTask: Future<*>? = null
@@ -120,7 +115,9 @@ class ProxyPool : Closeable {
     
     override fun close() {
         runningTask?.cancel(true)
-        forwarderOrNull?.close()
+        if(forwarderLazy.isInitialized()) {
+            forwarder.close()
+        }
         executor.shutdownNow()
     }
 }

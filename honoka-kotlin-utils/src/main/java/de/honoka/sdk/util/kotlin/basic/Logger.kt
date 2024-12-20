@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.code
+package de.honoka.sdk.util.kotlin.basic
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

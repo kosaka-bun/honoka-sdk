@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
-import de.honoka.sdk.util.kotlin.code.tryBlock
+import de.honoka.sdk.util.kotlin.basic.tryBlock
 import java.net.BindException
 import java.net.InetSocketAddress
 import java.nio.channels.ServerSocketChannel

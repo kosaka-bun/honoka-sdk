@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.code
+package de.honoka.sdk.util.kotlin.basic
 
 import kotlin.reflect.KClass
 
@@ -48,19 +48,5 @@ inline fun <T : Any> tryBlock(
 inline fun repeatCatching(times: Int, block: (Int) -> Unit) {
     repeat(times) {
         runCatching { block(times) }
-    }
-}
-
-inline fun <T> Iterable<T>.forEachCatching(action: (T) -> Unit) {
-    forEach {
-        runCatching {
-            action(it)
-        }
-    }
-}
-
-inline fun <K, V> Map<K, V>.forEachCatching(action: (K, V) -> Unit) {
-    entries.forEachCatching {
-        action(it.key, it.value)
     }
 }
