@@ -77,7 +77,7 @@ class SocketForwarder(
     private fun handleConnections() {
         selector.select()
         nioSocketClient.refresh()
-        connectionMap.forEachCatching { k, v ->
+        connectionMap.forEachKv { k, v ->
             executor.submit {
                 if(Thread.currentThread().isInterrupted) return@submit
                 runCatching {
