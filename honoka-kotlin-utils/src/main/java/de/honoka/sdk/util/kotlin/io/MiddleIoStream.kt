@@ -1,11 +1,16 @@
 package de.honoka.sdk.util.kotlin.io
 
+import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
+import de.honoka.sdk.util.basic.javadoc.ThreadSafe
+import de.honoka.sdk.util.kotlin.concurrent.ThreadSafeUsable
 import java.io.Closeable
 import java.io.InputStream
 import java.io.OutputStream
 
-abstract class MiddleIoStream : Closeable {
+@NotThreadSafe
+abstract class MiddleIoStream : ThreadSafeUsable, Closeable {
     
+    @NotThreadSafe
     private inner class In : InputStream() {
         
         override fun read(): Int = this@MiddleIoStream.read()
@@ -21,6 +26,7 @@ abstract class MiddleIoStream : Closeable {
         }
     }
     
+    @NotThreadSafe
     private inner class Out : OutputStream() {
         
         override fun write(b: Int) {
@@ -80,6 +86,7 @@ abstract class MiddleIoStream : Closeable {
     
     open fun flush() {}
     
+    @ThreadSafe
     private fun doClose() {
         synchronized(this) {
             if(closed) return

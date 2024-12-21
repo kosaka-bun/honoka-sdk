@@ -1,31 +1,23 @@
 package de.honoka.sdk.util.kotlin.io
 
-class ByteBufferIoStream(private val blocking: Boolean = false) : MiddleIoStream() {
+import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
+
+@NotThreadSafe
+class ByteBufferIoStream : MiddleIoStream() {
     
     private val buffer = ArrayList<Byte>()
     
     @Volatile
     private var readPointer = 0
     
-    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-    private val javaThis = this as Object
-    
     private fun privateRead(): Byte? {
-        if(isEmpty()) {
-            if(blocking) {
-                waitForNotEmpty()
-            } else {
-                return null
-            }
-        }
+        if(isEmpty()) return null
         readPointer++
         return buffer[readPointer - 1]
     }
     
-    @Synchronized
     override fun read(): Int = privateRead()?.toUByte()?.toInt() ?: -1
     
-    @Synchronized
     override fun read(b: ByteArray, off: Int, len: Int): Int {
         if(len < 1) return 0
         if(off + len > b.size) {
@@ -48,33 +40,18 @@ class ByteBufferIoStream(private val blocking: Boolean = false) : MiddleIoStream
         return count
     }
     
-    @Synchronized
-    override fun read(limit: Int): ByteArray {
-        if(blocking) waitForNotEmpty()
-        return super.read(limit)
-    }
-    
-    @Synchronized
     override fun write(b: Int) {
         buffer.add(b.toByte())
-        javaThis.notifyAll()
     }
     
-    @Synchronized
     override fun write(b: ByteArray, off: Int, len: Int) {
         if(len < 1) return
         if(off < 0 || off + len > b.size) {
             throw IndexOutOfBoundsException("size: ${b.size}, off: $off, len: $len")
         }
-        buffer.addAll(b.sliceArray(off until off + len).asList())
-        javaThis.notifyAll()
+        val subArray = if(off == 0 && len == b.size) b else b.copyOfRange(off, off + len)
+        buffer.addAll(subArray.asList())
     }
     
     override fun available(): Int = buffer.size - readPointer
-    
-    private fun waitForNotEmpty() {
-        while(isEmpty()) {
-            javaThis.wait()
-        }
-    }
 }
