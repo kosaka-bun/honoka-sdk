@@ -27,12 +27,12 @@ abstract class MiddleIoStream : Closeable {
             this@MiddleIoStream.write(b)
         }
         
-        override fun write(b: ByteArray) {
-            this@MiddleIoStream.write(b)
+        override fun write(b: ByteArray, off: Int, len: Int) {
+            this@MiddleIoStream.write(b, off, len)
         }
         
-        fun superWrite(b: ByteArray) {
-            super.write(b)
+        fun superWrite(b: ByteArray, off: Int, len: Int) {
+            super.write(b, off, len)
         }
         
         override fun flush() {
@@ -44,34 +44,34 @@ abstract class MiddleIoStream : Closeable {
         }
     }
     
-    private val `in` = In()
+    private val inputStream = In()
     
-    private val out = Out()
+    private val outputStream = Out()
     
     @Volatile
     private var closed: Boolean = false
     
-    fun asIn(): InputStream = `in`
+    fun asIn(): InputStream = inputStream
     
-    fun asOut(): OutputStream = out
+    fun asOut(): OutputStream = outputStream
     
     protected abstract fun read(): Int
     
-    protected open fun read(b: ByteArray, off: Int, len: Int): Int = `in`.superRead(b, off, len)
+    protected open fun read(b: ByteArray, off: Int, len: Int): Int = inputStream.superRead(b, off, len)
     
     open fun read(limit: Int = Int.MAX_VALUE): ByteArray {
         val count = available().let {
             if(limit > it) it else limit
         }
         val buffer = ByteArray(count)
-        `in`.read(buffer)
+        inputStream.read(buffer)
         return buffer
     }
     
     protected abstract fun write(b: Int)
     
-    open fun write(b: ByteArray) {
-        out.superWrite(b)
+    open fun write(b: ByteArray, off: Int, len: Int) {
+        outputStream.superWrite(b, off, len)
     }
     
     abstract fun available(): Int

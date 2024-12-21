@@ -11,7 +11,7 @@ class ByteBufferIoStream(private val blocking: Boolean = false) : MiddleIoStream
     private val javaThis = this as Object
     
     private fun privateRead(): Byte? {
-        if(buffer.isEmpty() || readPointer > buffer.lastIndex) {
+        if(isEmpty()) {
             if(blocking) {
                 waitForNotEmpty()
             } else {
@@ -61,15 +61,19 @@ class ByteBufferIoStream(private val blocking: Boolean = false) : MiddleIoStream
     }
     
     @Synchronized
-    override fun write(b: ByteArray) {
-        buffer.addAll(b.asList())
+    override fun write(b: ByteArray, off: Int, len: Int) {
+        if(len < 1) return
+        if(off < 0 || off + len > b.size) {
+            throw IndexOutOfBoundsException("size: ${b.size}, off: $off, len: $len")
+        }
+        buffer.addAll(b.sliceArray(off until off + len).asList())
         javaThis.notifyAll()
     }
     
     override fun available(): Int = buffer.size - readPointer
     
     private fun waitForNotEmpty() {
-        while(buffer.isEmpty() || readPointer > buffer.lastIndex) {
+        while(isEmpty()) {
             javaThis.wait()
         }
     }
