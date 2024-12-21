@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.basic
+package de.honoka.sdk.util.kotlin.concurrent
 
 import java.util.concurrent.RejectedExecutionHandler
 import java.util.concurrent.ScheduledThreadPoolExecutor

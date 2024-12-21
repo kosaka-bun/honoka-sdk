@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.basic.doc;
+package de.honoka.sdk.util.basic.javadoc;
 
 import java.lang.annotation.*;
 
