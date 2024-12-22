@@ -2,8 +2,10 @@ package de.honoka.sdk.util.kotlin.net.socket
 
 import cn.hutool.core.date.DateTime
 import cn.hutool.core.date.DateUnit
+import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
 import de.honoka.sdk.util.kotlin.basic.exception
 import de.honoka.sdk.util.kotlin.text.singleLine
+import java.io.ByteArrayOutputStream
 import java.io.Closeable
 import java.nio.ByteBuffer
 import java.nio.channels.SelectionKey
@@ -11,6 +13,7 @@ import java.nio.channels.Selector
 import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
 
+@NotThreadSafe
 @Suppress("MemberVisibilityCanBePrivate")
 class SocketConnection(
     val address: String,
@@ -27,6 +30,8 @@ class SocketConnection(
     var writable: Boolean = false
         internal set
     
+    val writeBufferStream = ByteArrayOutputStream()
+    
     @Volatile
     var lastReadOrWriteTime: DateTime = DateTime.now()
         private set
@@ -35,7 +40,7 @@ class SocketConnection(
     var closed: Boolean = false
         private set
     
-    fun register() {
+    fun updateListeningEvents() {
         if(closed) exception("closed")
         val operations = run {
             var it = 0
@@ -52,7 +57,7 @@ class SocketConnection(
         val readCount = runCatching {
             val c = channel.read(buffer)
             readable = false
-            register()
+            updateListeningEvents()
             c
         }.getOrElse {
             close()
@@ -67,7 +72,7 @@ class SocketConnection(
         runCatching {
             channel.write(ByteBuffer.wrap(bytes))
             writable = false
-            register()
+            updateListeningEvents()
         }.getOrElse {
             close()
             throw it

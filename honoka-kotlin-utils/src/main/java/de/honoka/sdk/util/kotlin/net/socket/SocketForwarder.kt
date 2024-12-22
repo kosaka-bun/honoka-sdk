@@ -1,6 +1,10 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
-import de.honoka.sdk.util.kotlin.basic.*
+import de.honoka.sdk.util.kotlin.basic.cast
+import de.honoka.sdk.util.kotlin.basic.exception
+import de.honoka.sdk.util.kotlin.basic.isAnyType
+import de.honoka.sdk.util.kotlin.basic.tryBlockNullable
+import de.honoka.sdk.util.kotlin.concurrent.shutdownNowAndWait
 import java.io.Closeable
 import java.net.InetSocketAddress
 import java.util.concurrent.ConcurrentHashMap
@@ -77,20 +81,34 @@ class SocketForwarder(
     private fun handleConnections() {
         selector.select()
         nioSocketClient.refresh()
-        connectionMap.forEachKv { k, v ->
+        connectionMap.forEach { (k, v) ->
             executor.submit {
                 if(Thread.currentThread().isInterrupted) return@submit
-                runCatching {
-                    forward(k, v)
-                    forward(v, k)
+                synchronized(k) {
+                    synchronized(v) {
+                        runCatching {
+                            forward(k, v)
+                            forward(v, k)
+                        }.getOrElse {
+                            k.close()
+                            v.close()
+                        }
+                    }
                 }
             }
         }
     }
     
     private fun forward(from: SocketConnection, to: SocketConnection) {
-        if(!from.readable || !to.writable) return
-        to.write(from.read(options.bufferSize))
+        if(from.readable) {
+            to.writeBufferStream.write(from.read(options.bufferSize))
+        }
+        if(to.writable && to.writeBufferStream.size() > 0) {
+            val bytes = to.writeBufferStream.run {
+                toByteArray().also { reset() }
+            }
+            to.write(bytes)
+        }
     }
     
     @Synchronized

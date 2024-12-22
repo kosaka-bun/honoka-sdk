@@ -8,6 +8,7 @@ class NioSocketClient : Closeable {
     
     private val selector = StatusSelector()
     
+    @Synchronized
     fun connect(address: String): SocketConnection {
         if(selector.closed) throw SelectorClosedException()
         val addressPart = address.split(":")

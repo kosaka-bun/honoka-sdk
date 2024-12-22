@@ -64,6 +64,7 @@ object WeakReferenceContainer {
         getOrInit(property, initialValue)
     }
     
+    @JvmName("getOrInitNullable")
     fun <T> getOrInit(property: KProperty<*>, initialValue: T?): T? {
         try {
             val ref = KPropertyReference(property)

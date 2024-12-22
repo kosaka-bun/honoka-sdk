@@ -1,6 +1,8 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
+import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
 import de.honoka.sdk.util.kotlin.basic.forEachCatching
+import de.honoka.sdk.util.kotlin.basic.forEachInstant
 import de.honoka.sdk.util.kotlin.basic.log
 import java.io.Closeable
 import java.nio.channels.SelectionKey
@@ -9,6 +11,7 @@ import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
 import java.util.concurrent.ConcurrentHashMap
 
+@NotThreadSafe
 class StatusSelector(private val blocking: Boolean = false) : Closeable {
     
     private val selector: Selector = Selector.open()
@@ -38,6 +41,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     
     fun select() {
         if(closed) throw SelectorClosedException()
+        removeClosedConnection()
         selector.run {
             if(blocking) {
                 select()
@@ -59,7 +63,6 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
                 }
                 clear()
             }
-            removeClosedConnection()
         }
     }
     
@@ -85,7 +88,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
         connections[key.channel()]?.run {
             readable = true
             log.debug("Connection readable: $channel")
-            register()
+            updateListeningEvents()
         }
     }
     
@@ -93,20 +96,19 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
         connections[key.channel()]?.run {
             writable = true
             log.debug("Connection writable: $channel")
-            register()
+            updateListeningEvents()
         }
     }
     
     private fun removeClosedConnection() {
-        //由于connections是可并发读写的，因此遍历此集合前需要先创建其keys的副本
-        connections.keys().toList().forEachCatching {
-            connections[it]!!.run {
+        connections.forEachInstant { (k, v) ->
+            v.runCatching {
                 checkOrClose()
                 if(closed) {
-                    connections.remove(it)
+                    connections.remove(k)
                     runCatching {
-                        fromChannel?.let { c ->
-                            servers[c]!!.onClosed(this)
+                        fromChannel?.let {
+                            servers[it]!!.onClosed(this)
                         }
                     }
                     log.debug("Connection $channel has been removed.")
@@ -118,8 +120,10 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     override fun close() {
         if(closed) return
         closed = true
-        connections.forEachCatching { _, v ->
-            v.close()
+        connections.forEachInstant {
+            runCatching {
+                it.value.close()
+            }
         }
         selector.close()
     }
