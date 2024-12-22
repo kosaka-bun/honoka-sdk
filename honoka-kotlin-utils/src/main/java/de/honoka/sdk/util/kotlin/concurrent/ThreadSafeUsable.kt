@@ -6,18 +6,18 @@ import java.util.concurrent.locks.ReentrantLock
 interface ThreadSafeUsable {
 
     val lock: ReentrantLock
-        get() = WeakReferenceContainer.getOrInit(this, ::lock, ReentrantLock())
+        get() = WeakReferenceContainer.getOrInit(::lock, ReentrantLock())
 }
 
 /*
  * The 'inline' modifier is not allowed on virtual members.
  * Only private or final members can be inlined.
  */
-inline fun <T : ThreadSafeUsable, R> T.safeUse(block: T.() -> R): R {
+inline fun <T : ThreadSafeUsable, R> T.safeUse(block: T.() -> R): R = lock.run {
     try {
-        lock.lock()
+        lock()
         return block()
     } finally {
-        lock.unlock()
+        unlock()
     }
 }

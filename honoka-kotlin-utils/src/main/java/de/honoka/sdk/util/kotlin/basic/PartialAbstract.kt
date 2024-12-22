@@ -13,8 +13,8 @@ package de.honoka.sdk.util.kotlin.basic
 interface PartialAbstract<T : Any> {
 
     var abstractPart: T?
-        get() = WeakReferenceContainer.get(this, ::abstractPart)
-        set(value) = WeakReferenceContainer.set(this, ::abstractPart, value)
+        get() = WeakReferenceContainer.get(::abstractPart)
+        set(value) = WeakReferenceContainer.set(::abstractPart, value)
 
     fun initAbstractPart(abstractPart: T) {
         this.abstractPart = abstractPart
