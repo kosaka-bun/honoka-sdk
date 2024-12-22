@@ -10,12 +10,10 @@ package de.honoka.sdk.util.kotlin.basic
  * 扩展函数都将无法在其他类中被直接调用，即便在其他类定义一个类型为该抽象类的属性，也依旧如此。
  */
 @Suppress("MemberVisibilityCanBePrivate")
-interface PartialAbstract<T : Any> {
-
-    var abstractPart: T?
-        get() = WeakReferenceContainer.get(::abstractPart)
-        set(value) = WeakReferenceContainer.set(::abstractPart, value)
-
+abstract class PartialAbstract<T : Any> {
+    
+    lateinit var abstractPart: T
+    
     fun initAbstractPart(abstractPart: T) {
         this.abstractPart = abstractPart
     }

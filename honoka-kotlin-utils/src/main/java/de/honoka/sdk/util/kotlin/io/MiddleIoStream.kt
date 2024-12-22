@@ -2,13 +2,12 @@ package de.honoka.sdk.util.kotlin.io
 
 import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
 import de.honoka.sdk.util.basic.javadoc.ThreadSafe
-import de.honoka.sdk.util.kotlin.concurrent.ThreadSafeUsable
 import java.io.Closeable
 import java.io.InputStream
 import java.io.OutputStream
 
 @NotThreadSafe
-abstract class MiddleIoStream : ThreadSafeUsable, Closeable {
+abstract class MiddleIoStream : Closeable {
     
     @NotThreadSafe
     private inner class In : InputStream() {
@@ -74,10 +73,22 @@ abstract class MiddleIoStream : ThreadSafeUsable, Closeable {
         return buffer
     }
     
+    @Synchronized
+    fun lockAndRead(limit: Int = Int.MAX_VALUE): ByteArray = read(limit)
+    
     protected abstract fun write(b: Int)
     
-    open fun write(b: ByteArray, off: Int, len: Int) {
+    protected open fun write(b: ByteArray, off: Int, len: Int) {
         outputStream.superWrite(b, off, len)
+    }
+    
+    open fun write(b: ByteArray) {
+        outputStream.write(b)
+    }
+    
+    @Synchronized
+    fun lockAndWrite(b: ByteArray) {
+        write(b)
     }
     
     abstract fun available(): Int
