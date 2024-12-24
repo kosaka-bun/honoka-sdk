@@ -4,6 +4,7 @@ import cn.hutool.core.collection.ConcurrentHashSet
 import cn.hutool.core.lang.Assert
 import cn.hutool.http.HttpStatus
 import cn.hutool.http.HttpUtil
+import de.honoka.sdk.util.kotlin.basic.HasLogger
 import de.honoka.sdk.util.kotlin.basic.log
 import de.honoka.sdk.util.kotlin.basic.tryBlockNullable
 import de.honoka.sdk.util.kotlin.concurrent.ThreadPoolUtils
@@ -15,7 +16,7 @@ import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 @Suppress("MemberVisibilityCanBePrivate")
-class ProxyPool : Closeable {
+class ProxyPool : Closeable, HasLogger {
     
     companion object {
         

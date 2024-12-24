@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
+interface HasLogger
+
 private object LoggerCache {
     
     val cache: MutableMap<KClass<*>, Logger> = ConcurrentHashMap()
 }
 
-val KClass<*>.log: Logger
+private val KClass<*>.log: Logger
     get() = LoggerCache.cache[this] ?: run {
         var clazz = java
         if(clazz.simpleName.lowercase().contains("\$\$springcglib")) {
@@ -21,5 +23,5 @@ val KClass<*>.log: Logger
         }
     }
 
-val Any.log: Logger
+val HasLogger.log: Logger
     get() = this::class.log

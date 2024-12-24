@@ -53,22 +53,32 @@ class SocketForwarder(
         registerServer(serverSocketChannel, SelectorCallback())
     }
     
-    private val nioSocketClient = NioSocketClient()
+    private val nioSocketClient = NioSocketClient(true)
     
     private val connectionMap = ConcurrentHashMap<SocketConnection, SocketConnection>()
     
-    private val executor = Executors.newFixedThreadPool(options.executorThreads + 1)
+    private val executor = Executors.newFixedThreadPool(options.executorThreads + 2)
     
     init {
         startup()
     }
     
     private fun startup() {
+        submitSelectorTask {
+            handleConnections()
+        }
+        submitSelectorTask {
+            nioSocketClient.refresh()
+            selector.wakeup()
+        }
+    }
+    
+    private inline fun submitSelectorTask(crossinline block: () -> Unit) {
         executor.submit {
             while(true) {
                 if(Thread.currentThread().isInterrupted) break
                 try {
-                    handleConnections()
+                    block()
                 } catch(t: Throwable) {
                     val typesToThrow = listOf(SelectorClosedException::class)
                     if(t.isAnyType(typesToThrow)) throw t
@@ -77,10 +87,8 @@ class SocketForwarder(
         }
     }
     
-    @Synchronized
     private fun handleConnections() {
         selector.select()
-        nioSocketClient.refresh()
         connectionMap.forEach { (k, v) ->
             executor.submit {
                 if(Thread.currentThread().isInterrupted) return@submit

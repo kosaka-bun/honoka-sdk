@@ -1,9 +1,11 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
+import de.honoka.sdk.util.kotlin.basic.HasLogger
 import de.honoka.sdk.util.kotlin.basic.forEachCatching
 import de.honoka.sdk.util.kotlin.basic.forEachInstant
 import de.honoka.sdk.util.kotlin.basic.log
+import lombok.extern.slf4j.Slf4j
 import java.io.Closeable
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
@@ -12,7 +14,8 @@ import java.nio.channels.SocketChannel
 import java.util.concurrent.ConcurrentHashMap
 
 @NotThreadSafe
-class StatusSelector(private val blocking: Boolean = false) : Closeable {
+@Slf4j
+class StatusSelector(private val blocking: Boolean = false) : Closeable, HasLogger {
     
     private val selector: Selector = Selector.open()
     
@@ -66,10 +69,17 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
         }
     }
     
+    fun wakeup() {
+        selector.wakeup()
+    }
+    
     private fun onChannelAcceptable(key: SelectionKey) {
         val serverChannel = key.channel() as ServerSocketChannel
-        val connection = register(serverChannel.accept(), serverChannel)
-        log.debug("Connection accepted: ${connection.channel}")
+        val channel = serverChannel.accept().apply {
+            configureBlocking(false)
+        }
+        val connection = register(channel, serverChannel)
+        log.debug("Connection accepted: $connection")
         runCatching {
             servers[serverChannel]!!.onAccpeted(connection)
         }.getOrElse {
@@ -80,14 +90,14 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     private fun onChannelConnectable(key: SelectionKey) {
         connections[key.channel()]?.run {
             channel.finishConnect()
-            log.debug("Connection established: $channel")
+            log.debug("Connection established: $this")
         }
     }
     
     private fun onChannelReadable(key: SelectionKey) {
         connections[key.channel()]?.run {
             readable = true
-            log.debug("Connection readable: $channel")
+            log.debug("Connection readable: $this")
             updateListeningEvents()
         }
     }
@@ -95,7 +105,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
     private fun onChannelWritable(key: SelectionKey) {
         connections[key.channel()]?.run {
             writable = true
-            log.debug("Connection writable: $channel")
+            log.debug("Connection writable: $this")
             updateListeningEvents()
         }
     }
@@ -111,7 +121,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable {
                             servers[it]!!.onClosed(this)
                         }
                     }
-                    log.debug("Connection $channel has been removed.")
+                    log.debug("Connection $v has been removed.")
                 }
             }
         }

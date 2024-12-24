@@ -93,9 +93,8 @@ class SocketConnection(
     
     override fun toString(): String = run {
         """
-            SocketConnection(address=$address, channel=$channel, |
-            selector=$selector, readable=$readable, |
-            writable=$writable, closed=$closed)
+            SocketConnection(address=$address, fromServerChannel=${fromChannel != null}, |
+            readable=$readable, writable=$writable, closed=$closed)
         """.singleLine()
     }
     

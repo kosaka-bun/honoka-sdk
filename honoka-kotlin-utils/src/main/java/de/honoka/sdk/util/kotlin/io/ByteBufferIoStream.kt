@@ -32,9 +32,10 @@ class ByteBufferIoStream : MiddleIoStream() {
         }
         if(count < 1) return -1
         buffer.run {
-            val remainingBytes = subList(readPointer, buffer.size).toTypedArray()
-            clear()
-            addAll(remainingBytes)
+            subList(readPointer, size).toTypedArray().let {
+                clear()
+                addAll(it)
+            }
         }
         readPointer = 0
         return count
