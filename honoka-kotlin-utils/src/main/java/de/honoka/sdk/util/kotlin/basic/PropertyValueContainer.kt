@@ -19,23 +19,28 @@ import kotlin.reflect.KProperty
  */
 @ThreadSafe
 @Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
-object WeakReferenceContainer {
+object PropertyValueContainer {
     
-    private class KPropertyReference(property: KProperty<*>) : WeakReference<KProperty<*>>(property) {
+    private class KPropertyReference(property: KProperty<*>) {
+        
+        val ref = WeakReference(property.cast<CallableReference>().boundReceiver)
+        
+        val signature: String = property.toString()
+        
+        val targetHashCode: Int = Objects.hash(ref.get(), signature)
         
         override fun equals(other: Any?): Boolean {
             if(other !is KPropertyReference) return false
-            val value = get() ?: return false
-            return value == other.get()
+            val target = ref.get() ?: return this === other
+            val result = BooleanBuilder.calc {
+                init(target === other.ref.get())
+                and(signature == other.signature)
+                and(targetHashCode == other.targetHashCode)
+            }
+            return result
         }
         
-        override fun hashCode(): Int {
-            val property = get() ?: return super.hashCode()
-            if(property is CallableReference) {
-                return Objects.hash(property, property.boundReceiver)
-            }
-            return property.hashCode()
-        }
+        override fun hashCode(): Int = targetHashCode
     }
     
     private val map = ConcurrentHashMap<KPropertyReference, Any>()
@@ -54,24 +59,27 @@ object WeakReferenceContainer {
     @Volatile
     private var lastCleanTime = 0L
     
-    fun <T> get(property: KProperty<*>): T? {
+    fun <T : Any> get(property: KProperty<*>): T = getOrNull(property)!!
+    
+    fun <T> getOrNull(property: KProperty<*>): T? {
         val result = map[KPropertyReference(property)]
         clean()
         return if(result === nullValue) null else result as T?
     }
     
     fun <T : Any> getOrInit(property: KProperty<*>, initialValue: T): T = run {
-        getOrInit(property, initialValue)
+        getOrInit(property, initialValue as T?)!!
     }
     
     @JvmName("getOrInitNullable")
     fun <T> getOrInit(property: KProperty<*>, initialValue: T?): T? {
         try {
+            property as CallableReference
             val ref = KPropertyReference(property)
             map[ref]?.let {
                 return if(it === nullValue) null else it as T
             }
-            synchronized(property) {
+            synchronized(property.boundReceiver) {
                 map[ref]?.let {
                     return if(it === nullValue) null else it as T
                 }
@@ -94,9 +102,7 @@ object WeakReferenceContainer {
         if(executorQueue.isNotEmpty()) return
         lastCleanTime = time
         executor.submit {
-            map.forEach { (k) ->
-                k.get() ?: map.remove(k)
-            }
+            map.removeIf { (k) -> k.ref.get() == null }
         }
     }
 }
