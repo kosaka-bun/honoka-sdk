@@ -1,19 +1,18 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
+import de.honoka.sdk.util.basic.javadoc.ThreadSafe
 import de.honoka.sdk.util.kotlin.basic.cast
 import de.honoka.sdk.util.kotlin.basic.exception
 import de.honoka.sdk.util.kotlin.basic.isAnyType
 import de.honoka.sdk.util.kotlin.basic.tryBlockNullable
+import de.honoka.sdk.util.kotlin.concurrent.doubleSynchronized
 import de.honoka.sdk.util.kotlin.concurrent.shutdownNowAndWait
 import java.io.Closeable
 import java.net.InetSocketAddress
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
-class SocketForwarder(
-    private val targets: Set<String>,
-    private val options: Options = Options()
-) : Closeable {
+class SocketForwarder(private val targets: Set<String>, private val options: Options = Options()) : Closeable {
     
     data class Options(
         
@@ -26,6 +25,7 @@ class SocketForwarder(
         var bufferSize: Int = 10 * 2024
     )
     
+    @ThreadSafe
     private inner class SelectorCallback : StatusSelectorEventCallback {
         
         override fun onAccpeted(connection: SocketConnection) {
@@ -33,6 +33,7 @@ class SocketForwarder(
             target ?: exception("No avaliable target.")
             val targetConnection = nioSocketClient.connect(target)
             connectionMap[connection] = targetConnection
+            selector.wakeup()
         }
         
         override fun onClosed(connection: SocketConnection) {
@@ -49,11 +50,11 @@ class SocketForwarder(
     val port: Int
         get() = serverSocketChannel.localAddress.cast<InetSocketAddress>().port
     
-    private val selector = StatusSelector(true).apply {
+    private val selector = StatusSelector().apply {
         registerServer(serverSocketChannel, SelectorCallback())
     }
     
-    private val nioSocketClient = NioSocketClient(true)
+    private val nioSocketClient = NioSocketClient()
     
     private val connectionMap = ConcurrentHashMap<SocketConnection, SocketConnection>()
     
@@ -92,15 +93,13 @@ class SocketForwarder(
         connectionMap.forEach { (k, v) ->
             executor.submit {
                 if(Thread.currentThread().isInterrupted) return@submit
-                synchronized(k) {
-                    synchronized(v) {
-                        runCatching {
-                            forward(k, v)
-                            forward(v, k)
-                        }.getOrElse {
-                            k.close()
-                            v.close()
-                        }
+                doubleSynchronized(k, v) {
+                    runCatching {
+                        forward(k, v)
+                        forward(v, k)
+                    }.getOrElse {
+                        k.close()
+                        v.close()
                     }
                 }
             }

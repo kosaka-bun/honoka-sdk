@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
-interface HasLogger
-
 private object LoggerCache {
     
     val cache: MutableMap<KClass<*>, Logger> = ConcurrentHashMap()
@@ -23,5 +21,5 @@ private val KClass<*>.log: Logger
         }
     }
 
-val HasLogger.log: Logger
+val Any.log: Logger
     get() = this::class.log

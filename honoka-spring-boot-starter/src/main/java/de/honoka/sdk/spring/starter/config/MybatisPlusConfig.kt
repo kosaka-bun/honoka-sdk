@@ -21,17 +21,12 @@ class MybatisPlusConfig {
     private var jdbcDriverClassName: String? = null
     
     @Bean
-    fun mybatisPlusInterceptor(): MybatisPlusInterceptor {
-        val interceptor = MybatisPlusInterceptor().apply {
-            val dbType = jdbcDriverClassName?.lowercase()?.run {
-                when {
-                    contains("mysql") -> DbType.MYSQL
-                    contains("sqlite") -> DbType.SQLITE
-                    else -> null
-                }
+    fun mybatisPlusInterceptor(): MybatisPlusInterceptor = MybatisPlusInterceptor().apply {
+        val dbType = jdbcDriverClassName?.lowercase()?.run {
+            DbType.values().firstOrNull {
+                contains(it.db.lowercase())
             }
-            dbType?.let { addInnerInterceptor(PaginationInnerInterceptor(it)) }
         }
-        return interceptor
+        dbType?.let { addInnerInterceptor(PaginationInnerInterceptor(it)) }
     }
 }

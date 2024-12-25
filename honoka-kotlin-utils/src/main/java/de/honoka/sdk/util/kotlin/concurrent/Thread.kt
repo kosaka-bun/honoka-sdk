@@ -31,3 +31,11 @@ fun ExecutorService.shutdownNowAndWait(
     timeout: Long = Long.MAX_VALUE,
     unit: TimeUnit = TimeUnit.SECONDS
 ): List<Runnable> = shutdownNow().apply { awaitTermination(timeout, unit) }
+
+inline fun <T> doubleSynchronized(lock1: Any, lock2: Any, block: () -> T): T {
+    synchronized(lock1) {
+        synchronized(lock2) {
+            return block()
+        }
+    }
+}

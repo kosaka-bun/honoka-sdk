@@ -1,7 +1,6 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
-import de.honoka.sdk.util.kotlin.basic.HasLogger
 import de.honoka.sdk.util.kotlin.basic.forEachCatching
 import de.honoka.sdk.util.kotlin.basic.forEachInstant
 import de.honoka.sdk.util.kotlin.basic.log
@@ -12,10 +11,16 @@ import java.nio.channels.Selector
 import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 @NotThreadSafe
 @Slf4j
-class StatusSelector(private val blocking: Boolean = false) : Closeable, HasLogger {
+class StatusSelector : Closeable {
+    
+    companion object {
+        
+        private val executor by lazy { Executors.newFixedThreadPool(1) }
+    }
     
     private val selector: Selector = Selector.open()
     
@@ -29,7 +34,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable, HasLogg
     
     fun register(channel: SocketChannel, fromChannel: ServerSocketChannel? = null): SocketConnection {
         if(closed) throw SelectorClosedException()
-        val events = SelectionKey.OP_CONNECT or SelectionKey.OP_READ or SelectionKey.OP_WRITE
+        val events = SelectionKey.OP_READ or SelectionKey.OP_WRITE
         channel.register(selector, events)
         val connection = SocketConnection(channel.remoteAddress.toString(), fromChannel, channel, selector)
         connections[channel] = connection
@@ -42,7 +47,7 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable, HasLogg
         servers[serverChannel] = callback
     }
     
-    fun select() {
+    fun select(blocking: Boolean = true) {
         if(closed) throw SelectorClosedException()
         removeClosedConnection()
         selector.run {
@@ -59,7 +64,6 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable, HasLogg
                     }
                     when {
                         it.isAcceptable -> onChannelAcceptable(it)
-                        it.isConnectable -> onChannelConnectable(it)
                         it.isReadable -> onChannelReadable(it)
                         it.isWritable -> onChannelWritable(it)
                     }
@@ -80,17 +84,12 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable, HasLogg
         }
         val connection = register(channel, serverChannel)
         log.debug("Connection accepted: $connection")
-        runCatching {
-            servers[serverChannel]!!.onAccpeted(connection)
-        }.getOrElse {
-            connection.close()
-        }
-    }
-    
-    private fun onChannelConnectable(key: SelectionKey) {
-        connections[key.channel()]?.run {
-            channel.finishConnect()
-            log.debug("Connection established: $this")
+        executor.submit {
+            runCatching {
+                servers[serverChannel]!!.onAccpeted(connection)
+            }.getOrElse {
+                connection.close()
+            }
         }
     }
     
@@ -116,9 +115,11 @@ class StatusSelector(private val blocking: Boolean = false) : Closeable, HasLogg
                 checkOrClose()
                 if(closed) {
                     connections.remove(k)
-                    runCatching {
-                        fromChannel?.let {
-                            servers[it]!!.onClosed(this)
+                    executor.submit {
+                        runCatching {
+                            fromChannel?.let {
+                                servers[it]!!.onClosed(this)
+                            }
                         }
                     }
                     log.debug("Connection $v has been removed.")

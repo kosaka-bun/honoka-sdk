@@ -4,7 +4,7 @@ import de.honoka.gradle.buildsrc.implementationApi
 setupVersionAndPublishing(libs.versions.honoka.kotlin.utils.get())
 
 dependencies {
-    implementationApi("de.honoka.sdk:honoka-utils:1.1.1")
+    implementationApi("de.honoka.sdk:honoka-utils:1.1.2-dev")
     compileOnly(libs.logback)
 }
 

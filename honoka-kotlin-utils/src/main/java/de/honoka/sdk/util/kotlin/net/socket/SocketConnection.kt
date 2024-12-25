@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateTime
 import cn.hutool.core.date.DateUnit
 import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
 import de.honoka.sdk.util.kotlin.basic.exception
+import de.honoka.sdk.util.kotlin.basic.log
 import de.honoka.sdk.util.kotlin.text.singleLine
 import java.io.ByteArrayOutputStream
 import java.io.Closeable
@@ -40,7 +41,7 @@ class SocketConnection(
     var closed: Boolean = false
         private set
     
-    fun updateListeningEvents() {
+    fun updateListeningEvents(wakeupSelector: Boolean = false) {
         if(closed) exception("closed")
         val operations = run {
             var it = 0
@@ -49,6 +50,7 @@ class SocketConnection(
             it
         }
         channel.register(selector, operations)
+        if(wakeupSelector) selector.wakeup()
     }
     
     fun read(bufferSize: Int = 10 * 1024): ByteArray {
@@ -56,13 +58,15 @@ class SocketConnection(
         val buffer = ByteBuffer.allocate(bufferSize)
         val readCount = runCatching {
             val c = channel.read(buffer)
+            if(c < 0) exception("No bytes read.")
             readable = false
-            updateListeningEvents()
+            updateListeningEvents(true)
             c
         }.getOrElse {
             close()
             throw it
         }
+        log.debug("Read $readCount bytes from $address.")
         lastReadOrWriteTime = DateTime.now()
         return buffer.array().sliceArray(0 until readCount)
     }
@@ -72,11 +76,12 @@ class SocketConnection(
         runCatching {
             channel.write(ByteBuffer.wrap(bytes))
             writable = false
-            updateListeningEvents()
+            updateListeningEvents(true)
         }.getOrElse {
             close()
             throw it
         }
+        log.debug("Writed ${bytes.size} bytes to $address.")
         lastReadOrWriteTime = DateTime.now()
     }
     
@@ -101,6 +106,10 @@ class SocketConnection(
     override fun close() {
         if(closed) return
         closed = true
-        channel.close()
+        runCatching {
+            channel.close()
+        }
+        log.debug("Connection closed: $this")
+        selector.wakeup()
     }
 }
