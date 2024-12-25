@@ -1,9 +1,9 @@
 [versions]
 # project modules version
-root = "2.0.1-dev"
-honoka-utils = "1.1.1-dev"
-honoka-kotlin-utils = "1.0.2-dev"
-honoka-spring-boot-starter = "1.0.1-dev"
+root = "2.1.0"
+honoka-utils = "1.1.1"
+honoka-kotlin-utils = "1.1.0"
+honoka-spring-boot-starter = "1.0.1"
 
 # dependencies version
 spring-boot = "3.2.5"

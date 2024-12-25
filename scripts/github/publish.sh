@@ -2,7 +2,7 @@
 
 set -e
 
-cd $(dirname "$0")/..
+cd $(dirname "$0")/../..
 PROJECT_PATH="$(pwd)"
 
 # 将kosaka-bun/maven-repo的git仓库clone到项目根目录下

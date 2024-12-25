@@ -1,5 +1,22 @@
 # 更新日志
 
+## 2.1.0
+#### honoka-utils 1.1.1
+- 将`code`包重命名为`basic`。
+- 新增了一些文档注解（`@ThreadSafe`、`@NotThreadSafe`）。
+
+#### honoka-kotlin-utils 1.1.0
+- 将`code`包重命名为`basic`。
+- 实现了`ProxyPool`，可自动搜集、更新、检查多个来源的免费HTTPS代理。
+- 实现了`SocketForwarder`，可实现Socket连接中转，作为中间服务交换客户端与远程目标间传输的数据，支持在客户端连接时从多个远程目标服务中随机选择其中一个。
+- 实现了`NioSocketClient`，可快速实现基于非阻塞IO并支持发起多个连接的Socket客户端。
+- 实现了`ByteBufferIoStream`，可作为中间缓存数据流使用，既可向其中写入字节数据，也可从中读取指定数量的字节数据，同时也支持转换为`InputStream`或`OutputStream`（均由`ByteBufferIoStream`直接代理读写）供其他类使用。
+- 实现了`PropertyValueContainer`，用于支持在对象外部存储对象的某些属性值，通常用于在interface中定义可直接赋予初始值的属性。
+
+#### honoka-spring-boot-starter 1.0.1
+- 优化了security模块的一些实现。
+- 新增了mybatis模块。
+
 ## 2.0.0
 #### 工程
 - 移除honoka-framework-utils与honoka-json子项目。

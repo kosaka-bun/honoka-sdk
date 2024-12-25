@@ -20,8 +20,8 @@ jobs:
       - id: gradle_build
         name: Build with Gradle
         run: |
-          chmod +x ./scripts/*.sh
-          ./scripts/build.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+          chmod +x ./scripts/github/*.sh
+          ./scripts/github/build.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
       - name: Upload remote maven repository as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -47,8 +47,8 @@ jobs:
         env:
           IS_DEVELOPMENT_VERSION: ${{ needs.build.outputs.IS_DEVELOPMENT_VERSION }}
         run: |
-          chmod +x ./scripts/*.sh
-          ./scripts/publish.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+          chmod +x ./scripts/github/*.sh
+          ./scripts/github/publish.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
 
 on:
   push:
