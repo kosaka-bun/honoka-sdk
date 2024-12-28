@@ -3,9 +3,9 @@ package de.honoka.sdk.spring.starter.config
 import com.baomidou.mybatisplus.annotation.DbType
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor
-import de.honoka.sdk.spring.starter.config.property.MybatisPlusProperties
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -28,5 +28,17 @@ class MybatisPlusConfig {
             }
         }
         dbType?.let { addInnerInterceptor(PaginationInnerInterceptor(it)) }
+    }
+}
+
+@ConfigurationProperties(MybatisPlusProperties.PREFIX)
+data class MybatisPlusProperties(
+    
+    var enabled: Boolean = false
+) {
+    
+    companion object {
+        
+        const val PREFIX = "${MainProperties.PREFIX}.mybatis"
     }
 }

@@ -1,10 +1,10 @@
 package de.honoka.sdk.spring.starter.config
 
-import de.honoka.sdk.spring.starter.config.property.SecurityProperties
 import de.honoka.sdk.spring.starter.security.AccessDeniedHandlerImpl
 import de.honoka.sdk.spring.starter.security.AuthenticationEntryPointImpl
 import de.honoka.sdk.spring.starter.security.DefaultAuthorizationFilter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -30,7 +30,7 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
     
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http.run {
-        val whiteList = arrayOf(*securityProperties.whiteList, "/error")
+        val whiteList = securityProperties.whiteList + "/error"
         cors {
             it.configurationSource(UrlBasedCorsConfigurationSource().apply {
                 registerCorsConfiguration("/**", CorsConfiguration().apply {
@@ -81,4 +81,31 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
     //不使用UserDetailsService，为了防止Spring Security自动在控制台生成临时密码，使用此默认配置
     @Bean
     fun userDetailService(): UserDetailsService = InMemoryUserDetailsManager()
+}
+
+@ConfigurationProperties(SecurityProperties.PREFIX)
+data class SecurityProperties(
+    
+    var enabled: Boolean = false,
+    
+    var whiteList: List<String> = listOf(),
+    
+    var corsOrigins: List<String> = listOf(),
+    
+    var token: Token = Token()
+) {
+    
+    companion object {
+        
+        const val PREFIX = "${MainProperties.PREFIX}.security"
+    }
+    
+    data class Token(
+        
+        var jwtKey: String = "abcde12345",
+        
+        var name: String = "token",
+        
+        var tempName: String = "temp-token"
+    )
 }

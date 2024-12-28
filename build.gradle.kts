@@ -11,6 +11,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.dependency.management)
     alias(libs.plugins.kotlin) apply false
+    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.lombok) apply false
 }
 
@@ -53,6 +54,7 @@ subprojects {
     //Kotlin项目
     if(project !in javaProjects) {
         apply(plugin = "org.jetbrains.kotlin.jvm")
+        apply(plugin = "org.jetbrains.kotlin.kapt")
         apply(plugin = "org.jetbrains.kotlin.plugin.lombok")
         dependencyManagement {
             imports {
@@ -60,17 +62,23 @@ subprojects {
             }
         }
         dependencies {
-            kotlin(rootProject)
+            kotlin(project)
             //仅用于避免libs.versions.toml中产生version变量未使用的提示
             rootProject.libs.versions.kotlin.coroutines
         }
         tasks {
             withType<KotlinCompile> {
                 kotlinOptions {
-                    freeCompilerArgs += "-Xjsr305=strict"
                     jvmTarget = java.sourceCompatibility.toString()
+                    freeCompilerArgs += listOf(
+                        "-Xjsr305=strict",
+                        "-Xjvm-default=all"
+                    )
                 }
             }
+        }
+        kapt {
+            keepJavacAnnotationProcessors = true
         }
     }
 
@@ -78,9 +86,10 @@ subprojects {
         compileJava {
             options.run {
                 encoding = StandardCharsets.UTF_8.name()
-                compilerArgs.run {
-                    add("-parameters")
-                }
+                val compilerArgs = compilerArgs as MutableCollection<String>
+                compilerArgs += listOf(
+                    "-parameters"
+                )
             }
         }
 

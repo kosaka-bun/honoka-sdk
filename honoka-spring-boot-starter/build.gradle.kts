@@ -28,10 +28,7 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-aop")
     compileOnly("org.springframework.boot:spring-boot-starter-security")
     compileOnly("com.baomidou:mybatis-plus-spring-boot3-starter:3.5.5")
-    "org.springframework.boot:spring-boot-configuration-processor".let {
-        compileOnly(it)
-        annotationProcessor(it)
-    }
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 tasks {

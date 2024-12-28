@@ -1,6 +1,6 @@
 package de.honoka.sdk.spring.starter.config
 
-import de.honoka.sdk.spring.starter.config.property.MainProperties
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -13,5 +13,14 @@ class MainConfig {
     companion object {
         
         const val CONFIG_CLASS_BEAN_NAME_PREFIX = "honokaStarter"
+    }
+}
+
+@ConfigurationProperties(MainProperties.PREFIX)
+class MainProperties {
+    
+    companion object {
+        
+        const val PREFIX = "honoka.starter"
     }
 }

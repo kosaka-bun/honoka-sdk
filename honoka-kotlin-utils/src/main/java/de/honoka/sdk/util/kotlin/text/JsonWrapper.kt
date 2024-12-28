@@ -48,4 +48,6 @@ class JsonWrapper internal constructor(private val json: JSON) {
     fun getBoolOrNull(path: String): Boolean? = json.getByPath(path) as Boolean?
     
     fun getDoubleOrNull(path: String): Double? = (json.getByPath(path) as Number?)?.toDouble()
+    
+    override fun toString(): String = json.toString()
 }

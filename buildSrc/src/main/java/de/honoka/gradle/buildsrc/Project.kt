@@ -8,7 +8,7 @@ import org.gradle.api.internal.catalog.VersionModel
 
 @Suppress("UNCHECKED_CAST")
 fun Project.libVersions(): Map<String, VersionModel> {
-    val libs = extensions.getByName("libs")
+    val libs = rootProject.extensions.getByName("libs")
     val versions = libs.javaClass.getDeclaredMethod("getVersions").invoke(libs)
     val catalog = versions.javaClass.superclass.getDeclaredField("config").run {
         isAccessible = true
