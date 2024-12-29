@@ -29,6 +29,8 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
     apply(plugin = "io.spring.dependency-management")
+    
+    val libs = rootProject.libs
 
     group = rootProject.group
 
@@ -41,7 +43,7 @@ subprojects {
     }
     
     dependencies {
-        rootProject.libs.lombok.let {
+        libs.lombok.let {
             compileOnly(it)
             annotationProcessor(it)
             testCompileOnly(it)
@@ -58,13 +60,13 @@ subprojects {
         apply(plugin = "org.jetbrains.kotlin.plugin.lombok")
         dependencyManagement {
             imports {
-                mavenBom(rootProject.libs.kotlin.bom.get().toString())
+                mavenBom(libs.kotlin.bom.get().toString())
             }
         }
         dependencies {
             kotlin(project)
             //仅用于避免libs.versions.toml中产生version变量未使用的提示
-            rootProject.libs.versions.kotlin.coroutines
+            libs.versions.kotlin.coroutines
         }
         tasks {
             withType<KotlinCompile> {

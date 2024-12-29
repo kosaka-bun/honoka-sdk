@@ -1,10 +1,7 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.basic.javadoc.ThreadSafe
-import de.honoka.sdk.util.kotlin.basic.cast
-import de.honoka.sdk.util.kotlin.basic.exception
-import de.honoka.sdk.util.kotlin.basic.isAnyType
-import de.honoka.sdk.util.kotlin.basic.tryBlockNullable
+import de.honoka.sdk.util.kotlin.basic.*
 import de.honoka.sdk.util.kotlin.concurrent.doubleSynchronized
 import de.honoka.sdk.util.kotlin.concurrent.shutdownNowAndWait
 import java.io.Closeable
@@ -115,6 +112,15 @@ class SocketForwarder(private val targets: Set<String>, private val options: Opt
                 toByteArray().also { reset() }
             }
             to.write(bytes)
+        }
+    }
+    
+    fun closeAllConnections() {
+        connectionMap.forEachInstant { (k, v) ->
+            runCatching {
+                k.close()
+                v.close()
+            }
         }
     }
     
