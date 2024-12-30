@@ -6,7 +6,7 @@ import cn.hutool.http.HttpStatus
 import cn.hutool.http.HttpUtil
 import de.honoka.sdk.util.kotlin.basic.log
 import de.honoka.sdk.util.kotlin.basic.tryBlockNullable
-import de.honoka.sdk.util.kotlin.concurrent.ThreadPoolUtils
+import de.honoka.sdk.util.kotlin.concurrent.ThreadPoolUtilsExt
 import de.honoka.sdk.util.kotlin.net.http.browserApiHeaders
 import de.honoka.sdk.util.kotlin.net.socket.SocketForwarder
 import de.honoka.sdk.util.kotlin.text.toJsonWrapper
@@ -29,7 +29,7 @@ class ProxyPool : Closeable {
     val randomProxy: String?
         get() = tryBlockNullable(3) { pool.randomOrNull() }
     
-    private val executor = ThreadPoolUtils.newScheduledPool(1)
+    private val executor = ThreadPoolUtilsExt.newScheduledPool(1)
     
     private var forwarderLazy = lazy { SocketForwarder(pool) }
     

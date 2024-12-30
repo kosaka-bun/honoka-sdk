@@ -1,4 +1,6 @@
-package de.honoka.sdk.util.system;
+package de.honoka.sdk.util.various;
+
+import lombok.Getter;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -9,12 +11,15 @@ import java.util.regex.Pattern;
 /**
  * 用于获取内存使用信息
  */
+@Getter
 public strictfp class SystemInfoBean {
 
     /**
      * 堆、非堆内存用量
      */
-    public MemoryUsage heap, nonHeap;
+    private final MemoryUsage heap;
+    
+    private final MemoryUsage nonHeap;
 
     public static String byteNumToStr(long byteNum) {
         if(byteNum < 1024)
