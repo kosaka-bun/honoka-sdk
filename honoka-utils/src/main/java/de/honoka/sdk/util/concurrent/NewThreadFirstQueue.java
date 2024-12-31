@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * 用于支持{@link ThreadPoolExecutor}在线程数未达到最大线程数时创建新线程的任务队列。
  * <p>
  * <b>
- * 注意：本类来源于Dubbo（<a href="https://github.com/apache/dubbo/blob/3.3/dubbo-common/src/main
+ * 本类来源于Dubbo（<a href="https://github.com/apache/dubbo/blob/3.3/dubbo-common/src/main
  * /java/org/apache/dubbo/common/threadpool/support/eager/TaskQueue.java">
  * https://github.com/apache/dubbo/blob/3.3/dubbo-common/src/main/java/org/apache/dubbo/common
  * /threadpool/support/eager/TaskQueue.java
@@ -31,14 +31,15 @@ public class NewThreadFirstQueue<R extends Runnable> extends LinkedBlockingQueue
     
     @Override
     public boolean offer(@NotNull R runnable) {
-        int poolSize = executor.getPoolSize();
         //have free worker. put task into queue to let the worker deal with task.
-        if(executor.getActiveCount() < poolSize) {
+        if(executor.getActiveCount() < executor.getPoolSize()) {
             return super.offer(runnable);
         }
-        //return false to let executor create new worker.
-        if(poolSize < executor.getMaximumPoolSize()) {
-            return false;
+        synchronized(this) {
+            //return false to let executor create new worker.
+            if(executor.getPoolSize() < executor.getMaximumPoolSize()) {
+                return false;
+            }
         }
         //poolSize >= max
         return super.offer(runnable);

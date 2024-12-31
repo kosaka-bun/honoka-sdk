@@ -25,7 +25,7 @@ class BooleanBuilder(private var boolean: Boolean = false) {
 
 fun <T : Any> KClass<*>.isSubClassOf(clazz: KClass<T>): Boolean = clazz.java.isAssignableFrom(java)
 
-fun <T : Any> KClass<*>.isSubClassOfAny(vararg classes: KClass<T>): Boolean {
+fun <T : Any> KClass<*>.isSubClassOfAny(vararg classes: KClass<out T>): Boolean {
     classes.forEach {
         if(this.isSubClassOf(it)) return true
     }
