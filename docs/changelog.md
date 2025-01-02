@@ -2,11 +2,11 @@
 
 ## 2.1.0
 #### honoka-utils 1.1.1
-- 将`code`包重命名为`basic`。
+- 将code包重命名为basic。
 - 新增了一些文档注解（`@ThreadSafe`、`@NotThreadSafe`）。
 
 #### honoka-kotlin-utils 1.1.0
-- 将`code`包重命名为`basic`。
+- 将code包重命名为basic。
 - 实现了`ProxyPool`，可自动搜集、更新、检查多个来源的免费HTTPS代理。
 - 实现了`SocketForwarder`，可实现Socket连接中转，作为中间服务交换客户端与远程目标间传输的数据，支持在客户端连接时从多个远程目标服务中随机选择其中一个。
 - 实现了`NioSocketClient`，可快速实现基于非阻塞IO并支持发起多个连接的Socket客户端。

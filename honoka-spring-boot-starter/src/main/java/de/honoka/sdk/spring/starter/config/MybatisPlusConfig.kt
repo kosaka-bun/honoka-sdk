@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration
 @ComponentScan("de.honoka.sdk.spring.starter.mybatis")
 @EnableConfigurationProperties(MybatisPlusProperties::class)
 @ConditionalOnProperty(prefix = MybatisPlusProperties.PREFIX, name = ["enabled"])
-@Configuration("${MainConfig.CONFIG_CLASS_BEAN_NAME_PREFIX}MybatisPlusConfig")
+@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}MybatisPlusConfig")
 class MybatisPlusConfig {
     
     @Value("\${spring.datasource.driver-class-name}")

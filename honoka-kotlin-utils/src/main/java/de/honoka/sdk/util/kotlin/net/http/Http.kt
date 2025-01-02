@@ -42,3 +42,8 @@ fun HttpRequest.randomProxy(autoInitPool: Boolean = true) {
     val proxy = ProxyPool.instance.randomProxy?.split(":")
     proxy?.let { setHttpProxy(proxy[0], proxy[1].toInt()) }
 }
+
+fun HttpRequest.setHttpProxy(proxy: String) {
+    val parts = proxy.split(":")
+    setHttpProxy(parts[0], parts[1].toInt())
+}

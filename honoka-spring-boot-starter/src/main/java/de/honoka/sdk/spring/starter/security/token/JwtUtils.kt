@@ -6,7 +6,7 @@ import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateTime
 import cn.hutool.jwt.JWT
 import de.honoka.sdk.spring.starter.config.SecurityProperties
-import de.honoka.sdk.spring.starter.core.context.ApplicationContextHolder.springBean
+import de.honoka.sdk.spring.starter.core.context.springBean
 import de.honoka.sdk.spring.starter.security.DefaultUser
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException

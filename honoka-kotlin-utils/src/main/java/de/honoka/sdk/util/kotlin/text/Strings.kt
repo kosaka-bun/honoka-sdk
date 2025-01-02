@@ -1,5 +1,7 @@
 package de.honoka.sdk.util.kotlin.text
 
+import org.intellij.lang.annotations.Language
+
 /**
  * 将多行字符串拼接为单行，支持行边界字符，默认使用“|”字符作为行边界。
  *
@@ -8,8 +10,8 @@ package de.honoka.sdk.util.kotlin.text
  * 2. 将字符串拆分为行。
  * 3. 遍历每行，先去掉每行两端的空格。
  * 4. 若某行以“|”开头，则去掉第一个“|”。以“|”结尾，则去掉最后一个“|”。
- * 5. 将处理好的行拼接到builder中。
- * 6. 返回builder的值。
+ * 5. 将处理好的行拼接到`builder`中。
+ * 6. 返回`builder`的值。
  *
  * 注意事项：
  * 1. 本方法仅适合用于Kotlin代码中的多行文本字面量。
@@ -46,3 +48,10 @@ fun String?.simpleSingleLine(whiteSpaceOnEnd: Boolean = false): String {
 }
 
 fun String.toStringBuilder(): StringBuilder = StringBuilder(this)
+
+fun String?.find(@Language("RegExp") regex: String): List<String> {
+    this ?: return listOf()
+    return Regex(regex).findAll(this).map { it.value }.toList()
+}
+
+fun String?.findOne(@Language("RegExp") regex: String): String? = find(regex).firstOrNull()

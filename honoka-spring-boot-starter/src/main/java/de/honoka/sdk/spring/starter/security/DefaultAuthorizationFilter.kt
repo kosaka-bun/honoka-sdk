@@ -3,7 +3,7 @@ package de.honoka.sdk.spring.starter.security
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import de.honoka.sdk.spring.starter.config.SecurityProperties
-import de.honoka.sdk.spring.starter.core.context.ApplicationContextHolder.springBean
+import de.honoka.sdk.spring.starter.core.context.springBean
 import de.honoka.sdk.spring.starter.core.web.authorization
 import de.honoka.sdk.spring.starter.core.web.get
 import de.honoka.sdk.spring.starter.security.token.JwtUtils
