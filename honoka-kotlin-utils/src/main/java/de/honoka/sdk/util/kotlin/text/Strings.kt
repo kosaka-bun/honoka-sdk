@@ -18,9 +18,9 @@ import org.intellij.lang.annotations.Language
  * 2. 若某行以`${}`开头或结尾，由于不知道表达式最终的值是否会以“|”开头或结尾，为了避免去除
  *    表达式结果当中包含的“|”，请在以`${}`开头或结尾的行的行首或行尾额外添加一个“|”。
  */
-fun String?.singleLine(borderChar: Char = '|', whiteSpaceOnEnd: Boolean = false): String {
+fun String.singleLine(borderChar: Char = '|', whiteSpaceOnEnd: Boolean = false): String {
     val builder = StringBuilder()
-    toString().trim().lineSequence().forEach {
+    trim().lineSequence().forEach {
         val line = it.trim()
         val startIndex = if(line.startsWith(borderChar)) 1 else 0
         val endIndex = if(line.endsWith(borderChar)) line.lastIndex else line.length
@@ -36,9 +36,9 @@ fun String?.singleLine(borderChar: Char = '|', whiteSpaceOnEnd: Boolean = false)
 /**
  * 直接将多行字符串的每行去除两端空格后，拼接在一起。
  */
-fun String?.simpleSingleLine(whiteSpaceOnEnd: Boolean = false): String {
+fun String.simpleSingleLine(whiteSpaceOnEnd: Boolean = false): String {
     val builder = StringBuilder()
-    toString().trim().lineSequence().forEach {
+    trim().lineSequence().forEach {
         builder.run {
             append(it.trim())
             if(whiteSpaceOnEnd) append(" ")
@@ -55,3 +55,7 @@ fun String?.find(@Language("RegExp") regex: String): List<String> {
 }
 
 fun String?.findOne(@Language("RegExp") regex: String): String? = find(regex).firstOrNull()
+
+fun String.trimAllLines(): String = run {
+    trim().lineSequence().map { it.trim() }.joinToString("\n")
+}

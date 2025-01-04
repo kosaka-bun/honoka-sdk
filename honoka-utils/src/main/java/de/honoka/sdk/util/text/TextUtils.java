@@ -49,10 +49,22 @@ public class TextUtils {
     }
 
     /**
-     * （供1.8及以下使用）获取每一行
+     * 获取每一行（供JDK 1.8及以下使用）
      */
     public static List<String> getLines(String s) {
         s = s.replace("\r", "");
         return Arrays.asList(s.split("\n"));
+    }
+    
+    /**
+     * 获取字符串半角长度（全角字符算2个单位，半角字符算1个单位）
+     */
+    public static int getHalfWidthLength(String s) {
+        int count = 0;
+        for(int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            count += c < 0x800 ? 1 : 2;
+        }
+        return count;
     }
 }

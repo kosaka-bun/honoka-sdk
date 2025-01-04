@@ -1,6 +1,7 @@
 package de.honoka.sdk.util.various;
 
 import de.honoka.sdk.util.file.FileUtils;
+import de.honoka.sdk.util.text.TextUtils;
 import gui.ava.html.Html2Image;
 import gui.ava.html.renderer.ImageRenderer;
 import lombok.SneakyThrows;
@@ -42,23 +43,19 @@ public class ImageUtils {
         String[] lines = text.split("\n");
         StringBuilder textBuilder = new StringBuilder();
         for(int i = 0; i < lines.length; i++) {
-            if(lines[i].length() <= lineLength) {
+            String line = lines[i];
+            if(TextUtils.getHalfWidthLength(line) <= lineLength) {
                 //行长度不超过限制
-                textBuilder.append(lines[i]);
+                textBuilder.append(line);
             } else {
-				/*
-				 * 超过限制，将此行拆分为多行，除最后一行外，每行都为固定长度，
-				 * 加末尾换行符
-				 */
-                //计算此行拆分后的行数
-                int lineNum = lines[i].length() / lineLength + 1;
-                if(lines[i].length() % lineLength == 0) lineNum -= 1;
-                //根据最大长度依次截取为多行，除最后一行外，均添加换行符
-                for(int j = 0; j < lineNum; j++) {
-                    if(j != lineNum - 1) {
-                        textBuilder.append(lines[i], j * lineLength, (j + 1) * lineLength).append("\n");
-                    } else {
-                        textBuilder.append(lines[i].substring(j * lineLength));
+                int halfWidthIndex = 0;
+                for(int j = 0; j < line.length(); j++) {
+                    char c = line.charAt(j);
+                    textBuilder.append(c);
+                    halfWidthIndex += c < 0x800 ? 1 : 2;
+                    if(halfWidthIndex >= lineLength) {
+                        halfWidthIndex = 0;
+                        textBuilder.append("\n");
                     }
                 }
             }
@@ -76,11 +73,12 @@ public class ImageUtils {
     }
 
     /**
-     * 指定每行最大字符数，自动计算图片大小
-     * 文本图片默认图片大小 imageSize = lineLength * 50
+     * 指定每行最大字符数（半角），自动计算图片大小。
+     * <p>
+     * 文本图片默认图片大小 <code>imageSize</code> = <code>lineLength</code> * 26
      */
     public static InputStream textToImageByLength(String text, int lineLength) {
-        return htmlToImage(getTextImageHtml(forceWarp(text, lineLength)), lineLength * 53);
+        return htmlToImage(getTextImageHtml(forceWarp(text, lineLength)), lineLength * 28);
     }
 
     public static InputStream textToImage(String text) {
