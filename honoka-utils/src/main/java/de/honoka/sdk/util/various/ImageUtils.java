@@ -55,7 +55,9 @@ public class ImageUtils {
                     halfWidthIndex += c < 0x800 ? 1 : 2;
                     if(halfWidthIndex >= lineLength) {
                         halfWidthIndex = 0;
-                        textBuilder.append("\n");
+                        if(j < line.length() - 1) {
+                            textBuilder.append("\n");
+                        }
                     }
                 }
             }
@@ -75,7 +77,7 @@ public class ImageUtils {
     /**
      * 指定每行最大字符数（半角），自动计算图片大小。
      * <p>
-     * 文本图片默认图片大小 <code>imageSize</code> = <code>lineLength</code> * 26
+     * 文本图片默认图片大小 <code>imageSize</code> = <code>lineLength</code> * 28
      */
     public static InputStream textToImageByLength(String text, int lineLength) {
         return htmlToImage(getTextImageHtml(forceWarp(text, lineLength)), lineLength * 28);
