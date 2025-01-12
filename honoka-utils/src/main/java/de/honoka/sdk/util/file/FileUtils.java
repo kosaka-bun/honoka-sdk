@@ -1,5 +1,6 @@
 package de.honoka.sdk.util.file;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import lombok.SneakyThrows;
@@ -14,7 +15,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FileUtils {
@@ -86,22 +90,41 @@ public class FileUtils {
         URL rootResourceUrl = Thread.currentThread().getContextClassLoader().getResource("");
         if(isAppRunningInJar()) {
             String path = Objects.requireNonNull(rootResourceUrl).getPath();
-            String pathEndSymbol = ".jar!/";
-            int lowercaseSymbolIndex = path.indexOf(pathEndSymbol);
-            int uppercaseSymbolIndex = path.indexOf(pathEndSymbol.toUpperCase(Locale.ROOT));
-            List<Integer> symbolIndexes = new HashSet<>(Arrays.asList(
-                lowercaseSymbolIndex, uppercaseSymbolIndex
-            )).stream().filter(it -> it != -1).sorted().collect(Collectors.toList());
-            if(!path.startsWith("file:/") || symbolIndexes.isEmpty()) {
+            String pathEndSymbol;
+            if(path.startsWith("file:/")) {
+                pathEndSymbol = ".jar!/";
+            } else if(path.startsWith("nested:/")) {
+                pathEndSymbol = ".jar/!";
+            } else {
                 throw new RuntimeException("Root resource path is invalid: " + path);
             }
-            path = path.substring(6, symbolIndexes.get(0) + 4);
+            int lowercaseSymbolIndex = path.indexOf(pathEndSymbol);
+            int uppercaseSymbolIndex = path.indexOf(pathEndSymbol.toUpperCase(Locale.ROOT));
+            List<Integer> symbolIndexes = CollUtil.newHashSet(lowercaseSymbolIndex, uppercaseSymbolIndex)
+                .stream()
+                .filter(it -> it != -1)
+                .sorted()
+                .collect(Collectors.toList());
+            if(symbolIndexes.isEmpty()) {
+                throw new RuntimeException("Root resource path is invalid: " + path);
+            }
+            int pathStartIndex = 0;
+            if(path.startsWith("file:/")) {
+                pathStartIndex = 6;
+            } else if(path.startsWith("nested:/")) {
+                pathStartIndex = 8;
+            }
+            path = path.substring(pathStartIndex, symbolIndexes.get(0) + 4);
             path = path.substring(0, path.lastIndexOf("/"));
             path = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
             String result = Paths.get(path).normalize().toString();
             String osName = System.getProperty("os.name").toLowerCase(Locale.ROOT);
             if(!osName.contains("windows") && !result.startsWith("/")) {
                 result = "/" + result;
+            }
+            File dir = new File(result);
+            if(!dir.exists() || !dir.isDirectory()) {
+                throw new RuntimeException("Calculated main classpath is invalid: " + result);
             }
             MAIN_CLASSPATH = result;
         } else {
