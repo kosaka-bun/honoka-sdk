@@ -1,9 +1,10 @@
-package de.honoka.sdk.util.kotlin.net.socket
+package de.honoka.sdk.util.kotlin.net.socket.selector
 
 import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
 import de.honoka.sdk.util.kotlin.basic.forEachCatching
 import de.honoka.sdk.util.kotlin.basic.forEachInstant
 import de.honoka.sdk.util.kotlin.basic.log
+import de.honoka.sdk.util.kotlin.net.socket.SocketConnection
 import lombok.extern.slf4j.Slf4j
 import java.io.Closeable
 import java.nio.channels.SelectionKey
@@ -17,16 +18,15 @@ import java.util.concurrent.Executors
 @Slf4j
 class StatusSelector : Closeable {
     
-    companion object {
-        
-        private val executor by lazy { Executors.newFixedThreadPool(1) }
-    }
-    
     private val selector: Selector = Selector.open()
     
     private val servers = ConcurrentHashMap<ServerSocketChannel, StatusSelectorEventCallback>()
     
     private val connections = ConcurrentHashMap<SocketChannel, SocketConnection>()
+
+    private val executorLazy = lazy { Executors.newFixedThreadPool(1) }
+
+    private val executor by executorLazy
     
     @Volatile
     var closed = false
@@ -43,7 +43,7 @@ class StatusSelector : Closeable {
     
     fun registerServer(
         serverChannel: ServerSocketChannel,
-        callback: StatusSelectorEventCallback = DefaultStatusSelectorEventCallback
+        callback: StatusSelectorEventCallback = EmptyStatusSelectorEventCallback
     ) {
         if(closed) throw SelectorClosedException()
         serverChannel.register(selector, SelectionKey.OP_ACCEPT)
@@ -87,11 +87,14 @@ class StatusSelector : Closeable {
         }
         val connection = register(channel, serverChannel)
         log.debug("Connection accepted: $connection")
-        executor.submit {
-            runCatching {
-                servers[serverChannel]!!.onAccpeted(connection)
-            }.getOrElse {
-                connection.close()
+        servers[serverChannel]?.let {
+            if(it is EmptyStatusSelectorEventCallback) return
+            executor.submit {
+                runCatching {
+                    it.onAccpeted(connection)
+                }.getOrElse {
+                    connection.close()
+                }
             }
         }
     }
@@ -118,10 +121,13 @@ class StatusSelector : Closeable {
                 checkOrClose()
                 if(!closed) return@forEachInstant
                 connections.remove(k)
-                executor.submit {
-                    runCatching {
-                        fromChannel?.let {
-                            servers[it]!!.onClosed(this)
+                fromChannel?.let {
+                    servers[it]?.let { c ->
+                        if(c is EmptyStatusSelectorEventCallback) return@forEachInstant
+                        executor.submit {
+                            runCatching {
+                                c.onClosed(this)
+                            }
                         }
                     }
                 }
@@ -139,21 +145,10 @@ class StatusSelector : Closeable {
             }
         }
         selector.close()
+        if(executorLazy.isInitialized()) {
+            executor.shutdownNow()
+        }
     }
-}
-
-interface StatusSelectorEventCallback {
-    
-    fun onAccpeted(connection: SocketConnection)
-    
-    fun onClosed(connection: SocketConnection)
-}
-
-object DefaultStatusSelectorEventCallback : StatusSelectorEventCallback {
-
-    override fun onAccpeted(connection: SocketConnection) {}
-
-    override fun onClosed(connection: SocketConnection) {}
 }
 
 class SelectorClosedException(message: String? = null) : RuntimeException(message)
