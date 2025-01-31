@@ -14,7 +14,7 @@ import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 
-abstract class NioSocketServer(private val options: Options = Options()) : Closeable {
+abstract class NioSocketServer(protected val options: Options = Options()) : Closeable {
 
     data class Options(
 
@@ -32,9 +32,10 @@ abstract class NioSocketServer(private val options: Options = Options()) : Close
     val port: Int
         get() = serverSocketChannel.localAddress.cast<InetSocketAddress>().port
 
-    protected open val eventCallback: StatusSelectorEventCallback = EmptyStatusSelectorEventCallback
+    private val eventCallback: StatusSelectorEventCallback
 
-    private val selector = StatusSelector().apply {
+    protected val selector = StatusSelector().apply {
+        eventCallback = newEventCallback()
         registerServer(serverSocketChannel, eventCallback)
     }
 
@@ -47,7 +48,13 @@ abstract class NioSocketServer(private val options: Options = Options()) : Close
         startup()
     }
 
+    protected open fun newEventCallback(): StatusSelectorEventCallback = EmptyStatusSelectorEventCallback
+
     private fun startup() {
+        startSelectorTask()
+    }
+
+    private fun startSelectorTask() {
         executor.submit {
             while(true) {
                 if(Thread.currentThread().isInterrupted) break
@@ -65,19 +72,25 @@ abstract class NioSocketServer(private val options: Options = Options()) : Close
         selector.run {
             select()
             connectionsView.forEach {
-                if(!it.readable) return@forEach
+                if(!it.needReport) return@forEach
                 executor.submit {
+                    if(Thread.currentThread().isInterrupted) return@submit
                     synchronized(it) {
-                        if(!it.readable) return@submit
-                        runCatching {
-                            val bytes = runCatching {
-                                it.read()
-                            }.getOrElse { _ ->
-                                return@runCatching
+                        it.checkOrClose()
+                        if(it.needReportReadable) {
+                            runCatching {
+                                onReadable(it)
+                            }.getOrElse { e ->
+                                if(e is SocketReadEofException) return@getOrElse
+                                log.error("", e)
                             }
-                            onReadable(it, bytes)
-                        }.getOrElse { e ->
-                            log.error("", e)
+                        }
+                        if(it.needReportWritable) {
+                            runCatching {
+                                onWritable(it)
+                            }.getOrElse { e ->
+                                log.error("", e)
+                            }
                         }
                     }
                 }
@@ -85,11 +98,19 @@ abstract class NioSocketServer(private val options: Options = Options()) : Close
         }
     }
 
-    abstract fun onReadable(connection: SocketConnection, bytes: ByteArray)
+    abstract fun onReadable(connection: SocketConnection)
+
+    open fun onWritable(connection: SocketConnection) {
+        connection.writableReported = true
+    }
+
+    protected open fun closeExecutor() {
+        executor.shutdownNowAndWait()
+    }
 
     @Synchronized
     override fun close() {
-        executor.shutdownNowAndWait()
+        closeExecutor()
         selector.close()
         serverSocketChannel.close()
     }

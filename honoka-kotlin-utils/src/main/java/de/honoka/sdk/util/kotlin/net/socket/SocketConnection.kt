@@ -34,6 +34,21 @@ class SocketConnection(
     var writable: Boolean = false
         internal set
 
+    @Volatile
+    var readableReported: Boolean = false
+
+    @Volatile
+    var writableReported: Boolean = false
+
+    val needReportReadable: Boolean
+        get() = readable && !readableReported && !closed
+
+    val needReportWritable: Boolean
+        get() = writable && !writableReported && !closed
+
+    val needReport: Boolean
+        get() = needReportReadable || needReportWritable
+
     @get:JvmSynthetic
     internal val writeBufferStream = ByteArrayOutputStream()
     
@@ -58,13 +73,12 @@ class SocketConnection(
         if(wakeupSelector) selector.wakeup()
     }
 
-    @JvmSynthetic
-    internal fun read(bufferSize: Int = 10 * 1024): ByteArray {
-        if(!readable || closed) exception("Not readable")
+    fun read(bufferSize: Int = 10 * 1024): ByteArray {
+        if(!readable || closed) exception("Not readable. readable = $readable, closed = $closed")
         val buffer = ByteBuffer.allocate(bufferSize)
         val readCount = runCatching {
             val c = channel.read(buffer)
-            if(c < 0) exception("No bytes read.")
+            if(c < 0) throw SocketReadEofException()
             readable = false
             updateListeningEvents(true)
             c
@@ -77,9 +91,8 @@ class SocketConnection(
         return buffer.array().sliceArray(0 until readCount)
     }
 
-    @JvmSynthetic
-    internal fun write(bytes: ByteArray) {
-        if(!writable || closed) exception("Not writable")
+    fun write(bytes: ByteArray) {
+        if(!writable || closed) exception("Not writable. readable = $readable, closed = $closed")
         runCatching {
             channel.write(ByteBuffer.wrap(bytes))
             writable = false
@@ -100,13 +113,14 @@ class SocketConnection(
         throwOnFailed: Boolean = true
     ): Boolean {
         repeat(tryCount) {
-            synchronized(this) {
-                if(!writable) {
-                    if(it + 1 < tryCount) {
-                        Thread.sleep(waitTimeMillis)
-                    }
-                    return@repeat
+            if(!writable) {
+                if(it + 1 < tryCount) {
+                    Thread.sleep(waitTimeMillis)
                 }
+                return@repeat
+            }
+            synchronized(this) {
+                if(!writable) return@repeat
                 write(bytes)
                 return true
             }
@@ -146,3 +160,5 @@ class SocketConnection(
         selector.wakeup()
     }
 }
+
+class SocketReadEofException : RuntimeException()

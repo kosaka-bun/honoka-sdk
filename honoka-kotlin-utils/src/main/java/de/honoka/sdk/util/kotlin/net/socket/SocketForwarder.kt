@@ -1,85 +1,62 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.basic.javadoc.ThreadSafe
-import de.honoka.sdk.util.kotlin.basic.*
+import de.honoka.sdk.util.kotlin.basic.exception
+import de.honoka.sdk.util.kotlin.basic.forEachInstant
+import de.honoka.sdk.util.kotlin.basic.isAnyType
+import de.honoka.sdk.util.kotlin.basic.tryBlockNullable
 import de.honoka.sdk.util.kotlin.concurrent.shutdownNowAndWait
-import de.honoka.sdk.util.kotlin.concurrent.synchronized2
 import de.honoka.sdk.util.kotlin.net.socket.selector.SelectorClosedException
-import de.honoka.sdk.util.kotlin.net.socket.selector.StatusSelector
 import de.honoka.sdk.util.kotlin.net.socket.selector.StatusSelectorEventCallback
 import java.io.Closeable
-import java.net.InetSocketAddress
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
-class SocketForwarder(private val targets: Set<String>, private val options: Options = Options()) : Closeable {
-    
-    data class Options(
-        
-        var firstTryPort: Int = 10000,
-        
-        var tryPortCount: Int = 20,
-        
-        var executorThreads: Int = 1,
-    
-        var bufferSize: Int = 10 * 2024
-    )
-    
-    @ThreadSafe
-    private inner class SelectorCallback : StatusSelectorEventCallback {
-        
-        override fun onAccpeted(connection: SocketConnection) {
-            val target = tryBlockNullable(3) { targets.randomOrNull() }
-            target ?: exception("No avaliable target.")
-            val targetConnection = nioSocketClient.connect(target)
-            connectionMap[connection] = targetConnection
-            selector.wakeup()
-        }
-        
-        override fun onClosed(connection: SocketConnection) {
-            val targetConnection = connectionMap[connection]
-            connectionMap.remove(targetConnection)
-            runCatching {
-                targetConnection?.close()
-            }
-        }
-    }
-
-    private val serverSocketChannel = SocketUtils.newServerSocketChannel(options.firstTryPort, options.tryPortCount)
-    
-    val port: Int
-        get() = serverSocketChannel.localAddress.cast<InetSocketAddress>().port
-    
-    private val selector = StatusSelector().apply {
-        registerServer(serverSocketChannel, SelectorCallback())
-    }
+class SocketForwarder(
+    private val targets: Set<String>,
+    options: Options = Options()
+) : NioSocketServer(options), Closeable {
     
     private val nioSocketClient = NioSocketClient()
     
     private val connectionMap = ConcurrentHashMap<SocketConnection, SocketConnection>()
     
-    private val executor = Executors.newFixedThreadPool(options.executorThreads + 2)
+    private val executor = Executors.newFixedThreadPool(1)
     
     init {
         startup()
     }
-    
+
+    override fun newEventCallback(): StatusSelectorEventCallback = @ThreadSafe object : StatusSelectorEventCallback {
+
+            override fun onAccpeted(connection: SocketConnection) {
+                val target = tryBlockNullable(3) { targets.randomOrNull() }
+                target ?: exception("No avaliable target.")
+                val targetConnection = nioSocketClient.connect(target)
+                connectionMap[connection] = targetConnection
+                selector.wakeup()
+            }
+
+            override fun onClosed(connection: SocketConnection) {
+                val targetConnection = connectionMap[connection]
+                connectionMap.remove(targetConnection)
+                runCatching {
+                    targetConnection?.close()
+                }
+            }
+        }
+
     private fun startup() {
-        submitSelectorTask {
-            handleConnections()
-        }
-        submitSelectorTask {
-            nioSocketClient.refresh()
-            selector.wakeup()
-        }
+        startClientSelectorTask()
     }
     
-    private inline fun submitSelectorTask(crossinline block: () -> Unit) {
+    private fun startClientSelectorTask() {
         executor.submit {
             while(true) {
                 if(Thread.currentThread().isInterrupted) break
                 try {
-                    block()
+                    nioSocketClient.refresh()
+                    selector.wakeup()
                 } catch(t: Throwable) {
                     val typesToThrow = listOf(SelectorClosedException::class)
                     if(t.isAnyType(typesToThrow)) throw t
@@ -87,25 +64,21 @@ class SocketForwarder(private val targets: Set<String>, private val options: Opt
             }
         }
     }
-    
-    private fun handleConnections() {
-        selector.select()
-        connectionMap.forEach { (k, v) ->
-            executor.submit {
-                if(Thread.currentThread().isInterrupted) return@submit
-                synchronized2(k, v) {
-                    runCatching {
-                        forward(k, v)
-                        forward(v, k)
-                    }.getOrElse {
-                        k.close()
-                        v.close()
-                    }
-                }
-            }
+
+    override fun onReadable(connection: SocketConnection) {
+        val clientConnection = connectionMap[connection] ?: return
+        synchronized(clientConnection) {
+            forwardBidirectionally(connection, clientConnection)
         }
     }
-    
+
+    override fun onWritable(connection: SocketConnection) {
+        val clientConnection = connectionMap[connection] ?: return
+        synchronized(clientConnection) {
+            forwardBidirectionally(clientConnection, connection)
+        }
+    }
+
     private fun forward(from: SocketConnection, to: SocketConnection) {
         if(from.readable) {
             to.writeBufferStream.write(from.read(options.bufferSize))
@@ -117,7 +90,17 @@ class SocketForwarder(private val targets: Set<String>, private val options: Opt
             to.write(bytes)
         }
     }
-    
+
+    private fun forwardBidirectionally(connection1: SocketConnection, connection2: SocketConnection) {
+        runCatching {
+            forward(connection1, connection2)
+            forward(connection2, connection1)
+        }.getOrElse {
+            connection1.close()
+            connection2.close()
+        }
+    }
+
     fun closeAllConnections() {
         connectionMap.forEachInstant { (k, v) ->
             runCatching {
@@ -126,12 +109,16 @@ class SocketForwarder(private val targets: Set<String>, private val options: Opt
             }
         }
     }
-    
+
+    override fun closeExecutor() {
+        super.closeExecutor()
+        executor.shutdownNowAndWait()
+    }
+
     @Synchronized
     override fun close() {
-        executor.shutdownNowAndWait()
+        closeExecutor()
         nioSocketClient.close()
-        selector.close()
-        serverSocketChannel.close()
+        super.close()
     }
 }

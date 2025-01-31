@@ -105,6 +105,7 @@ class StatusSelector : Closeable {
     private fun onChannelReadable(key: SelectionKey) {
         connections[key.channel()]?.run {
             readable = true
+            readableReported = false
             log.debug("Connection readable: {}", this)
             updateListeningEvents()
         }
@@ -113,6 +114,7 @@ class StatusSelector : Closeable {
     private fun onChannelWritable(key: SelectionKey) {
         connections[key.channel()]?.run {
             writable = true
+            writableReported = false
             log.debug("Connection writable: {}", this)
             updateListeningEvents()
         }
