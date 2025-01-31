@@ -24,6 +24,9 @@ class StatusSelector : Closeable {
     
     private val connections = ConcurrentHashMap<SocketChannel, SocketConnection>()
 
+    val connectionsView: Collection<SocketConnection>
+        get() = connections.values
+
     private val executorLazy = lazy { Executors.newFixedThreadPool(1) }
 
     private val executor by executorLazy
@@ -86,7 +89,7 @@ class StatusSelector : Closeable {
             configureBlocking(false)
         }
         val connection = register(channel, serverChannel)
-        log.debug("Connection accepted: $connection")
+        log.debug("Connection accepted: {}", connection)
         servers[serverChannel]?.let {
             if(it is EmptyStatusSelectorEventCallback) return
             executor.submit {
@@ -102,7 +105,7 @@ class StatusSelector : Closeable {
     private fun onChannelReadable(key: SelectionKey) {
         connections[key.channel()]?.run {
             readable = true
-            log.debug("Connection readable: $this")
+            log.debug("Connection readable: {}", this)
             updateListeningEvents()
         }
     }
@@ -110,7 +113,7 @@ class StatusSelector : Closeable {
     private fun onChannelWritable(key: SelectionKey) {
         connections[key.channel()]?.run {
             writable = true
-            log.debug("Connection writable: $this")
+            log.debug("Connection writable: {}", this)
             updateListeningEvents()
         }
     }
@@ -131,7 +134,7 @@ class StatusSelector : Closeable {
                         }
                     }
                 }
-                log.debug("Connection $v has been removed.")
+                log.debug("Connection {} has been removed.", v)
             }
         }
     }

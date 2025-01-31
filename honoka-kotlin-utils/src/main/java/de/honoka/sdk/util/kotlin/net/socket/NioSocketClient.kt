@@ -29,7 +29,7 @@ class NioSocketClient : Closeable {
                 throw it
             }
         }
-        log.debug("Connection established: $connection")
+        log.debug("Connection established: {}", connection)
         selector.wakeup()
         return connection
     }

@@ -3,6 +3,7 @@ package de.honoka.sdk.util.kotlin.net.socket
 import cn.hutool.core.date.DateTime
 import cn.hutool.core.date.DateUnit
 import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
+import de.honoka.sdk.util.basic.javadoc.ThreadSafe
 import de.honoka.sdk.util.kotlin.basic.exception
 import de.honoka.sdk.util.kotlin.basic.log
 import de.honoka.sdk.util.kotlin.text.singleLine
@@ -22,16 +23,19 @@ class SocketConnection(
     val channel: SocketChannel,
     val selector: Selector
 ) : Closeable {
-    
+
+    @set:JvmSynthetic
     @Volatile
     var readable: Boolean = false
         internal set
-    
+
+    @set:JvmSynthetic
     @Volatile
     var writable: Boolean = false
         internal set
-    
-    val writeBufferStream = ByteArrayOutputStream()
+
+    @get:JvmSynthetic
+    internal val writeBufferStream = ByteArrayOutputStream()
     
     @Volatile
     var lastReadOrWriteTime: DateTime = DateTime.now()
@@ -40,8 +44,9 @@ class SocketConnection(
     @Volatile
     var closed: Boolean = false
         private set
-    
-    fun updateListeningEvents(wakeupSelector: Boolean = false) {
+
+    @JvmSynthetic
+    internal fun updateListeningEvents(wakeupSelector: Boolean = false) {
         if(closed) exception("closed")
         val operations = run {
             var it = 0
@@ -52,8 +57,9 @@ class SocketConnection(
         channel.register(selector, operations)
         if(wakeupSelector) selector.wakeup()
     }
-    
-    fun read(bufferSize: Int = 10 * 1024): ByteArray {
+
+    @JvmSynthetic
+    internal fun read(bufferSize: Int = 10 * 1024): ByteArray {
         if(!readable || closed) exception("Not readable")
         val buffer = ByteBuffer.allocate(bufferSize)
         val readCount = runCatching {
@@ -70,8 +76,9 @@ class SocketConnection(
         lastReadOrWriteTime = DateTime.now()
         return buffer.array().sliceArray(0 until readCount)
     }
-    
-    fun write(bytes: ByteArray) {
+
+    @JvmSynthetic
+    internal fun write(bytes: ByteArray) {
         if(!writable || closed) exception("Not writable")
         runCatching {
             channel.write(ByteBuffer.wrap(bytes))
@@ -83,6 +90,32 @@ class SocketConnection(
         }
         log.debug("Writed ${bytes.size} bytes to $address.")
         lastReadOrWriteTime = DateTime.now()
+    }
+
+    @ThreadSafe
+    fun tryWrite(
+        bytes: ByteArray,
+        tryCount: Int = 1,
+        waitTimeMillis: Long = 10L,
+        throwOnFailed: Boolean = true
+    ): Boolean {
+        repeat(tryCount) {
+            synchronized(this) {
+                if(!writable) {
+                    if(it + 1 < tryCount) {
+                        Thread.sleep(waitTimeMillis)
+                    }
+                    return@repeat
+                }
+                write(bytes)
+                return true
+            }
+        }
+        if(throwOnFailed) {
+            exception("Write timeout")
+        } else {
+            return false
+        }
     }
     
     fun checkOrClose() {
@@ -109,7 +142,7 @@ class SocketConnection(
         runCatching {
             channel.close()
         }
-        log.debug("Connection closed: $this")
+        log.debug("Connection closed: {}", this)
         selector.wakeup()
     }
 }

@@ -10,6 +10,8 @@ dependencies {
     implementation("gui.ava:html2image:2.0.1") {
         exclude("xml-apis", "xml-apis")
     }
+    implementationApi(libs.slf4j.api)
+    implementation(libs.logback)
     compileOnly("org.jetbrains:annotations:24.0.0")
     runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.78.1")
 }

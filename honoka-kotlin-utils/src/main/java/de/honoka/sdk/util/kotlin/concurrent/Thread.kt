@@ -1,5 +1,6 @@
 package de.honoka.sdk.util.kotlin.concurrent
 
+import de.honoka.sdk.util.concurrent.LockUtils
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
@@ -32,10 +33,20 @@ fun ExecutorService.shutdownNowAndWait(
     unit: TimeUnit = TimeUnit.SECONDS
 ): List<Runnable> = shutdownNow().apply { awaitTermination(timeout, unit) }
 
-inline fun <T> doubleSynchronized(lock1: Any, lock2: Any, block: () -> T): T {
+inline fun <T> synchronized2(lock1: Any, lock2: Any, block: () -> T): T = run {
+    synchronized(lock1) {
+        synchronized(lock2, block)
+    }
+}
+
+inline fun <T> synchronized3(lock1: Any, lock2: Any, lock3: Any, block: () -> T): T = run {
     synchronized(lock1) {
         synchronized(lock2) {
-            return block()
+            synchronized(lock3, block)
         }
     }
+}
+
+fun <T> synchronizedItems(vararg items: Any, block: () -> T): T = run {
+    LockUtils.synchronizedItems(items.asIterable(), block)
 }

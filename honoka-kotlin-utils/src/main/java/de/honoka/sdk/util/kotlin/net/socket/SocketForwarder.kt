@@ -2,8 +2,8 @@ package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.basic.javadoc.ThreadSafe
 import de.honoka.sdk.util.kotlin.basic.*
-import de.honoka.sdk.util.kotlin.concurrent.doubleSynchronized
 import de.honoka.sdk.util.kotlin.concurrent.shutdownNowAndWait
+import de.honoka.sdk.util.kotlin.concurrent.synchronized2
 import de.honoka.sdk.util.kotlin.net.socket.selector.SelectorClosedException
 import de.honoka.sdk.util.kotlin.net.socket.selector.StatusSelector
 import de.honoka.sdk.util.kotlin.net.socket.selector.StatusSelectorEventCallback
@@ -93,7 +93,7 @@ class SocketForwarder(private val targets: Set<String>, private val options: Opt
         connectionMap.forEach { (k, v) ->
             executor.submit {
                 if(Thread.currentThread().isInterrupted) return@submit
-                doubleSynchronized(k, v) {
+                synchronized2(k, v) {
                     runCatching {
                         forward(k, v)
                         forward(v, k)
