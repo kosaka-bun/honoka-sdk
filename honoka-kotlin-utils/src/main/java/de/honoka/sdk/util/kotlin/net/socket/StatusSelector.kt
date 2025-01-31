@@ -41,7 +41,10 @@ class StatusSelector : Closeable {
         return connection
     }
     
-    fun registerServer(serverChannel: ServerSocketChannel, callback: StatusSelectorEventCallback) {
+    fun registerServer(
+        serverChannel: ServerSocketChannel,
+        callback: StatusSelectorEventCallback = DefaultStatusSelectorEventCallback
+    ) {
         if(closed) throw SelectorClosedException()
         serverChannel.register(selector, SelectionKey.OP_ACCEPT)
         servers[serverChannel] = callback
@@ -113,17 +116,16 @@ class StatusSelector : Closeable {
         connections.forEachInstant { (k, v) ->
             v.runCatching {
                 checkOrClose()
-                if(closed) {
-                    connections.remove(k)
-                    executor.submit {
-                        runCatching {
-                            fromChannel?.let {
-                                servers[it]!!.onClosed(this)
-                            }
+                if(!closed) return@forEachInstant
+                connections.remove(k)
+                executor.submit {
+                    runCatching {
+                        fromChannel?.let {
+                            servers[it]!!.onClosed(this)
                         }
                     }
-                    log.debug("Connection $v has been removed.")
                 }
+                log.debug("Connection $v has been removed.")
             }
         }
     }
@@ -145,6 +147,13 @@ interface StatusSelectorEventCallback {
     fun onAccpeted(connection: SocketConnection)
     
     fun onClosed(connection: SocketConnection)
+}
+
+object DefaultStatusSelectorEventCallback : StatusSelectorEventCallback {
+
+    override fun onAccpeted(connection: SocketConnection) {}
+
+    override fun onClosed(connection: SocketConnection) {}
 }
 
 class SelectorClosedException(message: String? = null) : RuntimeException(message)
