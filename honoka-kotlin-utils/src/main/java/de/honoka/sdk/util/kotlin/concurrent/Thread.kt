@@ -30,13 +30,11 @@ fun <T> Future<T>.getOrCancel(timeout: Long, unit: TimeUnit): T {
 
 fun ExecutorService.shutdownNowAndWait(
     timeout: Long = Long.MAX_VALUE,
-    unit: TimeUnit = TimeUnit.SECONDS
+    unit: TimeUnit = TimeUnit.SECONDS,
+    ignoreIfAlreadyShutdown: Boolean = true
 ): List<Runnable> = run {
-    if(isShutdown) {
-        listOf()
-    } else {
-        shutdownNow().apply { awaitTermination(timeout, unit) }
-    }
+    if(isShutdown && ignoreIfAlreadyShutdown) return@run listOf()
+    shutdownNow().apply { awaitTermination(timeout, unit) }
 }
 
 inline fun <T> synchronized2(lock1: Any, lock2: Any, block: () -> T): T = run {

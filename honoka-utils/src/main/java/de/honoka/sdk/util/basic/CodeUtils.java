@@ -39,4 +39,19 @@ public class CodeUtils {
     public static void sneakyThrows(Throwable t) {
         throw t;
     }
+
+    public static Class<?> getCallerClass() {
+        StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+        if(stackTrace.length < 3) return null;
+        try {
+            for(int i = 2; i < stackTrace.length; i++) {
+                StackTraceElement element = stackTrace[i];
+                if(element.getMethodName().endsWith("$default")) continue;
+                return Class.forName(element.getClassName());
+            }
+            return null;
+        } catch(Throwable t) {
+            return null;
+        }
+    }
 }

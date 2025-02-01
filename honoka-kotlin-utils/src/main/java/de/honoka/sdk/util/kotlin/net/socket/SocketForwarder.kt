@@ -1,6 +1,5 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
-import de.honoka.sdk.util.basic.javadoc.ThreadSafe
 import de.honoka.sdk.util.kotlin.basic.exception
 import de.honoka.sdk.util.kotlin.basic.forEachInstant
 import de.honoka.sdk.util.kotlin.basic.isAnyType
@@ -27,24 +26,24 @@ class SocketForwarder(
         startup()
     }
 
-    override fun newEventCallback(): StatusSelectorEventCallback = @ThreadSafe object : StatusSelectorEventCallback {
+    override fun newEventCallback(): StatusSelectorEventCallback = object : StatusSelectorEventCallback {
 
-            override fun onAccpeted(connection: SocketConnection) {
-                val target = tryBlockNullable(3) { targets.randomOrNull() }
-                target ?: exception("No avaliable target.")
-                val targetConnection = nioSocketClient.connect(target)
-                connectionMap[connection] = targetConnection
-                selector.wakeup()
-            }
+        override fun onAccpeted(connection: SocketConnection) {
+            val target = tryBlockNullable(3) { targets.randomOrNull() }
+            target ?: exception("No avaliable target.")
+            val targetConnection = nioSocketClient.connect(target)
+            connectionMap[connection] = targetConnection
+            selector.wakeup()
+        }
 
-            override fun onClosed(connection: SocketConnection) {
-                val targetConnection = connectionMap[connection]
-                connectionMap.remove(targetConnection)
-                runCatching {
-                    targetConnection?.close()
-                }
+        override fun onClosed(connection: SocketConnection) {
+            val targetConnection = connectionMap[connection]
+            connectionMap.remove(targetConnection)
+            runCatching {
+                targetConnection?.close()
             }
         }
+    }
 
     private fun startup() {
         startClientSelectorTask()

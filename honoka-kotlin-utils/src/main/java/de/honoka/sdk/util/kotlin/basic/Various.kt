@@ -1,5 +1,7 @@
 package de.honoka.sdk.util.kotlin.basic
 
+import de.honoka.sdk.util.basic.CodeUtils
+import org.slf4j.event.Level
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -59,3 +61,22 @@ val Date.weekdayNum: Int
             if(it != Calendar.SUNDAY) it - 1 else 7
         }
     }
+
+fun <T> Result<T>.printStackIfFailed() {
+    if(isSuccess) return
+    exceptionOrNull()?.printStackTrace()
+}
+
+fun <T> Result<T>.logIfFailed(level: Level = Level.ERROR, msg: String = "") {
+    if(isSuccess) return
+    val log = CodeUtils.getCallerClass().kotlin.log
+    val throwable = exceptionOrNull() ?: return
+    when(level) {
+        Level.ERROR -> log.error(msg, throwable)
+        Level.INFO -> log.info(msg, throwable)
+        Level.WARN -> log.warn(msg, throwable)
+        Level.DEBUG -> log.debug(msg, throwable)
+        Level.TRACE -> log.trace(msg, throwable)
+        else -> log.error(msg, throwable)
+    }
+}

@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.concurrent;
 
-import lombok.SneakyThrows;
+import de.honoka.sdk.util.basic.CodeUtils;
 
 import java.util.Iterator;
 import java.util.concurrent.Callable;
@@ -11,7 +11,6 @@ public class LockUtils {
         return synchronizedItems(iterable.iterator(), callable);
     }
 
-    @SneakyThrows
     private static <T> T synchronizedItems(Iterator<?> iterator, Callable<T> callable) {
         Object obj = null;
         while(obj == null && iterator.hasNext()) {
@@ -23,7 +22,12 @@ public class LockUtils {
                 return synchronizedItems(iterator, callable);
             }
         } else {
-            return callable.call();
+            try {
+                return callable.call();
+            } catch(Throwable t) {
+                CodeUtils.sneakyThrows(t);
+                return null;
+            }
         }
     }
 }
