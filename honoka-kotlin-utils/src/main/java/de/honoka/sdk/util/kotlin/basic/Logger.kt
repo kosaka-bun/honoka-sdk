@@ -23,11 +23,8 @@ val Any.log: Logger
     get() = this::class.log
 
 fun Logger.off() {
-    when(javaClass.name) {
-        "ch.qos.logback.classic.Logger" -> {
-            this as ch.qos.logback.classic.Logger
-            level = Level.OFF
-        }
+    when(this) {
+        is ch.qos.logback.classic.Logger -> level = Level.OFF
         else -> throw UnsupportedOperationException()
     }
 }

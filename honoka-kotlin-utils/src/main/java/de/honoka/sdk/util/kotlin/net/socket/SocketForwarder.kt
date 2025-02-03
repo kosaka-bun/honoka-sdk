@@ -65,28 +65,30 @@ class SocketForwarder(
     }
 
     override fun onReadable(connection: SocketConnection) {
-        val clientConnection = connectionMap[connection] ?: return
-        synchronized(clientConnection) {
-            forwardBidirectionally(connection, clientConnection)
-        }
+        findClientAndForward(connection, false)
     }
 
     override fun onWritable(connection: SocketConnection) {
+        findClientAndForward(connection, true)
+    }
+
+    private fun findClientAndForward(connection: SocketConnection, reverse: Boolean) {
         val clientConnection = connectionMap[connection] ?: return
         synchronized(clientConnection) {
-            forwardBidirectionally(clientConnection, connection)
+            if(reverse) {
+                forwardBidirectionally(clientConnection, connection)
+            } else {
+                forwardBidirectionally(connection, clientConnection)
+            }
         }
     }
 
     private fun forward(from: SocketConnection, to: SocketConnection) {
         if(from.readable) {
-            to.writeBufferStream.write(from.read(options.bufferSize))
+            to.writeToBuffer(from.read(options.bufferSize))
         }
-        if(to.writable && to.writeBufferStream.size() > 0) {
-            val bytes = to.writeBufferStream.run {
-                toByteArray().also { reset() }
-            }
-            to.write(bytes)
+        if(to.writable) {
+            to.flushBuffer()
         }
     }
 

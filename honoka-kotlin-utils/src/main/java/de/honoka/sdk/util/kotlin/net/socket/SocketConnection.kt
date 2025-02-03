@@ -49,8 +49,7 @@ class SocketConnection(
     val needReport: Boolean
         get() = needReportReadable || needReportWritable
 
-    @get:JvmSynthetic
-    internal val writeBufferStream = ByteArrayOutputStream()
+    private val writeBufferStream = ByteArrayOutputStream()
     
     @Volatile
     var lastReadOrWriteTime: DateTime = DateTime.now()
@@ -130,6 +129,18 @@ class SocketConnection(
         } else {
             return false
         }
+    }
+
+    fun writeToBuffer(bytes: ByteArray) {
+        writeBufferStream.write(bytes)
+    }
+
+    fun flushBuffer() {
+        val bytes = writeBufferStream.run {
+            if(size() < 1) return
+            toByteArray().also { reset() }
+        }
+        write(bytes)
     }
     
     fun checkOrClose() {
