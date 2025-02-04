@@ -8,8 +8,7 @@ object HttpUtilExt {
     fun getWithBrowserHeaders(
         url: String,
         timeout: Int? = null,
-        useApiHeaders: Boolean = false,
-        useRandomProxy: Boolean = false
+        useApiHeaders: Boolean = false
     ): String {
         val request = HttpUtil.createGet(url).apply {
             if(useApiHeaders) {
@@ -18,14 +17,12 @@ object HttpUtilExt {
                 browserHeaders()
             }
             timeout?.let { timeout(it) }
-            if(useRandomProxy) randomProxy()
         }
         return request.execute().body()
     }
     
     fun getWithBrowserApiHeaders(
         url: String,
-        timeout: Int? = null,
-        useRandomProxy: Boolean = false
-    ): String = getWithBrowserHeaders(url, timeout, true, useRandomProxy)
+        timeout: Int? = null
+    ): String = getWithBrowserHeaders(url, timeout, true)
 }

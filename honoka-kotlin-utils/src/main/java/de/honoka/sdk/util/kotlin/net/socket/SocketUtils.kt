@@ -1,5 +1,6 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
+import de.honoka.sdk.util.kotlin.basic.cast
 import de.honoka.sdk.util.kotlin.basic.tryBlock
 import java.net.BindException
 import java.net.InetSocketAddress
@@ -22,5 +23,11 @@ object SocketUtils {
             }
         }
         return channel
+    }
+    
+    fun findAvailablePort(firstTryPort: Int, tryCount: Int = 1): Int {
+        newServerSocketChannel(firstTryPort, tryCount).use {
+            return it.localAddress.cast<InetSocketAddress>().port
+        }
     }
 }

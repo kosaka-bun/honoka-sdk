@@ -2,7 +2,6 @@ package de.honoka.sdk.util.kotlin.net.http
 
 import cn.hutool.http.HttpRequest
 import cn.hutool.json.JSONObject
-import de.honoka.sdk.util.kotlin.net.proxy.ProxyPool
 import de.honoka.sdk.util.kotlin.text.toJsonObject
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.jvm.javaField
@@ -35,12 +34,6 @@ fun HttpRequest.browserHeaders() {
 
 fun HttpRequest.browserApiHeaders() {
     browserHeaders("api")
-}
-
-fun HttpRequest.randomProxy(autoInitPool: Boolean = true) {
-    if(autoInitPool) ProxyPool.instance.init()
-    val proxy = ProxyPool.instance.randomProxy?.split(":")
-    proxy?.let { setHttpProxy(proxy[0], proxy[1].toInt()) }
 }
 
 fun HttpRequest.setHttpProxy(proxy: String) {

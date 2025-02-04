@@ -31,11 +31,11 @@ public class NewThreadFirstQueue<R extends Runnable> extends LinkedBlockingQueue
     
     @Override
     public boolean offer(@NotNull R runnable) {
-        //have free worker. put task into queue to let the worker deal with task.
-        if(executor.getActiveCount() < executor.getPoolSize()) {
-            return super.offer(runnable);
-        }
         synchronized(this) {
+            //have free worker. put task into queue to let the worker deal with task.
+            if(executor.getActiveCount() + size() < executor.getPoolSize()) {
+                return super.offer(runnable);
+            }
             //return false to let executor create new worker.
             if(executor.getPoolSize() < executor.getMaximumPoolSize()) {
                 return false;
