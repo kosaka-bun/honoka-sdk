@@ -5,7 +5,7 @@ setupVersionAndPublishing(libs.versions.honoka.utils.get())
 
 dependencies {
     implementationApi("cn.hutool:hutool-all:5.8.25")
-    implementationApi("org.dom4j:dom4j:2.1.3")
+    implementationApi("org.dom4j:dom4j:2.1.4")
     implementationApi("org.jsoup:jsoup:1.18.1")
     implementation("gui.ava:html2image:2.0.1") {
         exclude("xml-apis", "xml-apis")
