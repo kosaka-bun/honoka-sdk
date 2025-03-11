@@ -22,7 +22,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementationApi("de.honoka.sdk:honoka-kotlin-utils:1.1.1-dev")
+    implementationApi("de.honoka.sdk:honoka-kotlin-utils:1.1.1")
     compileOnly("org.springframework.boot:spring-boot-starter")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")

@@ -1,5 +1,22 @@
 # 更新日志
 
+## 2.1.1
+#### honoka-utils 1.1.2
+- 实现了`NewThreadFirstQueue`，并新增了`ThreadPoolUtils`，以创建先达到最大线程数再将任务放入阻塞队列中的线程池。
+- 优化了`ImageUtils`中关于文字换行的策略。
+- 优化了`FileUtils.getMainClasspath()`方法。
+- 新增了`LockUtils`，以在若干个对象上启用`synchronized`并执行代码块。
+
+#### honoka-kotlin-utils 1.1.1
+- 移除了`net.proxy`与`net.socket`包下除了`SocketUtils`以外的所有工具类。
+- 新增了`ScheduledTask`，以快速创建基于`ScheduledThreadPoolExecutor`的具有固定延迟（`scheduleWithFixedDelay`）的计划任务。
+- 为`Result<T>`新增了一些有关日志记录的扩展方法。
+
+#### honoka-spring-boot-starter 1.0.2
+- 重构了`GlobalExceptionHandler`及其相关的方法。
+- 优化了`MybatisPlusConfig`中关于判断数据库类型的逻辑。
+- 新增了`QueryWrapper.updateChainWrapper()`。
+
 ## 2.1.0
 #### honoka-utils 1.1.1
 - 将code包重命名为basic。
