@@ -1,47 +1,58 @@
 package de.honoka.sdk.util.various;
 
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.RuntimeUtil;
+
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RuntimeUtils {
 
-    public static class Command {
+    public static class Commands {
 
-        private SystemEnum system;
+        Map<SystemEnum, String[]> commands = new HashMap<>();
 
-        private String[] cmdParts;
+        Charset charset = CharsetUtil.systemCharset();
 
-        private Command() {}
-
-        public static Command of(SystemEnum system, String... cmdParts) {
-            Command command = new Command();
-            command.system = system;
-            command.cmdParts = cmdParts;
-            return command;
+        public Commands charset(Charset charset) {
+            this.charset = charset;
+            return this;
         }
 
-        public static Command win(String... cmdParts) {
-            return of(SystemEnum.WINDOWS, cmdParts);
+        @SuppressWarnings("UnusedReturnValue")
+        public Commands set(SystemEnum system, String... cmdParts) {
+            commands.put(system, cmdParts);
+            return this;
         }
 
-        public static Command linux(String... cmdParts) {
-            return of(SystemEnum.LINUX, cmdParts);
+        public Commands win(String... cmdParts) {
+            set(SystemEnum.WINDOWS, cmdParts);
+            return this;
         }
 
-        public static Command mac(String... cmdParts) {
-            return of(SystemEnum.MACOS, cmdParts);
+        public Commands linux(String... cmdParts) {
+            set(SystemEnum.LINUX, cmdParts);
+            return this;
         }
 
-        public static Command other(String... cmdParts) {
-            return of(SystemEnum.OTHER, cmdParts);
+        public Commands mac(String... cmdParts) {
+            set(SystemEnum.MACOS, cmdParts);
+            return this;
+        }
+
+        public Commands other(String... cmdParts) {
+            set(SystemEnum.OTHER, cmdParts);
+            return this;
         }
     }
 
-    public static String exec(Command... commands) {
+    public static String exec(Commands commands) {
         SystemEnum system = SystemEnum.getLocal();
-        for(Command command : commands) {
-            if(!command.system.equals(system)) continue;
-            return RuntimeUtil.execForStr(command.cmdParts);
+        String[] cmdParts = commands.commands.get(system);
+        if(cmdParts == null) {
+            throw new RuntimeException("No suitable command.");
         }
-        throw new RuntimeException("No suitable command.");
+        return RuntimeUtil.execForStr(commands.charset, commands.commands.get(system));
     }
 }

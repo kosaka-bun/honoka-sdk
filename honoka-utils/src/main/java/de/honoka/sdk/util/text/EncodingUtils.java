@@ -23,9 +23,7 @@ public class EncodingUtils {
         if(s == null) {
             return null;
         }
-
         String result;
-
         result = URLDecoder.decode(s, "UTF-8");
         return result;
     }
@@ -41,9 +39,13 @@ public class EncodingUtils {
     @SneakyThrows
     public static String encodeURIComponent(String s) {
         String result;
-        result = URLEncoder.encode(s, "UTF-8").replaceAll("\\+", "%20").replaceAll("%21", "!")
-                .replaceAll("%27", "'").replaceAll("%28", "(").replaceAll("%29", ")")
-                .replaceAll("%7E", "~");
+        result = URLEncoder.encode(s, "UTF-8")
+            .replaceAll("\\+", "%20")
+            .replaceAll("%21", "!")
+            .replaceAll("%27", "'")
+            .replaceAll("%28", "(")
+            .replaceAll("%29", ")")
+            .replaceAll("%7E", "~");
         return result;
     }
 
