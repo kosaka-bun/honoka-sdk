@@ -11,9 +11,9 @@ public class RuntimeUtils {
 
     public static class Commands {
 
-        Map<SystemEnum, String[]> commands = new HashMap<>();
+        private final Map<SystemEnum, String[]> commands = new HashMap<>();
 
-        Charset charset = CharsetUtil.systemCharset();
+        private Charset charset = CharsetUtil.systemCharset();
 
         public Commands charset(Charset charset) {
             this.charset = charset;
