@@ -1,6 +1,6 @@
-import de.honoka.gradle.buildsrc.MavenPublish.defineCheckVersionOfProjectsTask
-import de.honoka.gradle.buildsrc.kotlin
-import de.honoka.gradle.buildsrc.projects
+import de.honoka.gradle.plugin.basic.ext.DependenciesDsl.kotlin
+import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.defineCheckVersionTask
+import de.honoka.gradle.util.dsl.projects
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.charset.StandardCharsets
 
@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.lombok) apply false
+    id("de.honoka.gradle.plugin.basic") version "1.0.0-dev"
 }
 
 group = "de.honoka.sdk"
@@ -29,7 +30,8 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
     apply(plugin = "io.spring.dependency-management")
-    
+    apply(plugin = "de.honoka.gradle.plugin.basic")
+
     val libs = rootProject.libs
 
     group = rootProject.group
@@ -64,7 +66,7 @@ subprojects {
             }
         }
         dependencies {
-            kotlin(project)
+            kotlin()
             //仅用于避免libs.versions.toml中产生version变量未使用的提示
             libs.versions.kotlin.coroutines
         }
@@ -72,10 +74,7 @@ subprojects {
             withType<KotlinCompile> {
                 kotlinOptions {
                     jvmTarget = java.sourceCompatibility.toString()
-                    freeCompilerArgs += listOf(
-                        "-Xjsr305=strict",
-                        "-Xjvm-default=all"
-                    )
+                    freeCompilerArgs += listOf("-Xjsr305=strict", "-Xjvm-default=all")
                 }
             }
         }
@@ -89,9 +88,7 @@ subprojects {
             options.run {
                 encoding = StandardCharsets.UTF_8.name()
                 val compilerArgs = compilerArgs as MutableCollection<String>
-                compilerArgs += listOf(
-                    "-parameters"
-                )
+                compilerArgs += listOf("-parameters")
             }
         }
 
@@ -107,4 +104,6 @@ subprojects {
     }
 }
 
-defineCheckVersionOfProjectsTask()
+publishing {
+    defineCheckVersionTask()
+}

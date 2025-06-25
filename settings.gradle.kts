@@ -1,20 +1,18 @@
 @file:Suppress("UnstableApiUsage")
 
-dependencyResolutionManagement {
-    repositories {
+pluginManagement {
+    val customRepositories: RepositoryHandler.() -> Unit = {
         mavenLocal()
+        maven("https://maven.aliyun.com/repository/gradle-plugin")
         maven("https://maven.aliyun.com/repository/public")
+        gradlePluginPortal()
         mavenCentral()
         maven("https://mirrors.honoka.de/maven-repo/release")
         maven("https://mirrors.honoka.de/maven-repo/development")
     }
-}
-
-pluginManagement {
-    repositories {
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        mavenCentral()
-        gradlePluginPortal()
+    repositories(customRepositories)
+    dependencyResolutionManagement {
+        repositories(customRepositories)
     }
 }
 

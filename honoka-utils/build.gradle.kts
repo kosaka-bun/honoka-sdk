@@ -1,7 +1,5 @@
-import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
-import de.honoka.gradle.buildsrc.implementationApi
-
-setupVersionAndPublishing(libs.versions.honoka.utils.get())
+import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.publicationVersion
+import de.honoka.gradle.util.dsl.implementationApi
 
 dependencies {
     implementationApi("cn.hutool:hutool-all:5.8.25")
@@ -14,4 +12,8 @@ dependencies {
     implementation(libs.logback)
     compileOnly("org.jetbrains:annotations:24.0.0")
     runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.78.1")
+}
+
+publishing {
+    publicationVersion = libs.versions.honoka.utils.get()
 }

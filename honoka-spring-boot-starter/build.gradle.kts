@@ -1,12 +1,11 @@
-import de.honoka.gradle.buildsrc.MavenPublish.setupVersionAndPublishing
-import de.honoka.gradle.buildsrc.implementationApi
+
+import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.publicationVersion
+import de.honoka.gradle.util.dsl.implementationApi
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.spring)
 }
-
-setupVersionAndPublishing(libs.versions.honoka.spring.boot.starter.get())
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -35,4 +34,8 @@ tasks {
     compileKotlin {
         dependsOn(":honoka-kotlin-utils:publish")
     }
+}
+
+publishing {
+    publicationVersion = libs.versions.honoka.spring.boot.starter.get()
 }
