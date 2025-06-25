@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.lombok) apply false
-    id("de.honoka.gradle.plugin.basic") version "1.0.0-dev"
+    id("de.honoka.gradle.plugin.basic") version "1.0.0-dev" apply false
 }
 
 group = "de.honoka.sdk"

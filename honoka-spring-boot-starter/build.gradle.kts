@@ -1,5 +1,4 @@
-
-import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.publicationVersion
+import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.default
 import de.honoka.gradle.util.dsl.implementationApi
 
 @Suppress("DSL_SCOPE_VIOLATION")
@@ -37,5 +36,7 @@ tasks {
 }
 
 publishing {
-    publicationVersion = libs.versions.honoka.spring.boot.starter.get()
+    publications {
+        default(libs.versions.honoka.spring.boot.starter.get())
+    }
 }
