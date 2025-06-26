@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.spring)
 }
 
+version = libs.versions.honoka.spring.boot.starter.get()
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = sourceCompatibility
@@ -37,6 +39,6 @@ tasks {
 
 publishing {
     publications {
-        default(libs.versions.honoka.spring.boot.starter.get())
+        default()
     }
 }

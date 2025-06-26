@@ -1,6 +1,8 @@
 import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.default
 import de.honoka.gradle.util.dsl.implementationApi
 
+version = libs.versions.honoka.utils.get()
+
 dependencies {
     implementationApi("cn.hutool:hutool-all:5.8.25")
     implementationApi("org.dom4j:dom4j:2.1.4")
@@ -16,6 +18,6 @@ dependencies {
 
 publishing {
     publications {
-        default(libs.versions.honoka.utils.get())
+        default()
     }
 }
