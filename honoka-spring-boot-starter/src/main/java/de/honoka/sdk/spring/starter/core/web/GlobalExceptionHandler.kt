@@ -22,11 +22,16 @@ class GlobalExceptionHandler {
     )
     
     @ExceptionHandler
-    fun handle(t: Throwable, request: HttpServletRequest, response: HttpServletResponse): ApiResponse<*>? {
+    fun handle(
+        t: Throwable,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
+    ): ApiResponse<*>? {
         if(!t.isAnyType(disablePrintLogExceptionTypes)) {
             log.error("", t)
         }
-        response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+        response.status = status.value()
         if(!request.canAcceptJson()) return null
         val msg = if(t.message?.isNotBlank() == true) {
             t.message
@@ -45,4 +50,11 @@ class GlobalExceptionHandler {
         val message = e.allErrors.map { it.defaultMessage }.joinToString()
         return handle(IllegalArgumentException(message), request, response)
     }
+
+    @ExceptionHandler
+    fun handle(
+        e: NoResourceFoundException,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ApiResponse<*>? = handle(e, request, response, HttpStatus.NOT_FOUND)
 }

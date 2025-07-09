@@ -1,7 +1,7 @@
 import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.default
 import de.honoka.gradle.util.dsl.implementationApi
 
-version = libs.versions.honoka.utils.get()
+version = libs.versions.p.honoka.utils.get()
 
 dependencies {
     implementationApi("cn.hutool:hutool-all:5.8.25")

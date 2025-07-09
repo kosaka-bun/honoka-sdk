@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.spring)
 }
 
-version = libs.versions.honoka.spring.boot.starter.get()
+version = libs.versions.p.honoka.spring.boot.starter.get()
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -22,7 +22,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementationApi("de.honoka.sdk:honoka-kotlin-utils:1.1.2-dev")
+    implementationApi(libs.hsbs.honoka.kotlin.utils)
     compileOnly("org.springframework.boot:spring-boot-starter")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")

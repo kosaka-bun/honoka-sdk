@@ -13,11 +13,11 @@ plugins {
     alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.lombok) apply false
-    id("de.honoka.gradle.plugin.basic") version "1.0.0"
+    alias(libs.plugins.honoka.basic)
 }
 
 group = "de.honoka.sdk"
-version = libs.versions.root.get()
+version = libs.versions.p.root.get()
 
 //纯Java项目
 val javaProjects = projects("honoka-utils")
@@ -68,7 +68,7 @@ subprojects {
         dependencies {
             kotlin()
             //仅用于避免libs.versions.toml中产生version变量未使用的提示
-            libs.versions.kotlin.coroutines
+            libs.versions.d.kotlin.coroutines
         }
         tasks {
             withType<KotlinCompile> {
