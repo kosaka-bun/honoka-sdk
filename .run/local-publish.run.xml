@@ -8,4 +8,13 @@
     <option name="PARAMETERS" value="" />
     <method v="2" />
   </configuration>
+  <configuration default="false" name="local-publish" type="BatchConfigurationType" factoryName="Batch">
+    <module name="honoka-sdk" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="WORKING_DIRECTORY" value="./scripts/local" />
+    <option name="PARENT_ENVS" value="true" />
+    <option name="SCRIPT_NAME" value="local-publish.bat" />
+    <option name="PARAMETERS" value="" />
+    <method v="2" />
+  </configuration>
 </component>

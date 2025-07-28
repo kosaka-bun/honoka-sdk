@@ -4,7 +4,6 @@ import de.honoka.gradle.util.dsl.projects
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.charset.StandardCharsets
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     java
     `java-library`
