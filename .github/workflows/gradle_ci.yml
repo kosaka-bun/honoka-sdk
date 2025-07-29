@@ -22,7 +22,7 @@ jobs:
         run: |
           chmod +x ./scripts/github/*.sh
           ./scripts/github/build.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
-      - name: Upload remote maven repository as artifact
+      - name: Upload remote Maven repository as artifact
         uses: actions/upload-artifact@v4
         with:
           # 指定要上传的目录在上传到当前Actions运行实例的Artifacts当中时要使用的名字
@@ -36,14 +36,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Download temporary maven repository
+      - name: Download temporary Maven repository
         uses: actions/download-artifact@v4
         with:
           # 指定在之前的job当中，上传到Actions运行实例的Artifacts当中的目录所使用的名字
           name: remote-maven-repo-copy
           # 指定要将这一目录下的所有内容（即不包含目录本身）下载到哪个位置（以项目根目录为相对路径起始点）
           path: remote-maven-repo-copy
-      - name: Merge maven repository and publish
+      - name: Merge Maven repository and publish
         env:
           IS_DEVELOPMENT_VERSION: ${{ needs.build.outputs.IS_DEVELOPMENT_VERSION }}
         run: |

@@ -48,12 +48,6 @@ subprojects {
                 //仅用于避免libs.versions.toml中产生version变量未使用的提示
                 libs.versions.d.lombok
             }
-
-            publishing {
-                repositories {
-                    default()
-                }
-            }
         }
     }
     
