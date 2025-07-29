@@ -1,4 +1,3 @@
-import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.default
 import de.honoka.gradle.util.dsl.implementationApi
 
 version = libs.versions.p.honoka.kotlin.utils.get()
@@ -8,14 +7,12 @@ dependencies {
     implementation(libs.logback)
 }
 
-tasks {
-    compileKotlin {
-        dependsOn(":honoka-utils:publish")
-    }
-}
-
-publishing {
-    publications {
-        default()
+honoka {
+    basic {
+        publishing {
+            publications {
+                default()
+            }
+        }
     }
 }

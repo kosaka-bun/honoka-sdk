@@ -1,4 +1,3 @@
-import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.default
 import de.honoka.gradle.util.dsl.implementationApi
 
 plugins {
@@ -30,14 +29,12 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
 
-tasks {
-    compileKotlin {
-        dependsOn(":honoka-kotlin-utils:publish")
-    }
-}
-
-publishing {
-    publications {
-        default()
+honoka {
+    basic {
+        publishing {
+            publications {
+                default()
+            }
+        }
     }
 }

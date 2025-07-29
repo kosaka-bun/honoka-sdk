@@ -1,4 +1,3 @@
-import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.default
 import de.honoka.gradle.util.dsl.implementationApi
 
 version = libs.versions.p.honoka.utils.get()
@@ -16,8 +15,12 @@ dependencies {
     runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.78.1")
 }
 
-publishing {
-    publications {
-        default()
+honoka {
+    basic {
+        publishing {
+            publications {
+                default()
+            }
+        }
     }
 }

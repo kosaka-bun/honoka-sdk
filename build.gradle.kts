@@ -1,5 +1,3 @@
-import de.honoka.gradle.plugin.basic.ext.DependenciesDsl.kotlin
-import de.honoka.gradle.plugin.basic.ext.MavenPublishDsl.defineCheckVersionTask
 import de.honoka.gradle.util.dsl.projects
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.charset.StandardCharsets
@@ -9,9 +7,9 @@ plugins {
     `java-library`
     `maven-publish`
     alias(libs.plugins.dependency.management)
-    alias(libs.plugins.kotlin) apply false
+    alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.kotlin.lombok) apply false
+    alias(libs.plugins.kotlin.lombok)
     alias(libs.plugins.honoka.basic)
 }
 
@@ -42,14 +40,24 @@ subprojects {
         }
         withSourcesJar()
     }
+
+    honoka {
+        basic {
+            dependencies {
+                lombok()
+                //仅用于避免libs.versions.toml中产生version变量未使用的提示
+                libs.versions.d.lombok
+            }
+
+            publishing {
+                repositories {
+                    default()
+                }
+            }
+        }
+    }
     
     dependencies {
-        libs.lombok.let {
-            compileOnly(it)
-            annotationProcessor(it)
-            testCompileOnly(it)
-            testAnnotationProcessor(it)
-        }
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     }
@@ -59,17 +67,27 @@ subprojects {
         apply(plugin = "org.jetbrains.kotlin.jvm")
         apply(plugin = "org.jetbrains.kotlin.kapt")
         apply(plugin = "org.jetbrains.kotlin.plugin.lombok")
+
         dependencyManagement {
             imports {
                 mavenBom(libs.kotlin.bom.get().toString())
             }
         }
-        dependencies {
-            kotlin()
-            //仅用于避免libs.versions.toml中产生version变量未使用的提示
-            libs.versions.d.kotlin.coroutines
+
+        honoka {
+            basic {
+                dependencies {
+                    kotlin()
+                    libs.versions.d.kotlin.coroutines
+                }
+            }
         }
+
         tasks {
+            /*
+             * 由于除了原本的compileKotlin任务外，还存在compileTestKotlin和kapt的KaptGenerateStubsTask
+             * （KotlinCompile的子类）任务需要配置，因此这里不能使用“compileKotlin {}”块。
+             */
             withType<KotlinCompile> {
                 kotlinOptions {
                     jvmTarget = java.sourceCompatibility.toString()
@@ -77,13 +95,14 @@ subprojects {
                 }
             }
         }
+
         kapt {
             keepJavacAnnotationProcessors = true
         }
     }
 
     tasks {
-        compileJava {
+        withType<JavaCompile> {
             options.run {
                 encoding = StandardCharsets.UTF_8.name()
                 val compilerArgs = compilerArgs as MutableCollection<String>
@@ -95,14 +114,12 @@ subprojects {
             useJUnitPlatform()
         }
     }
-
-    publishing {
-        repositories {
-            mavenLocal()
-        }
-    }
 }
 
-publishing {
-    defineCheckVersionTask()
+honoka {
+    basic {
+        publishing {
+            defineCheckVersionTask()
+        }
+    }
 }
