@@ -23,7 +23,7 @@ check_version_of_projects_out=$(./gradlew checkVersionOfProjects)
 projects_passed=$(echo "$check_version_of_projects_out" | grep -i "results.projectsPassed=true") || true
 dependencies_passed=$(echo "$check_version_of_projects_out" | grep -i "results.dependenciesPassed=true") || true
 # -z表示字符串为空，-n表示字符串不为空
-if [ -n $projects_passed ] && [ -z $dependencies_passed ]; then
+if [ -n "$projects_passed" ] && [ -z "$dependencies_passed" ]; then
   echo 'Projects with release version contain dependencies with development version!'
   exit 10
 fi
@@ -32,7 +32,7 @@ fi
 repository_name=development
 is_development_version=true
 
-if [ -z $projects_passed ]; then
+if [ -z "$projects_passed" ]; then
   echo -e '\n\nUsing development repository to publish artifacts.\n'
 else
   repository_name=release

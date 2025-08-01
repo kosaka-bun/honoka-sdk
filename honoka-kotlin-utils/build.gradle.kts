@@ -10,9 +10,7 @@ dependencies {
 honoka {
     basic {
         publishing {
-            publications {
-                default()
-            }
+            default()
         }
     }
 }
