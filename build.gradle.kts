@@ -104,7 +104,7 @@ subprojects {
             }
         }
 
-        test {
+        withType<Test> {
             useJUnitPlatform()
         }
     }

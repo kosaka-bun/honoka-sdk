@@ -7,7 +7,7 @@ PROJECT_PATH="$(pwd)"
 
 chmod +x gradlew
 
-# 读取当前gradle项目根模块的版本信息，检查版本号是否符合要求
+# 读取当前Gradle项目根模块的版本信息，检查版本号是否符合要求
 ./gradlew checkVersionOfProjects
 check_version_of_projects_out=$(./gradlew checkVersionOfProjects)
 
@@ -28,10 +28,7 @@ if [ -n $projects_passed ] && [ -z $dependencies_passed ]; then
   exit 10
 fi
 
-# 将kosaka-bun/maven-repo的git仓库clone到项目根目录下
-git clone $1
-
-# 打包，并发布到远程maven仓库在本地的一个拷贝当中
+# 打包，并发布到一个空的Maven仓库中
 repository_name=development
 is_development_version=true
 
@@ -42,6 +39,7 @@ else
   is_development_version=false
 fi
 
+mkdir -p $PROJECT_PATH/maven-repo/repository/$repository_name
 echo "IS_DEVELOPMENT_VERSION=$is_development_version" >> "$GITHUB_OUTPUT"
 
 gradle-publish() {
@@ -54,7 +52,7 @@ gradle-publish() {
 }
 
 #
-# 若仅在gradle中指定task的依赖关系，无法保证在B模块依赖A模块时，在A模块的publish任务执行完成之后，
+# 若仅在Gradle中指定task的依赖关系，无法保证在B模块依赖A模块时，在A模块的publish任务执行完成之后，
 # 就能在同一次构建的后续任务当中，使B模块能够从本地仓库中找到其所依赖的A模块。
 #
 # 需要根据模块间依赖关系，按顺序多次执行不同的构建。
@@ -64,6 +62,7 @@ gradle-publish honoka-kotlin-utils
 gradle-publish
 
 # 将maven-repo/repository目录打包，然后将tar移动到另一个单独的目录中
+find maven-repo/repository -type f -name "maven-metadata.xml*" -delete
 tar -zcf maven-repo.tar.gz maven-repo/repository
-mkdir remote-maven-repo-copy
-mv maven-repo.tar.gz remote-maven-repo-copy/
+mkdir maven-repo-changes
+mv maven-repo.tar.gz maven-repo-changes/
