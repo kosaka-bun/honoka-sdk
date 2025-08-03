@@ -3,6 +3,7 @@ package de.honoka.sdk.util.kotlin.text
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
 import cn.hutool.json.JSONObject
+import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
 class JsonWrapper internal constructor(private val json: JSON) {
@@ -48,6 +49,10 @@ class JsonWrapper internal constructor(private val json: JSON) {
     fun getBoolOrNull(path: String): Boolean? = json.getByPath(path) as Boolean?
     
     fun getDoubleOrNull(path: String): Double? = (json.getByPath(path) as Number?)?.toDouble()
+
+    //others
     
     override fun toString(): String = json.toString()
+
+    fun <T : Any> toBean(clazz: KClass<T>): T = json.toBean(clazz.java)
 }

@@ -15,12 +15,13 @@ object SocketUtils {
         channel.run {
             configureBlocking(false)
             runCatching {
-                tryBlock(tryCount, exceptionTypesToIgnore = listOf(BindException::class)) {
+                tryBlock(tryCount, ignoredExceptionTypes = listOf(BindException::class)) {
                     bind(InetSocketAddress(firstTryPort + it))
                 }
             }.getOrElse {
                 close()
-                throw it
+                val msg = "端口范围（$firstTryPort - ${firstTryPort + tryCount - 1}）均被占用"
+                throw RuntimeException(msg, it)
             }
         }
         return channel
