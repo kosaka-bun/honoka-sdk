@@ -4,7 +4,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      IS_DEVELOPMENT_VERSION: ${{ steps.gradle_build.outputs.is_development_version }}
+      IS_DEVELOPMENT_VERSION: ${{ steps.gradle_build.outputs.IS_DEVELOPMENT_VERSION }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,7 +21,7 @@ jobs:
         name: Build with Gradle
         run: |
           chmod +x ./scripts/github/*.sh
-          ./scripts/github/build.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+          ./scripts/github/build.sh
       - name: Upload the changes of Maven repository as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -45,10 +45,11 @@ jobs:
           path: maven-repo-changes
       - name: Merge the changes into Maven repository and publish
         env:
+          REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
           IS_DEVELOPMENT_VERSION: ${{ needs.build.outputs.IS_DEVELOPMENT_VERSION }}
         run: |
           chmod +x ./scripts/github/*.sh
-          ./scripts/github/publish.sh ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+          ./scripts/github/publish.sh
 
 on:
   push:

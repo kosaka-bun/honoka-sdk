@@ -6,7 +6,7 @@ cd $(dirname "$0")/../..
 PROJECT_PATH="$(pwd)"
 
 # 将存储Maven仓库文件的Git仓库clone到项目根目录下
-git clone $1 maven-repo
+git clone "$REMOTE_MAVEN_REPO_URL" maven-repo
 
 # 解压maven-repo.tar.gz
 cd maven-repo-changes

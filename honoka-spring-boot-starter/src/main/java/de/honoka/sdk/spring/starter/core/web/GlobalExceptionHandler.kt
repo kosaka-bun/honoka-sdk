@@ -1,7 +1,7 @@
 package de.honoka.sdk.spring.starter.core.web
 
 import cn.hutool.core.exceptions.ExceptionUtil
-import de.honoka.sdk.util.kotlin.basic.isAnyType
+import de.honoka.sdk.util.kotlin.basic.isAny
 import de.honoka.sdk.util.kotlin.basic.log
 import de.honoka.sdk.util.web.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -28,7 +28,7 @@ class GlobalExceptionHandler {
         response: HttpServletResponse,
         status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
     ): ApiResponse<*>? {
-        if(!t.isAnyType(disablePrintLogExceptionTypes)) {
+        if(!t.isAny(disablePrintLogExceptionTypes)) {
             log.error("", t)
         }
         response.status = status.value()
@@ -47,7 +47,7 @@ class GlobalExceptionHandler {
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ApiResponse<*>? {
-        val message = e.allErrors.map { it.defaultMessage }.joinToString()
+        val message = e.allErrors.joinToString { it.defaultMessage.toString() }
         return handle(IllegalArgumentException(message), request, response)
     }
 
