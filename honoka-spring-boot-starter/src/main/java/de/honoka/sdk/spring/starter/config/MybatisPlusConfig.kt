@@ -18,13 +18,13 @@ import org.springframework.context.annotation.Configuration
 @Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}MybatisPlusConfig")
 class MybatisPlusConfig(private val mybatisPlusProperties: MybatisPlusProperties) {
     
-    @Value("\${spring.datasource.driver-class-name}")
+    @Value($$"${spring.datasource.driver-class-name}")
     private var jdbcDriverClassName: String? = null
     
     @Bean
     fun mybatisPlusInterceptor(): MybatisPlusInterceptor = MybatisPlusInterceptor().apply {
         val dbType = mybatisPlusProperties.dbType ?: jdbcDriverClassName?.lowercase()?.run {
-            DbType.values().firstOrNull { contains(it.db.lowercase()) }
+            DbType.entries.firstOrNull { contains(it.db.lowercase()) }
         } ?: DbType.OTHER
         log.info("Used DbType: ${dbType.name}")
         addInnerInterceptor(PaginationInnerInterceptor(dbType))

@@ -1,4 +1,5 @@
 import de.honoka.gradle.util.dsl.projects
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.charset.StandardCharsets
 
@@ -6,7 +7,6 @@ plugins {
     java
     `java-library`
     `maven-publish`
-    alias(libs.plugins.dependency.management)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.lombok)
@@ -26,10 +26,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
-    apply(plugin = "io.spring.dependency-management")
     apply(plugin = "de.honoka.gradle.plugin.basic")
-
-    val libs = rootProject.libs
 
     group = rootProject.group
 
@@ -45,8 +42,6 @@ subprojects {
         basic {
             dependencies {
                 lombok()
-                //仅用于避免libs.versions.toml中产生version变量未使用的提示
-                libs.versions.d.lombok
             }
         }
     }
@@ -62,17 +57,10 @@ subprojects {
         apply(plugin = "org.jetbrains.kotlin.kapt")
         apply(plugin = "org.jetbrains.kotlin.plugin.lombok")
 
-        dependencyManagement {
-            imports {
-                mavenBom(libs.kotlin.bom.get().toString())
-            }
-        }
-
         honoka {
             basic {
                 dependencies {
                     kotlin()
-                    libs.versions.d.kotlin.coroutines
                 }
             }
         }
@@ -83,9 +71,11 @@ subprojects {
              * （KotlinCompile的子类）任务需要配置，因此这里不能使用“compileKotlin {}”块。
              */
             withType<KotlinCompile> {
-                kotlinOptions {
-                    jvmTarget = java.sourceCompatibility.toString()
-                    freeCompilerArgs += listOf("-Xjsr305=strict", "-Xjvm-default=all")
+                compilerOptions {
+                    if(project !in notJava8Projects) {
+                        jvmTarget.set(JvmTarget.fromTarget(java.sourceCompatibility.toString()))
+                    }
+                    freeCompilerArgs.addAll("-Xjsr305=strict", "-Xjvm-default=all")
                 }
             }
         }
@@ -117,3 +107,8 @@ honoka {
         }
     }
 }
+
+//仅用于避免libs.versions.toml中产生version变量未使用的提示
+libs.versions.d.lombok
+libs.versions.d.kotlin.coroutines
+libs.versions.d.spring.boot

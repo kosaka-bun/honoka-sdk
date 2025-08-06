@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.intercept.AuthorizationFilter
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
@@ -71,7 +71,9 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
             it.accessDeniedHandler(AccessDeniedHandlerImpl)
         }
         authorizeHttpRequests {
-            val whiteListMatchers = whiteList.map { s -> AntPathRequestMatcher.antMatcher(s) }.toTypedArray()
+            val whiteListMatchers = whiteList.map { s ->
+                PathPatternRequestMatcher.withDefaults().matcher(s)
+            }.toTypedArray()
             it.requestMatchers(*whiteListMatchers).permitAll()
             it.anyRequest().authenticated()
         }

@@ -57,10 +57,7 @@ on:
       - dev
     paths-ignore:
       - 'docs/**'
-      - 'gradle/wrapper/**'
-      - '**src/test/**'
-      - '.gitignore'
-      - 'gradlew*'
+      - '**/.gitignore'
       - 'LICENSE'
       - 'README.md'
   pull_request:
@@ -68,9 +65,6 @@ on:
       - dev
     paths-ignore:
       - 'docs/**'
-      - 'gradle/wrapper/**'
-      - '**src/test/**'
-      - '.gitignore'
-      - 'gradlew*'
+      - '**/.gitignore'
       - 'LICENSE'
       - 'README.md'
