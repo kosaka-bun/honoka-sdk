@@ -1,5 +1,9 @@
 name: Gradle CI
 
+env:
+  BUILD_SCRIPTS_REPO: build-scripts
+  BUILD_SCRIPTS_VERSION: master
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -9,6 +13,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+      - name: Download build scripts
+        run: |
+          chmod +x ./.github/workflows/scripts/*.sh
+          ./.github/workflows/scripts/download-build-scripts.sh
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -20,8 +28,8 @@ jobs:
       - id: gradle_build
         name: Build with Gradle
         run: |
-          chmod +x ./scripts/github/*.sh
-          ./scripts/github/build.sh
+          separate_projects=(honoka-utils honoka-kotlin-utils)
+          ./build-scripts/scripts/gradle/library/build.sh "${separate_projects[@]}"
       - name: Upload the changes of Maven repository as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -36,6 +44,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+      - name: Download build scripts
+        run: |
+          chmod +x ./.github/workflows/scripts/*.sh
+          ./.github/workflows/scripts/download-build-scripts.sh
       - name: Download the changes of Maven repository
         uses: actions/download-artifact@v4
         with:
@@ -47,9 +59,10 @@ jobs:
         env:
           REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
           IS_DEVELOPMENT_VERSION: ${{ needs.build.outputs.IS_DEVELOPMENT_VERSION }}
+          GIT_USERNAME: Kosaka Bun
+          GIT_EMAIL: kosaka-bun@qq.com
         run: |
-          chmod +x ./scripts/github/*.sh
-          ./scripts/github/publish.sh
+          ./build-scripts/scripts/gradle/library/publish.sh
 
 on:
   push:

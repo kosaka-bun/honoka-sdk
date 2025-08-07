@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     alias(libs.plugins.kotlin.spring)
 }
@@ -8,8 +5,7 @@ plugins {
 version = libs.versions.p.honoka.spring.boot.starter.get()
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = sourceCompatibility
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
 honoka {
@@ -32,14 +28,6 @@ dependencies {
         libs.versions.d.spring.boot.get()
     }"
     kapt(configProcessor)
-}
-
-tasks {
-    withType<KotlinCompile> {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.fromTarget(java.sourceCompatibility.toString()))
-        }
-    }
 }
 
 honoka {

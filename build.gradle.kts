@@ -1,5 +1,4 @@
 import de.honoka.gradle.util.dsl.projects
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.charset.StandardCharsets
 
@@ -32,8 +31,7 @@ subprojects {
 
     java {
         if(project !in notJava8Projects) {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = sourceCompatibility
+            toolchain.languageVersion = JavaLanguageVersion.of(8)
         }
         withSourcesJar()
     }
@@ -72,9 +70,6 @@ subprojects {
              */
             withType<KotlinCompile> {
                 compilerOptions {
-                    if(project !in notJava8Projects) {
-                        jvmTarget.set(JvmTarget.fromTarget(java.sourceCompatibility.toString()))
-                    }
                     freeCompilerArgs.addAll("-Xjsr305=strict", "-Xjvm-default=all")
                 }
             }
