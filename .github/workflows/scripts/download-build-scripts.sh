@@ -2,6 +2,11 @@
 
 set -e
 
+if [ -z "$GITHUB_WORKSPACE" ]; then
+  echo 'Must specify a project root path!'
+  exit 10
+fi
+
 cd "$GITHUB_WORKSPACE"
 
 if [ "$BUILD_SCRIPTS_VERSION" == 'master' ]; then
