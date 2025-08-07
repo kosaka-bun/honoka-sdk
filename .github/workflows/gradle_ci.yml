@@ -1,8 +1,8 @@
 name: Gradle CI
 
 env:
-  BUILD_SCRIPTS_REPO: build-scripts
-  BUILD_SCRIPTS_VERSION: 1.0.0
+  BUILD_SCRIPTS_DOWNLOADER: https://mirrors.honoka.de/build-scripts/download.sh
+  BUILD_SCRIPTS_VERSION: 1.0.1
   ARTIFACT_NAME: maven-repo-changes
 
 jobs:
@@ -13,11 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          path: repo
           submodules: recursive
       - name: Download build scripts
         run: |
-          chmod +x ./.github/workflows/scripts/*.sh
-          ./.github/workflows/scripts/download-build-scripts.sh
+          set -e
+          curl -L --fail -o download-build-scripts.sh $BUILD_SCRIPTS_DOWNLOADER
+          chmod +x download-build-scripts.sh && ./download-build-scripts.sh
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -36,25 +38,23 @@ jobs:
         with:
           # 指定要上传的目录在上传到当前Actions运行实例的Artifacts当中时要使用的名字
           name: ${{ env.ARTIFACT_NAME }}
-          # 要上传的目录路径（以项目根目录为相对路径起始点）
+          # 要上传的目录路径（以workspace为相对路径起始点）
           path: ${{ env.ARTIFACT_NAME }}
   publish:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       - name: Download build scripts
         run: |
-          chmod +x ./.github/workflows/scripts/*.sh
-          ./.github/workflows/scripts/download-build-scripts.sh
+          set -e
+          curl -L --fail -o download-build-scripts.sh $BUILD_SCRIPTS_DOWNLOADER
+          chmod +x download-build-scripts.sh && ./download-build-scripts.sh
       - name: Download the changes of Maven repository
         uses: actions/download-artifact@v4
         with:
           # 指定在之前的job当中，上传到Actions运行实例的Artifacts当中的目录所使用的名字
           name: ${{ env.ARTIFACT_NAME }}
-          # 指定要将这一目录下的所有内容（即不包含目录本身）下载到哪个位置（以项目根目录为相对路径起始点）
+          # 指定要将这一目录下的所有内容（即不包含目录本身）下载到哪个位置（以workspace为相对路径起始点）
           path: ${{ env.ARTIFACT_NAME }}
       - name: Merge the changes into Maven repository and publish
         env:
@@ -63,6 +63,7 @@ jobs:
           GIT_USERNAME: Kosaka Bun
           GIT_EMAIL: kosaka-bun@qq.com
         run: |
+          mkdir -p repo
           ./build-scripts/scripts/gradle/library/publish.sh
 
 on:
