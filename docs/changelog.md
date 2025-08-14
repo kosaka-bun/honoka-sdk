@@ -1,5 +1,18 @@
 # 更新日志
 
+## 2.1.2
+#### 工程
+- 更新Gradle版本为9.0.0。
+- 更新Kotlin版本为2.2.0。
+- 更新Kotlin Coroutines版本为1.10.2。
+- 移除`buildSrc`，引入honoka-basic-plugin。
+
+#### honoka-kotlin-utils 1.1.2
+- 优化了部分扩展函数的定义。
+
+#### honoka-spring-boot-starter 1.0.3
+- 更新Spring Boot版本为3.5.4。
+
 ## 2.1.1
 #### honoka-utils 1.1.2
 - 实现了`NewThreadFirstQueue`，并新增了`ThreadPoolUtils`，以创建先达到最大线程数再将任务放入阻塞队列中的线程池。
