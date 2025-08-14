@@ -2,11 +2,11 @@
 
 pluginManagement {
     val customRepositories: RepositoryHandler.() -> Unit = {
-        mavenLocal()
         maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
         maven("https://maven.aliyun.com/repository/gradle-plugin")
         gradlePluginPortal()
+        mavenLocal()
         maven("https://mirrors.honoka.de/maven-repo/release")
         maven("https://mirrors.honoka.de/maven-repo/development")
     }
