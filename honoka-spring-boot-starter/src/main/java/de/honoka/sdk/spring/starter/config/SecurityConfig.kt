@@ -17,8 +17,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.intercept.AuthorizationFilter
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @EnableMethodSecurity
 @EnableWebSecurity
@@ -31,20 +29,6 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http.run {
         val whiteList = securityProperties.whiteList + "/error"
-        cors {
-            it.configurationSource(UrlBasedCorsConfigurationSource().apply {
-                registerCorsConfiguration("/**", CorsConfiguration().apply {
-                    allowCredentials = true
-                    addAllowedHeader("*")
-                    addAllowedMethod("*")
-                    securityProperties.corsOrigins.forEach { s ->
-                        //必须以域名结尾，包含带端口和不带端口两种情况
-                        addAllowedOriginPattern("*://*$s")
-                        addAllowedOriginPattern("*://*$s:*")
-                    }
-                })
-            })
-        }
         csrf {
             /*
              * CSRF攻击防护仅在由服务端从Cookie中取得token时有意义，若服务端不从请求方提供的Cookie中
@@ -91,8 +75,6 @@ data class SecurityProperties(
     var enabled: Boolean = false,
     
     var whiteList: List<String> = listOf(),
-    
-    var corsOrigins: List<String> = listOf(),
     
     var token: Token = Token()
 ) {

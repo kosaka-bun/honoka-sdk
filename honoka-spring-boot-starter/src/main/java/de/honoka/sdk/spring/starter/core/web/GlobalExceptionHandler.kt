@@ -21,8 +21,7 @@ class GlobalExceptionHandler {
         NoResourceFoundException::class
     )
     
-    @ExceptionHandler
-    fun handle(
+    private fun handleDefault(
         t: Throwable,
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -40,6 +39,13 @@ class GlobalExceptionHandler {
         }
         return ApiResponse.fail(msg)
     }
+
+    @ExceptionHandler
+    fun handle(
+        t: Throwable,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ApiResponse<*>? = handleDefault(t, request, response)
     
     @ExceptionHandler
     fun handle(
@@ -48,7 +54,7 @@ class GlobalExceptionHandler {
         response: HttpServletResponse
     ): ApiResponse<*>? {
         val message = e.allErrors.joinToString { it.defaultMessage.toString() }
-        return handle(IllegalArgumentException(message), request, response)
+        return handleDefault(IllegalArgumentException(message), request, response)
     }
 
     @ExceptionHandler
@@ -56,5 +62,5 @@ class GlobalExceptionHandler {
         e: NoResourceFoundException,
         request: HttpServletRequest,
         response: HttpServletResponse
-    ): ApiResponse<*>? = handle(e, request, response, HttpStatus.NOT_FOUND)
+    ): ApiResponse<*>? = handleDefault(e, request, response, HttpStatus.NOT_FOUND)
 }
