@@ -14,6 +14,14 @@ pluginManagement {
     dependencyResolutionManagement {
         repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
         repositories(customRepositories)
+        versionCatalogs {
+            create("globalLibs") {
+                from(files("../gradle/versions.toml"))
+            }
+            create("libs") {
+                from(files("../gradle/versions-jvm.toml"))
+            }
+        }
     }
 }
 
@@ -21,7 +29,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-rootProject.name = "honoka-sdk"
+rootProject.name = "honoka-sdk-jvm"
 
 include("honoka-utils")
 include("honoka-kotlin-utils")

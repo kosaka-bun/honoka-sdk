@@ -1,7 +1,7 @@
-version = libs.versions.p.honoka.kotlin.utils.get()
+version = globalLibs.versions.p.honoka.kotlin.utils.get()
 
 dependencies {
-    api(libs.hku.honoka.utils)
+    api(globalLibs.honoka.utils)
     implementation(libs.logback)
 }
 

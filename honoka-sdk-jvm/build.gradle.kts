@@ -6,14 +6,14 @@ plugins {
     java
     `java-library`
     `maven-publish`
-    alias(libs.plugins.kotlin)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.kotlin.lombok)
+    alias(globalLibs.plugins.kotlin)
+    alias(globalLibs.plugins.kotlin.kapt)
+    alias(globalLibs.plugins.kotlin.lombok)
     alias(libs.plugins.honoka.basic)
 }
 
 group = "de.honoka.sdk"
-version = libs.versions.p.root.get()
+version = globalLibs.versions.p.root.get()
 
 //纯Java项目
 val javaProjects = projects("honoka-utils")
@@ -102,8 +102,3 @@ honoka {
         }
     }
 }
-
-//仅用于避免libs.versions.toml中产生version变量未使用的提示
-libs.versions.d.lombok
-libs.versions.d.kotlin.coroutines
-libs.versions.d.spring.boot

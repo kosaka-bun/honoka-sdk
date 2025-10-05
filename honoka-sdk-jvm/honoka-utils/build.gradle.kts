@@ -1,4 +1,4 @@
-version = libs.versions.p.honoka.utils.get()
+version = globalLibs.versions.p.honoka.utils.get()
 
 dependencies {
     api("cn.hutool:hutool-all:5.8.25")

@@ -1,0 +1,21 @@
+[versions]
+# gradle plugins version
+gp-android-library = "8.11.1"
+gp-honoka-android = "1.0.1-dev"
+
+# android related version
+a-compile-sdk = "33"
+a-min-sdk = "26"
+
+# dependencies version
+d-ktor = "3.2.2"
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "gp-android-library" }
+honoka-android = { id = "de.honoka.gradle.plugin.android", version.ref = "gp-honoka-android" }
+
+[libraries]
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "d-ktor" }
+ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "d-ktor" }
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "d-ktor" }
+ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "d-ktor" }
