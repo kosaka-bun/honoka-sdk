@@ -1,0 +1,49 @@
+name: Gradle CI (Android)
+
+env:
+  CI_BUILDERS_DOWNLOADER: https://mirrors.honoka.de/ci-builders/downloader.sh
+  CI_BUILDERS_VERSION: master
+  ARTIFACT_NAME: maven-repo-changes
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download CI Builders
+        run: |
+          set -e
+          curl -L --fail -o download-builders.sh $CI_BUILDERS_DOWNLOADER
+          chmod +x download-builders.sh && ./download-builders.sh
+      - uses: actions/checkout@v4
+        with:
+          path: repo
+          submodules: recursive
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+          # 通过预定义的包管理器之一管理的依赖项的快速设置缓存
+          # 它可以是maven、gradle或sbt之一
+          cache: gradle
+      - name: Build with Gradle and publish to Maven repository
+        env:
+          SUBPROJECT: honoka-sdk-android
+          REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+        run: |
+          ./ci-builders/scripts/run.sh gradle-library publish
+      - name: Upload the changes of Maven repository as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # 指定要上传的目录在上传到当前Actions运行实例的Artifacts当中时要使用的名字
+          name: ${{ env.ARTIFACT_NAME }}
+          # 要上传的目录路径（以workspace为相对路径起始点）
+          path: ${{ env.ARTIFACT_NAME }}
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'honoka-sdk-android/**'
+      - '.github/workflows/gradle-ci-android.yml'

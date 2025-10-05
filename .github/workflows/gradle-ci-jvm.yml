@@ -1,8 +1,8 @@
-name: Gradle CI
+name: Gradle CI (JVM)
 
 env:
   CI_BUILDERS_DOWNLOADER: https://mirrors.honoka.de/ci-builders/downloader.sh
-  CI_BUILDERS_VERSION: 1.0.0
+  CI_BUILDERS_VERSION: master
   ARTIFACT_NAME: maven-repo-changes
 
 jobs:
@@ -28,6 +28,7 @@ jobs:
           cache: gradle
       - name: Build with Gradle and publish to Maven repository
         env:
+          SUBPROJECT: honoka-sdk-jvm
           REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
         run: |
           ./ci-builders/scripts/run.sh gradle-library publish
@@ -43,16 +44,6 @@ on:
   push:
     branches:
       - dev
-    paths-ignore:
-      - 'docs/**'
-      - '**/.gitignore'
-      - 'LICENSE'
-      - 'README.md'
-  pull_request:
-    branches:
-      - dev
-    paths-ignore:
-      - 'docs/**'
-      - '**/.gitignore'
-      - 'LICENSE'
-      - 'README.md'
+    paths:
+      - 'honoka-sdk-jvm/**'
+      - '.github/workflows/gradle-ci-jvm.yml'
