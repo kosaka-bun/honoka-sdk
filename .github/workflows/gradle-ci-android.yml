@@ -46,5 +46,7 @@ on:
       - dev
     paths:
       - 'honoka-sdk-android/**'
+      - 'gradle/versions/common.toml'
+      - 'gradle/versions/android.toml'
       - '.github/workflows/gradle-ci-android.yml'
       - '!**/.gitignore'

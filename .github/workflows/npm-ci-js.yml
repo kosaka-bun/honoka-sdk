@@ -52,5 +52,6 @@ on:
       - dev
     paths:
       - 'honoka-sdk-js/**'
+      - 'gradle/versions/common.toml'
       - '.github/workflows/npm-ci-js.yml'
       - '!**/.gitignore'
