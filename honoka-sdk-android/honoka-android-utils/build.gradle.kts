@@ -3,11 +3,11 @@ import de.honoka.gradle.plugin.android.ext.kotlinAndroid
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(globalLibs.plugins.kotlin.android)
+    alias(commonLibs.plugins.kotlin.android)
     `maven-publish`
 }
 
-version = globalLibs.versions.p.honoka.android.utils.get()
+version = commonLibs.versions.p.honoka.android.utils.get()
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(8)
@@ -54,7 +54,7 @@ honoka.basic {
 //noinspection UseTomlInstead
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
-    api(globalLibs.honoka.kotlin.utils) {
+    api(commonLibs.honoka.kotlin.utils) {
         exclude("org.bouncycastle", "bcprov-jdk18on")
         exclude("ch.qos.logback", "logback-classic")
     }

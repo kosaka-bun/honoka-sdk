@@ -1,10 +1,10 @@
 plugins {
     alias(libs.plugins.android.library) apply false
-    alias(globalLibs.plugins.kotlin.android) apply false
+    alias(commonLibs.plugins.kotlin.android) apply false
     alias(libs.plugins.honoka.android)
 }
 
-version = globalLibs.versions.p.root.get()
+version = commonLibs.versions.p.root.get()
 
 allprojects {
     group = "de.honoka.sdk"

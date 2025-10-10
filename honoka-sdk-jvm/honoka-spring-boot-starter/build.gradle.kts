@@ -1,8 +1,8 @@
 plugins {
-    alias(globalLibs.plugins.kotlin.spring)
+    alias(commonLibs.plugins.kotlin.spring)
 }
 
-version = globalLibs.versions.p.honoka.spring.boot.starter.get()
+version = commonLibs.versions.p.honoka.spring.boot.starter.get()
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -15,7 +15,7 @@ honoka.basic {
 }
 
 dependencies {
-    api(globalLibs.honoka.kotlin.utils)
+    api(commonLibs.honoka.kotlin.utils)
     compileOnly("org.springframework.boot:spring-boot-starter")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")

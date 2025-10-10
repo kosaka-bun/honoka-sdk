@@ -1,8 +1,8 @@
 plugins {
-    alias(globalLibs.plugins.honoka.basic)
+    alias(commonLibs.plugins.honoka.basic)
 }
 
-version = globalLibs.versions.p.root.get()
+version = commonLibs.versions.p.root.get()
 
 layout.buildDirectory = File("./gradle-build")
 

@@ -17,12 +17,11 @@ pluginManagement {
         repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
         repositories(customRepositories)
         versionCatalogs {
-            fun versionCatalogFile(name: String? = null): ConfigurableFileCollection {
-                val suffix = if(name?.isBlank() == false) "-$name.toml" else ".toml"
-                return files("$versionCatalogFilePrefix$suffix")
+            fun versionCatalogFile(name: String): ConfigurableFileCollection = run {
+                files("$versionCatalogFilePrefix/$name.toml")
             }
-            create("globalLibs", Action {
-                from(versionCatalogFile())
+            create("commonLibs", Action {
+                from(versionCatalogFile("common"))
             })
             create("libs", Action {
                 from(versionCatalogFile("android"))

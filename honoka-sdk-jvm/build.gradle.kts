@@ -6,14 +6,14 @@ plugins {
     java
     `java-library`
     `maven-publish`
-    alias(globalLibs.plugins.kotlin)
-    alias(globalLibs.plugins.kotlin.kapt)
-    alias(globalLibs.plugins.kotlin.lombok)
-    alias(globalLibs.plugins.honoka.basic)
+    alias(commonLibs.plugins.kotlin)
+    alias(commonLibs.plugins.kotlin.kapt)
+    alias(commonLibs.plugins.kotlin.lombok)
+    alias(commonLibs.plugins.honoka.basic)
 }
 
 group = "de.honoka.sdk"
-version = globalLibs.versions.p.root.get()
+version = commonLibs.versions.p.root.get()
 
 //纯Java项目
 val javaProjects = projects("honoka-utils")
