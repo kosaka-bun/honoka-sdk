@@ -10,17 +10,22 @@ pluginManagement {
         maven("https://mirrors.honoka.de/maven-repo/release")
         maven("https://mirrors.honoka.de/maven-repo/development")
     }
+    val versionCatalogFilePrefix = "../gradle/versions"
     repositories(customRepositories)
     dependencyResolutionManagement {
         repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
         repositories(customRepositories)
         versionCatalogs {
-            create("globalLibs") {
-                from(files("../gradle/versions.toml"))
+            fun versionCatalogFile(name: String? = null): ConfigurableFileCollection {
+                val suffix = if(name?.isBlank() == false) "-$name.toml" else ".toml"
+                return files("$versionCatalogFilePrefix$suffix")
             }
-            create("libs") {
-                from(files("../gradle/versions-jvm.toml"))
-            }
+            create("globalLibs", Action {
+                from(versionCatalogFile())
+            })
+            create("libs", Action {
+                from(versionCatalogFile("jvm"))
+            })
         }
     }
 }

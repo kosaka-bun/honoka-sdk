@@ -47,3 +47,4 @@ on:
     paths:
       - 'honoka-sdk-jvm/**'
       - '.github/workflows/gradle-ci-jvm.yml'
+      - '!**/.gitignore'

@@ -9,7 +9,7 @@ plugins {
     alias(globalLibs.plugins.kotlin)
     alias(globalLibs.plugins.kotlin.kapt)
     alias(globalLibs.plugins.kotlin.lombok)
-    alias(libs.plugins.honoka.basic)
+    alias(globalLibs.plugins.honoka.basic)
 }
 
 group = "de.honoka.sdk"
@@ -36,11 +36,9 @@ subprojects {
         withSourcesJar()
     }
 
-    honoka {
-        basic {
-            dependencies {
-                lombok()
-            }
+    honoka.basic {
+        dependencies {
+            lombok()
         }
     }
     
@@ -55,11 +53,9 @@ subprojects {
         apply(plugin = "org.jetbrains.kotlin.kapt")
         apply(plugin = "org.jetbrains.kotlin.plugin.lombok")
 
-        honoka {
-            basic {
-                dependencies {
-                    kotlin()
-                }
+        honoka.basic {
+            dependencies {
+                kotlin()
             }
         }
 
@@ -95,10 +91,8 @@ subprojects {
     }
 }
 
-honoka {
-    basic {
-        publishing {
-            defineCheckVersionTask()
-        }
+honoka.basic {
+    publishing {
+        defineCheckVersionTask()
     }
 }

@@ -1,13 +1,7 @@
 [versions]
-# gradle plugins version
-gp-honoka-basic = "1.0.3-dev"
-
 # dependencies version
 d-spring-boot = "3.5.4"
 d-mybatis-plus = "3.5.12"
-
-[plugins]
-honoka-basic = { id = "de.honoka.gradle.plugin.basic", version.ref = "gp-honoka-basic" }
 
 [libraries]
 mybatis-plus = { module = "com.baomidou:mybatis-plus-spring-boot3-starter", version.ref = "d-mybatis-plus" }

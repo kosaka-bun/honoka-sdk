@@ -44,6 +44,13 @@ kotlin {
     }
 }
 
+honoka.basic {
+    dependencies {
+        kotlinAndroid()
+        lombok()
+    }
+}
+
 //noinspection UseTomlInstead
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
@@ -63,11 +70,6 @@ dependencies {
 }
 
 honoka.basic {
-    dependencies {
-        kotlinAndroid()
-        lombok()
-    }
-
     publishing {
         defaultAar(true)
     }

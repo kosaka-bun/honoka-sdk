@@ -8,11 +8,9 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
-honoka {
-    basic {
-        dependencies {
-            springBootBom()
-        }
+honoka.basic {
+    dependencies {
+        springBootBom()
     }
 }
 
@@ -30,10 +28,8 @@ dependencies {
     kapt(configProcessor)
 }
 
-honoka {
-    basic {
-        publishing {
-            default()
-        }
+honoka.basic {
+    publishing {
+        default()
     }
 }

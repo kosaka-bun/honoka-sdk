@@ -5,10 +5,8 @@ dependencies {
     implementation(libs.logback)
 }
 
-honoka {
-    basic {
-        publishing {
-            default()
-        }
+honoka.basic {
+    publishing {
+        default()
     }
 }

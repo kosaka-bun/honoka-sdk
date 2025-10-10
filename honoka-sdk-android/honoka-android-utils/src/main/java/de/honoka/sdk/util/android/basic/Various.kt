@@ -91,7 +91,7 @@ fun Collection<*>.toFunctionArgs(function: KFunction<*>): Array<Any?> {
             result.add(JSONUtil.toBean(arg as JSON, type, false))
             return@forEachIndexed
         }
-        throw Exception("Unsupported parameter type [$type] of function [$function]")
+        error("Unsupported parameter type [$type] of function [$function]")
     }
     return result.toTypedArray()
 }
