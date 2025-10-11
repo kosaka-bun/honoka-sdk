@@ -11,6 +11,7 @@ java {
 honoka.basic {
     dependencies {
         springBootBom()
+        springBootConfigProcessor()
     }
 }
 
@@ -22,10 +23,6 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-security")
     compileOnly(libs.mybatis.plus)
     compileOnly(libs.mybatis.plus.jsqlparser)
-    val configProcessor = "org.springframework.boot:spring-boot-configuration-processor:${
-        libs.versions.d.spring.boot.get()
-    }"
-    kapt(configProcessor)
 }
 
 honoka.basic {

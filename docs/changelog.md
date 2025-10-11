@@ -4,7 +4,7 @@
 #### 工程
 - 将项目改造为多类型复合项目，每个子项目都是一个可以使用IDE单独打开的独立项目。
 - 原项目更名为honoka-sdk-jvm，并作为新项目的一个子项目。
-- 迁入原honoka-android-utils项目，更名为honoka-sdk-android，原项目中的aar模块更名为honoka-android-utils、
+- 迁入原honoka-android-utils项目，更名为honoka-sdk-android，原项目中的aar模块更名为honoka-android-utils。
 - 迁入原honoka-js-sdk项目，更名为honoka-sdk-js，并引入Gradle以读取common版本目录中的root工程版本号作为该项目的根项目的版本号。
 - 迁移honoka-sdk-android与honoka-sdk-js的原Git仓库中的更新日志。
 
@@ -31,7 +31,7 @@
 - `GlobalData`更名为`GlobalComponents`。
 
 #### honoka-android-utils 1.0.0
-- 初始版本。包含`GlobalData`与`java.beans.Transient`。
+- 起始版本。包含`GlobalData`与`java.beans.Transient`。
 
 #### js-utils 1.0.1
 - 使用axios调用异步JavaScript Interface。

@@ -32,11 +32,8 @@ object PropertyValueContainer {
         override fun equals(other: Any?): Boolean {
             if(other !is KPropertyReference) return false
             val target = ref.get() ?: return this === other
-            val result = BooleanBuilder.calc {
-                init(target === other.ref.get())
-                and(signature == other.signature)
-                and(targetHashCode == other.targetHashCode)
-            }
+            val result = target === other.ref.get() && signature == other.signature &&
+                targetHashCode == other.targetHashCode
             return result
         }
         

@@ -10,3 +10,7 @@ fun <T : Throwable> Throwable?.isAny(vararg types: KClass<out T>): Boolean {
 fun <T : Throwable> Throwable?.isAny(types: Collection<KClass<out T>>): Boolean = run {
     isAny(*types.toTypedArray())
 }
+
+fun error(message: Any, cause: Throwable) {
+    throw IllegalStateException(message.toString(), cause)
+}
