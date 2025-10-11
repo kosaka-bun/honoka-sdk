@@ -1,12 +1,13 @@
-package de.honoka.sdk.util.kotlin.basic
+package de.honoka.sdk.util.kotlin.various
 
 import de.honoka.sdk.util.basic.javadoc.ThreadSafe
+import de.honoka.sdk.util.kotlin.basic.cast
+import de.honoka.sdk.util.kotlin.basic.removeIf
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy
 import java.util.concurrent.TimeUnit
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.KProperty
@@ -20,15 +21,15 @@ import kotlin.reflect.KProperty
 @ThreadSafe
 @Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 object PropertyValueContainer {
-    
+
     private class KPropertyReference(property: KProperty<*>) {
-        
+
         val ref = WeakReference(property.cast<CallableReference>().boundReceiver)
-        
+
         val signature: String = property.toString()
-        
+
         val targetHashCode: Int = Objects.hash(ref.get(), signature)
-        
+
         override fun equals(other: Any?): Boolean {
             if(other !is KPropertyReference) return false
             val target = ref.get() ?: return this === other
@@ -36,38 +37,38 @@ object PropertyValueContainer {
                 targetHashCode == other.targetHashCode
             return result
         }
-        
+
         override fun hashCode(): Int = targetHashCode
     }
-    
+
     private val map = ConcurrentHashMap<KPropertyReference, Any>()
-    
+
     private val nullValue = Any()
-    
+
     private val executor by lazy {
         ThreadPoolExecutor(
             1, 1, 0, TimeUnit.MILLISECONDS,
-            executorQueue, DiscardPolicy()
+            executorQueue, ThreadPoolExecutor.DiscardPolicy()
         )
     }
-    
+
     private val executorQueue = LinkedBlockingQueue<Runnable>(1)
-    
+
     @Volatile
     private var lastCleanTime = 0L
-    
+
     fun <T : Any> get(property: KProperty<*>): T = getOrNull(property)!!
-    
+
     fun <T> getOrNull(property: KProperty<*>): T? {
         val result = map[KPropertyReference(property)]
         clean()
         return if(result === nullValue) null else result as T?
     }
-    
+
     fun <T : Any> getOrInit(property: KProperty<*>, initialValue: T): T = run {
         getOrInit(property, initialValue as T?)!!
     }
-    
+
     @JvmName("getOrInitNullable")
     fun <T> getOrInit(property: KProperty<*>, initialValue: T?): T? {
         try {
@@ -87,12 +88,12 @@ object PropertyValueContainer {
             clean()
         }
     }
-    
+
     fun set(property: KProperty<*>, value: Any?) {
         map[KPropertyReference(property)] = value ?: nullValue
         clean()
     }
-    
+
     private fun clean() {
         val time = System.currentTimeMillis()
         if(time - lastCleanTime < 1000) return

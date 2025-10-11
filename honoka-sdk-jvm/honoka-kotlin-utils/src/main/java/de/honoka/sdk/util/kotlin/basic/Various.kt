@@ -59,7 +59,9 @@ inline fun <T> tryBlockOrNull(
 
 inline fun repeatCatching(times: Int, block: (Int) -> Unit) {
     repeat(times) {
-        runCatching { block(times) }
+        runCatching {
+            block(times)
+        }
     }
 }
 

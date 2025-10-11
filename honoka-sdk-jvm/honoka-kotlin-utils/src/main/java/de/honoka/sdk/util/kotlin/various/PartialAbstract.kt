@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.basic
+package de.honoka.sdk.util.kotlin.various
 
 /**
  * “部分抽象”设计模式。
@@ -8,10 +8,9 @@ package de.honoka.sdk.util.kotlin.basic
  * 在上述情况中，若直接将上述单例对象改为抽象类，则在依赖者自定义单例对象实现这一抽象类之前，类中的所有扩展函数都将无法在
  * 其他类中被直接调用，即便在其他类定义一个类型为该抽象类的属性，也依旧如此。
  */
-@Suppress("MemberVisibilityCanBePrivate")
-abstract class PartialAbstract<T : Any> {
+interface PartialAbstract<T : Any> {
 
-    lateinit var abstractPart: T
+    var abstractPart: T
 
     fun initAbstractPart(abstractPart: T) {
         this.abstractPart = abstractPart
