@@ -11,7 +11,7 @@ private val loggerCache = ConcurrentHashMap<KClass<*>, Logger>()
 val KClass<*>.log: Logger
     get() = loggerCache[this] ?: run {
         var clazz = java
-        if(clazz.simpleName.lowercase().contains("\$\$springcglib")) {
+        if(clazz.simpleName.lowercase().contains($$$"$$springcglib")) {
             clazz = java.superclass ?: clazz
         }
         LoggerFactory.getLogger(clazz).also {

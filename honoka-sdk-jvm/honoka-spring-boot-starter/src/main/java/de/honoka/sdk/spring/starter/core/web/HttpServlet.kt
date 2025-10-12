@@ -32,10 +32,12 @@ val HttpServletRequest.clientRealIp: String?
  * 长度为2的`List`，第一个元素为Token类型（如Bearer），第二个元素为Token值
  */
 val HttpServletRequest.authorization: List<String?>
-    get() = run {
-        getHeader(HttpHeaders.AUTHORIZATION)?.split(" ")?.run {
+    get() {
+        val parts = getHeader(HttpHeaders.AUTHORIZATION)?.split(" ")
+        val result = parts?.run {
             if(size < 2) listOf(null, first()) else this
-        } ?: listOf(null, null)
+        }
+        return result ?: listOf(null, null)
     }
 
 operator fun Array<Cookie>?.get(name: String): String? = this?.firstOrNull { it.name == name }?.value

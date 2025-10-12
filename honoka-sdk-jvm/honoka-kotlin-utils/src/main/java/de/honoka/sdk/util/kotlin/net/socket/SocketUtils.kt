@@ -1,6 +1,7 @@
 package de.honoka.sdk.util.kotlin.net.socket
 
 import de.honoka.sdk.util.kotlin.basic.cast
+import de.honoka.sdk.util.kotlin.basic.error
 import de.honoka.sdk.util.kotlin.basic.tryBlock
 import java.net.BindException
 import java.net.InetSocketAddress
@@ -20,7 +21,7 @@ object SocketUtils {
             }.getOrElse {
                 close()
                 val msg = "端口范围（$firstTryPort - ${firstTryPort + tryCount - 1}）均被占用"
-                throw RuntimeException(msg, it)
+                error(msg, it)
             }
         }
         return channel

@@ -1,6 +1,7 @@
 package de.honoka.sdk.spring.starter.core.web
 
 import cn.hutool.core.exceptions.ExceptionUtil
+import de.honoka.sdk.spring.starter.config.MainConfig
 import de.honoka.sdk.util.kotlin.basic.isAny
 import de.honoka.sdk.util.kotlin.basic.log
 import de.honoka.sdk.util.web.ApiResponse
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import kotlin.reflect.KClass
 
-@RestControllerAdvice
+@RestControllerAdvice(name = "${MainConfig.STARTER_BEAN_NAME_PREFIX}GlobalExceptionHandler")
 class GlobalExceptionHandler {
     
     private val disablePrintLogExceptionTypes = listOf<KClass<out Throwable>>(

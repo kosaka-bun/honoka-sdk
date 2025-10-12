@@ -18,8 +18,8 @@ import kotlin.reflect.KProperty
  * 注意：对象的属性在使用本类存取属性值时会有一定性能问题，速度在理论上远不如直接使用对象中的字段来
  * 进行属性值存取的属性。
  */
-@ThreadSafe
 @Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
+@ThreadSafe
 object PropertyValueContainer {
 
     private class KPropertyReference(property: KProperty<*>) {

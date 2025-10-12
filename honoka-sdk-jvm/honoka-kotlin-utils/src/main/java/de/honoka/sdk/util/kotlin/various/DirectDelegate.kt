@@ -12,6 +12,6 @@ class DirectDelegate<T>(private val property: KProperty<*>) {
     }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        this.property.cast<KMutableProperty<*>>().setter.call()
+        this.property.cast<KMutableProperty<*>>().setter.call(value)
     }
 }

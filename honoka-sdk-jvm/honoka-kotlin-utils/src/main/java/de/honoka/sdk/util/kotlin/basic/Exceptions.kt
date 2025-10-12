@@ -11,6 +11,6 @@ fun <T : Throwable> Throwable?.isAny(types: Collection<KClass<out T>>): Boolean 
     isAny(*types.toTypedArray())
 }
 
-fun error(message: Any, cause: Throwable) {
+fun error(message: Any, cause: Throwable): Nothing {
     throw IllegalStateException(message.toString(), cause)
 }

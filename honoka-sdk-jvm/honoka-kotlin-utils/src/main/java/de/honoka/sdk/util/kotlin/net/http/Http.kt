@@ -18,12 +18,12 @@ fun HttpRequest.params(params: Map<String, Any?>) {
 }
 
 internal fun HttpRequest.browserHeaders(headersFileName: String) {
-    val json = browserHeadersCache[headersFileName] ?: run {
+    val json: Map<String, Any?> = browserHeadersCache[headersFileName] ?: run {
         val path = "/http/static-headers/${headersFileName}.json"
         val declaringClass = ::browserHeadersCache.javaField!!.declaringClass
         declaringClass.getResource(path)!!.readText().toJsonObject()
     }
-    json.forEach { k, v ->
+    json.forEach { (k, v) ->
         header(k, v?.toString() ?: "", true)
     }
 }
