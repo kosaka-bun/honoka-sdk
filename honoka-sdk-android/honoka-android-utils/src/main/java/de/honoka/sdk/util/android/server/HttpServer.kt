@@ -22,6 +22,9 @@ object HttpServer {
 
     internal var server: KtorEngine? = null
 
+    val isActive: Boolean
+        get() = server?.isActive == true
+
     internal val threadPool = ThreadPoolUtils.newEagerThreadPool(
         5, 30, 60, TimeUnit.SECONDS
     )
@@ -36,7 +39,7 @@ object HttpServer {
 
     @Synchronized
     fun start(options: KtorEngine.Options? = null): KtorEngine {
-        if(server?.isActive == true) {
+        if(isActive) {
             server!!.stop()
         }
         options?.let {
@@ -49,10 +52,5 @@ object HttpServer {
     }
 
     @Synchronized
-    fun restartIfStopped(): KtorEngine {
-        if(server?.isActive == true) {
-            return server!!
-        }
-        return start()
-    }
+    fun restartIfStopped(): KtorEngine = if(isActive) server!! else start()
 }

@@ -130,7 +130,7 @@ object SomeEntityDao : BaseDao<SomeEntity>(SomeEntity::class.java)
 
 若想在应用启动时就初始化所有`BaseDao`的子类，可在项目中创建任意一个继承`AbstractAndroidDatabaseUtils`类的自定义子类，并在实现抽象属性`daoInstances`时，引用每一个需要被初始化的`BaseDao`的子类，并在应用启动时即调用该子类的`initDaoInstances()`方法。
 
-### [AbstractWebActivity](./honoka-sdk-android/honoka-android-utils/src/main/java/de/honoka/sdk/util/android/ui/WebActivity.kt)
+### [AbstractWebActivity](./honoka-sdk-android/honoka-android-utils/src/main/java/de/honoka/sdk/util/android/activity/WebActivity.kt)
 仅包含一个全屏`WebView`的`Activity`的子类，其中包含了针对网页触发的全局全屏（可使状态栏隐藏的全屏，通常由网页中的视频播放器触发）的默认实现、全局全屏（横屏）时的重力感应旋屏、返回键触发网页后退、将`Activity`事件传递到`WebView`中的JavaScript层的实现、自动注册多个包含`JavascriptInterface`或`AsyncJavascriptInterface`的对象等功能。
 
 要使用`AbstractWebActivity`，可选择直接使用`DefaultWebActivity`，或继承`AbstractWebActivity`创建一个自定义的`Activity`，然后实现抽象属性`definedJsInterfaceInstances`，传入包含`JavascriptInterface`方法的一个或多个类的实例列表，例如：

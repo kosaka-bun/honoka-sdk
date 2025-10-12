@@ -1,24 +1,18 @@
-package de.honoka.sdk.util.android.ui
+package de.honoka.sdk.util.android.basic
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.view.WindowManager
-import android.webkit.WebView
-import android.widget.Toast
-import de.honoka.sdk.util.android.basic.launchOnUi
+import de.honoka.sdk.util.android.activity.AbstractWebActivity
+import de.honoka.sdk.util.android.activity.DefaultWebActivity
+import de.honoka.sdk.util.android.activity.WebActivityExtras
 import de.honoka.sdk.util.android.server.HttpServer
 import de.honoka.sdk.util.kotlin.text.toJsonString
 import de.honoka.sdk.util.kotlin.text.toJsonWrapper
-import org.intellij.lang.annotations.Language
 import kotlin.reflect.KClass
 
 private const val ACTIVITY_DEFAULT_EXTRAS_NAME = "defaultExtras"
-
-fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(this, text, duration).show()
-}
 
 fun Activity.startActivity(clazz: KClass<out Activity>, extras: Any? = null) {
     val intent = Intent(this, clazz.java)
@@ -57,14 +51,5 @@ fun Activity.fullScreen() {
     //隐藏虚拟按键
     window.decorView.systemUiVisibility = run {
         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
-    }
-}
-
-fun WebView.evaluateJsOnUi(
-    @Language("JavaScript") script: String,
-    callback: (String) -> Unit = {}
-) {
-    launchOnUi {
-        evaluateJavascript(script, callback)
     }
 }

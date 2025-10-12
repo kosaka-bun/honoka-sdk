@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.android.ui
+package de.honoka.sdk.util.android.activity
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
@@ -14,7 +14,9 @@ import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import de.honoka.sdk.util.android.R
+import de.honoka.sdk.util.android.basic.getDefaultExtras
 import de.honoka.sdk.util.android.basic.launchOnUi
+import de.honoka.sdk.util.android.basic.toast
 import de.honoka.sdk.util.android.jsinterface.JsInterfaceRegistrar
 import de.honoka.sdk.util.android.server.HttpServer
 import kotlinx.coroutines.delay
@@ -159,9 +161,9 @@ abstract class AbstractWebActivity : AppCompatActivity() {
 
     override fun onResume() {
         HttpServer.restartIfStopped()
+        super.onResume()
         extendedOnResume()
         dispatchEventToListenersInWebViewDirectly("onActivityResume")
-        super.onResume()
     }
 
     abstract fun extendedOnResume()

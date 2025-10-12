@@ -2,8 +2,8 @@ package de.honoka.sdk.util.android.jsinterface
 
 import android.annotation.SuppressLint
 import cn.hutool.json.JSONUtil
+import de.honoka.sdk.util.android.activity.AbstractWebActivity
 import de.honoka.sdk.util.android.basic.toFunctionArgs
-import de.honoka.sdk.util.android.ui.AbstractWebActivity
 import de.honoka.sdk.util.kotlin.text.singleLine
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.declaredMemberFunctions

@@ -1,5 +1,8 @@
 package de.honoka.sdk.util.android.basic
 
+import android.content.Context
+import android.webkit.WebView
+import android.widget.Toast
 import cn.hutool.core.io.FileUtil
 import cn.hutool.core.io.IoUtil
 import cn.hutool.core.util.ClassUtil
@@ -19,6 +22,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
+fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(this, text, duration).show()
+}
+
 private fun launchCoroutine(block: suspend () -> Unit, dispatcher: CoroutineDispatcher): Job = run {
     CoroutineScope(dispatcher).launch {
         block()
@@ -28,6 +35,15 @@ private fun launchCoroutine(block: suspend () -> Unit, dispatcher: CoroutineDisp
 fun launchOnUi(block: suspend () -> Unit): Job = launchCoroutine(block, Dispatchers.Main)
 
 fun launchOnIo(block: suspend () -> Unit): Job = launchCoroutine(block, Dispatchers.IO)
+
+fun WebView.evaluateJsOnUi(
+    @Language("JavaScript") script: String,
+    callback: (String) -> Unit = {}
+) {
+    launchOnUi {
+        evaluateJavascript(script, callback)
+    }
+}
 
 fun executeShellCommand(
     @Language("Shell") command: String,

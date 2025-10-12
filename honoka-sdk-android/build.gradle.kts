@@ -4,13 +4,12 @@ plugins {
     alias(libs.plugins.honoka.android)
 }
 
+group = "de.honoka.sdk"
 version = commonLibs.versions.p.root.get()
 
-allprojects {
-    group = "de.honoka.sdk"
-}
-
 subprojects {
+    group = rootProject.group
+
     apply(plugin = "de.honoka.gradle.plugin.android")
 }
 
