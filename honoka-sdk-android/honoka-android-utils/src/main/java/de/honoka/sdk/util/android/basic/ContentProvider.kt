@@ -14,6 +14,7 @@ import cn.hutool.json.JSON
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import de.honoka.sdk.util.kotlin.basic.tryCastOrNull
+import kotlin.reflect.KClass
 
 abstract class BaseContentProvider : ContentProvider() {
 
@@ -94,13 +95,21 @@ fun ContentResolver.call(authority: String, method: String? = null, args: Any? =
     return result
 }
 
+fun <T : Any> ContentResolver.typedCallOrNull(
+    authority: String, method: String? = null, args: Any? = null, resultClass: KClass<T>
+): T? = call(authority, method, args).tryCastOrNull(resultClass)
+
 /*
  * 需注意，若实化泛型T中含有嵌套泛型，比如调用该方法时表现为：typedCall<List<Entity>>()，则在代码中获取
  * T::class时，只能获取到泛型T的顶级类型，即List的Class对象。
  */
 inline fun <reified T : Any> ContentResolver.typedCallOrNull(
     authority: String, method: String? = null, args: Any? = null
-): T? = call(authority, method, args).tryCastOrNull(T::class)
+): T? = typedCallOrNull(authority, method, args, T::class)
+
+fun <T : Any> ContentResolver.typedCall(
+    authority: String, method: String? = null, args: Any? = null, resultClass: KClass<T>
+): T = typedCallOrNull(authority, method, args, resultClass)!!
 
 inline fun <reified T : Any> ContentResolver.typedCall(
     authority: String, method: String? = null, args: Any? = null

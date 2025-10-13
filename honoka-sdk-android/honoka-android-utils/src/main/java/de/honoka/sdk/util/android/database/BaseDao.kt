@@ -12,6 +12,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.jvm.javaField
 
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseDao<T : Any>(internal val entityClass: KClass<T>) {
@@ -23,9 +24,11 @@ abstract class BaseDao<T : Any>(internal val entityClass: KClass<T>) {
     private val entityCache = ConcurrentHashMap<Any, T>()
 
     private val idProp: KMutableProperty1<T, *> = entityClass.run {
-        declaredMemberProperties.first {
-            it.findAnnotation<DatabaseField>()?.id ?: false
-        } as KMutableProperty1<T, *>
+        val prop = declaredMemberProperties.first {
+            val clazz = DatabaseField::class.java
+            it.javaField!!.getAnnotation(clazz)?.id ?: false
+        }
+        prop as KMutableProperty1<T, *>
     }
 
     init {

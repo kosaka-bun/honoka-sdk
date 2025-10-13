@@ -16,7 +16,6 @@ inline fun <T> Any?.cast(): T = this as T
 
 fun <T : Any> Any.tryCast(clazz: KClass<T>): T = tryCastOrNull(clazz)!!
 
-//内容较长，不适合定义为inline函数
 @Suppress("UNCHECKED_CAST")
 fun <T : Any> Any?.tryCastOrNull(clazz: KClass<T>): T? = run {
     this ?: return null

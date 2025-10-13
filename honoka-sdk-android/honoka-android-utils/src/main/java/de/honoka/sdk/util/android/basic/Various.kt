@@ -10,16 +10,15 @@ import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
-import de.honoka.sdk.util.kotlin.basic.isSubclassOfAny
 import kotlinx.coroutines.*
 import org.intellij.lang.annotations.Language
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.javaMethod
 
 fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
@@ -99,10 +98,9 @@ fun Collection<*>.toFunctionArgs(function: KFunction<*>): Array<Any?> {
             return@forEachIndexed
         }
         val rawType = type as? Class<*> ?: (type as ParameterizedType).rawType as Class<*>
-        val canBeTransfered = rawType.kotlin.isSubclassOfAny(
-            Serializable::class,
-            Collection::class
-        )
+        val canBeTransfered = rawType.kotlin.run {
+            isData || isSubclassOf(Collection::class)
+        }
         if(canBeTransfered) {
             result.add(JSONUtil.toBean(arg as JSON, type, false))
             return@forEachIndexed
