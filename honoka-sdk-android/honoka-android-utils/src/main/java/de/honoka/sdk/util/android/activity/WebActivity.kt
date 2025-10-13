@@ -161,12 +161,12 @@ abstract class AbstractWebActivity : AppCompatActivity() {
 
     override fun onResume() {
         HttpServer.restartIfStopped()
+        onResumeExt()
         super.onResume()
-        extendedOnResume()
         dispatchEventToListenersInWebViewDirectly("onActivityResume")
     }
 
-    abstract fun extendedOnResume()
+    abstract fun onResumeExt()
 
     override fun onDestroy() {
         webView.destroy()
@@ -266,5 +266,5 @@ open class DefaultWebActivity : AbstractWebActivity() {
 
     override val definedJsInterfaceInstances: List<Any> = listOf()
 
-    override fun extendedOnResume() {}
+    override fun onResumeExt() {}
 }

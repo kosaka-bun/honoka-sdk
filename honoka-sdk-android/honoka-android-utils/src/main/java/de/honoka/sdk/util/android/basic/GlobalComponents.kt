@@ -1,6 +1,7 @@
 package de.honoka.sdk.util.android.basic
 
 import android.app.Application
+import android.app.Service
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -26,8 +27,9 @@ class GlobalComponents internal constructor() {
     val contentResolver: ContentResolver
         get() = application.contentResolver
 
-    fun startService(clazz: KClass<*>) {
-        application.startService(Intent(application, clazz.java))
+    inline fun startService(clazz: KClass<out Service>, intentHandler: Intent.() -> Unit = {}) {
+        val intent = Intent(application, clazz.java).apply(intentHandler)
+        application.startService(intent)
     }
 }
 

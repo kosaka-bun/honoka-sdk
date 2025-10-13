@@ -62,6 +62,7 @@ class AndroidInterfaceStubUtils {
         return
       }
       if(methodDef instanceof Object) {
+        //noinspection JSUnresolvedReference
         let isAsync = methodDef.isAsync ?? false
         if(isAsync) {
           stub[it] = androidInterface ? this.#getAsyncMethodStub(interfaceName, it) : (
