@@ -1,11 +1,14 @@
 package de.honoka.sdk.util.kotlin.basic
 
 import cn.hutool.json.JSON
+import cn.hutool.json.JSONArray
 import de.honoka.sdk.util.basic.CodeUtils
 import org.slf4j.event.Level
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.starProjectedType
 
 fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = run {
     classes.firstOrNull { isSubclassOf(it) } != null
@@ -16,14 +19,29 @@ inline fun <T> Any?.cast(): T = this as T
 
 fun <T : Any> Any.tryCast(clazz: KClass<T>): T = tryCastOrNull(clazz)!!
 
+fun <T : Any> Any.tryCast(type: KType): T = tryCastOrNull(type)!!
+
+fun <T : Any> Any?.tryCastOrNull(clazz: KClass<T>): T? = tryCastOrNull(clazz.starProjectedType)
+
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> Any?.tryCastOrNull(clazz: KClass<T>): T? = run {
+fun <T> Any?.tryCastOrNull(type: KType): T? {
     this ?: return null
-    this as? T ?: when(this) {
-        is JSON -> toBean(clazz.java)
-        else -> throw ClassCastException(
-            "Cannot cast ${javaClass.name} to ${clazz.java.name}"
-        )
+    when(this) {
+        is JSON -> {
+            val clazz = type.classifier as KClass<*>
+            if(clazz.isSubclassOf(JSON::class)) {
+                return this as T
+            }
+            if(clazz.isSubclassOf(Collection::class)) {
+                val elementClass = type.arguments[0].type!!.classifier as KClass<*>
+                val result = cast<JSONArray>().toList(elementClass.java).let {
+                    if(clazz == Set::class) it.toSet() else it
+                }
+                return result as T
+            }
+            return toBean(clazz.java) as T
+        }
+        else -> throw ClassCastException("Cannot cast ${javaClass.name} to $type")
     }
 }
 

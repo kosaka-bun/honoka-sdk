@@ -6,6 +6,8 @@ class AndroidInterfaceStubUtils {
 
   enableWarning = true
 
+  showErrorMsg(msg) {}
+
   #axios
 
   constructor() {
@@ -31,12 +33,19 @@ class AndroidInterfaceStubUtils {
     }, error => {
       if(error.code === 'ERR_NETWORK') {
         console.error(`Call ${error.config.url}\n本地网络请求失败`)
+        this.showErrorMsg('本地网络请求失败')
       } else {
+        //noinspection JSUnresolvedReference
+        let msg = error.response.data?.msg
+        if(!msg || msg === '') {
+          msg = error.message
+        }
         console.error(
           `Call ${error.config.url}`,
           '\nparams:', error.config.data,
-          '\nerror:', error.response.data.message
+          '\nerror:', msg
         )
+        this.showErrorMsg(msg)
       }
       return Promise.reject(error.response.data ?? error)
     })

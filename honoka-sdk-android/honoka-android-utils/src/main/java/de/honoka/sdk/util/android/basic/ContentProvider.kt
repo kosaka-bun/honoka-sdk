@@ -15,6 +15,7 @@ import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import de.honoka.sdk.util.kotlin.basic.tryCastOrNull
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 abstract class BaseContentProvider : ContentProvider() {
 
@@ -73,7 +74,7 @@ data class ContentProviderCallException(
     val info: String,
 
     val stackTraceText: String
-) : Exception(info)
+) : RuntimeException(info)
 
 fun ContentResolver.call(authority: String, method: String? = null, args: Any? = null): Any? {
     val uri = "content://$authority".toUri()
@@ -99,6 +100,10 @@ fun <T : Any> ContentResolver.typedCallOrNull(
     authority: String, method: String? = null, args: Any? = null, resultClass: KClass<T>
 ): T? = call(authority, method, args).tryCastOrNull(resultClass)
 
+fun <T : Any> ContentResolver.typedCallOrNull(
+    authority: String, method: String? = null, args: Any? = null, resultType: KType
+): T? = call(authority, method, args).tryCastOrNull(resultType)
+
 /*
  * 需注意，若实化泛型T中含有嵌套泛型，比如调用该方法时表现为：typedCall<List<Entity>>()，则在代码中获取
  * T::class时，只能获取到泛型T的顶级类型，即List的Class对象。
@@ -110,6 +115,10 @@ inline fun <reified T : Any> ContentResolver.typedCallOrNull(
 fun <T : Any> ContentResolver.typedCall(
     authority: String, method: String? = null, args: Any? = null, resultClass: KClass<T>
 ): T = typedCallOrNull(authority, method, args, resultClass)!!
+
+fun <T : Any> ContentResolver.typedCall(
+    authority: String, method: String? = null, args: Any? = null, resultType: KType
+): T = typedCallOrNull(authority, method, args, resultType)!!
 
 inline fun <reified T : Any> ContentResolver.typedCall(
     authority: String, method: String? = null, args: Any? = null
