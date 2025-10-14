@@ -1,7 +1,7 @@
 [versions]
 # gradle plugins version
 gp-android-library = "8.11.1"
-gp-honoka-android = "1.0.1-dev"
+gp-honoka-android = "1.0.1"
 
 # android related version
 a-compile-sdk = "33"

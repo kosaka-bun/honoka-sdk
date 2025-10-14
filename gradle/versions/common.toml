@@ -1,20 +1,20 @@
 [versions]
 # project modules version
-p-root = "2.1.4-dev"
+p-root = "2.1.4"
 p-honoka-utils = "1.1.2"
-p-honoka-kotlin-utils = "1.1.3-dev"
-p-honoka-spring-boot-starter = "1.0.4-dev"
-p-honoka-android-utils = "1.1.2-dev"
+p-honoka-kotlin-utils = "1.1.3"
+p-honoka-spring-boot-starter = "1.0.4"
+p-honoka-android-utils = "1.1.2"
 
 # gradle plugins version
-gp-honoka-basic = "1.0.3-dev"
+gp-honoka-basic = "1.0.3"
 
 # dependencies version
 d-kotlin = "2.2.0"
 d-kotlin-coroutines = "1.10.2"
 d-lombok = "1.18.38"
 d-honoka-utils = "1.1.2"
-d-honoka-kotlin-utils = "1.1.3-dev"
+d-honoka-kotlin-utils = "1.1.3"
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "d-kotlin" }

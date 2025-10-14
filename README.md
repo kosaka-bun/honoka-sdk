@@ -121,9 +121,9 @@ data class SomeEntity(
 )
 ```
 
-然后创建一个`object`类（Kotlin中的单例对象），继承`BaseDao`，将此类作为泛型和`Class`对象传入：
+然后创建一个`object`类（Kotlin中的单例对象），继承`BaseDao`，将此类作为泛型和`KClass<*>`对象传入：
 ```kotlin
-object SomeEntityDao : BaseDao<SomeEntity>(SomeEntity::class.java)
+object SomeEntityDao : BaseDao<SomeEntity>(SomeEntity::class)
 ```
 
 在任何一个地方首次调用`SomeEntityDao`中的任何成员（包括继承的成员）时，其所继承的来自`BaseDao`中的成员才会被初始化，此时才可能会触发数据表的升级或降级。

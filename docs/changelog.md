@@ -1,5 +1,24 @@
 # 更新日志
 
+## 2.1.4
+#### honoka-kotlin-utils 1.1.3
+- 移除了`BooleanBuilder`与`StringWrapper`。
+- 恢复`PartialAbstract`类并改造为`interface`。
+- 将`PartialAbstract`与`PropertyValueContainer`移动到`various`包下。
+- 新增了`DirectDelegate`，用于将一个`KProperty<*>`直接作为另一个属性的委托。
+- 新增了`DirectProxy`，用于创建一个接口的代理类，此代理类中的所有方法将直接调用getter所获取到的对象中的对应方法。
+
+#### honoka-spring-boot-starter 1.0.4
+- 为`GlobalExceptionHandler`上的`@RestControllerAdvice`注解指定明确的`name`。
+
+#### honoka-android-utils 1.1.2
+- 将`ui/Various.kt`中与`Activity`有关的部分迁移到`basic/Activity.kt`中，其他部分迁移到`basic/Various.kt`中。
+- 将`SnowflakeUtils`迁移到honoka-kotlin-utils中。
+- 移除了`BaseService`，新增了`LoopTaskService`，用于快速创建一个有固定间隔时间的循环任务。
+
+#### @honoka/js-utils 1.0.2
+- `AndroidInterfaceStubUtils`新增了预留的错误信息展示接口。
+
 ## 2.1.3
 #### 工程
 - 将项目改造为多类型复合项目，每个子项目都是一个可以使用IDE单独打开的独立项目。
@@ -33,10 +52,10 @@
 #### honoka-android-utils 1.0.0
 - 起始版本。包含`GlobalData`与`java.beans.Transient`。
 
-#### js-utils 1.0.1
+#### @honoka/js-utils 1.0.1
 - 使用axios调用异步JavaScript Interface。
 
-#### js-utils 1.0.0
+#### @honoka/js-utils 1.0.0
 - 起始版本。`basic`模块提供了一些常用的代码工具，`android`模块提供了Android事件监听器和异步JavaScript Interface的实现。
 
 ## 2.1.2
