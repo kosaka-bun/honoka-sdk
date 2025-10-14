@@ -2,7 +2,5 @@
   "separateProjects": [
     "honoka-utils",
     "honoka-kotlin-utils"
-  ],
-  "gitUsername": "Kosaka Bun",
-  "gitEmail": "kosaka-bun@qq.com"
+  ]
 }

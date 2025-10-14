@@ -118,11 +118,14 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
     }
 
     fun androidImage() {
-        routing.get("${HttpServer.Variables.IMAGE_URL_PREFIX}/{...}") {
-            val imagePath = call.request.path().removePrefix(HttpServer.Variables.IMAGE_URL_PREFIX)
-            val filePath = "${global.application.dataDir}/image$imagePath"
+        val prefix = HttpServer.Variables.IMAGE_URL_PREFIX
+        fun handler(subPath: String): RoutingHandler = {
+            val imagePath = call.request.path().removePrefix("$prefix/$subPath")
+            val filePath = "${global.application.dataDir}/$subPath/image$imagePath"
             respondFile(filePath)
         }
+        routing.get("$prefix/files/{...}", handler("files"))
+        routing.get("$prefix/cache/{...}", handler("cache"))
     }
 
     fun jsInterface() {
@@ -178,7 +181,7 @@ private class StatusHandlerRegistrar(private val config: StatusPagesConfig) {
             val status = HttpStatusCode.InternalServerError
             val res = ApiResponse.of<Any>().apply {
                 code = status.value
-                msg = ExceptionUtil.getMessage(t)
+                msg = t.message ?: t::class.qualifiedName
                 data = JSONObject().also {
                     it["stackTrace"] = ExceptionUtil.stacktraceToString(t)
                 }

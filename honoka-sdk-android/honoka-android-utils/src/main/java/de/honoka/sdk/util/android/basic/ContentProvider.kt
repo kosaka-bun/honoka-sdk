@@ -83,11 +83,9 @@ fun ContentResolver.call(authority: String, method: String? = null, args: Any? =
         it.getString("json").let { jsonStr ->
             val json = JSONUtil.parseObj(jsonStr)
             json.getJSONObject("error")?.let { error ->
-                val stackTrace = error.getStr("stackTrace").apply {
-                    Log.e(ContentResolver::class.simpleName, this)
-                }
                 throw ContentProviderCallException(
-                    error.getStr("info"), stackTrace
+                    error.getStr("info"),
+                    error.getStr("stackTrace")
                 )
             }
             json["result"]

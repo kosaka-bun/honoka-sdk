@@ -4,7 +4,7 @@ gp-android-library = "8.11.1"
 gp-honoka-android = "1.0.1"
 
 # android related version
-a-compile-sdk = "33"
+a-compile-sdk = "36"
 a-min-sdk = "26"
 
 # dependencies version

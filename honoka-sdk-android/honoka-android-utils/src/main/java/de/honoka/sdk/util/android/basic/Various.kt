@@ -83,11 +83,7 @@ fun copyAssetsFile(sourcePath: String, targetPath: String, abortIfExists: Boolea
  */
 fun Collection<*>.toFunctionArgs(function: KFunction<*>): Array<Any?> {
     val result = ArrayList<Any?>()
-    val dataTypes = arrayOf(
-        JSONObject::class.java,
-        JSONArray::class.java,
-        String::class.java
-    )
+    val dataTypes = arrayOf(JSONObject::class.java, JSONArray::class.java, String::class.java)
     forEachIndexed { i, arg ->
         val type = function.javaMethod!!.genericParameterTypes[i]
         val shouldAddDirectly = arg == null || run {

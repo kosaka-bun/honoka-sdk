@@ -43,7 +43,7 @@ class AndroidInterfaceStubUtils {
         console.error(
           `Call ${error.config.url}`,
           '\nparams:', error.config.data,
-          '\nerror:', msg
+          '\nerror:', error.response.data
         )
         this.showErrorMsg(msg)
       }
