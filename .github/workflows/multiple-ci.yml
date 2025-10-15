@@ -4,6 +4,8 @@ env:
   CIB_DOWNLOADER: https://mirrors.honoka.de/ci-builders/downloader.sh
   CIB_VERSION: 1.0.2
   CIB_GIT_INFO: ${{ secrets.CIB_GIT_INFO }}
+  REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
+  REMOTE_NPM_REGISTRY_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
 
 jobs:
   gradle-ci-jvm:
@@ -11,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CIB_SUBPROJECT: honoka-sdk-jvm
-      REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
       CIB_ARTIFACT_NAME: maven-repo-changes-jvm
     steps:
       - name: Download CI Builders
@@ -47,7 +48,6 @@ jobs:
     needs: gradle-ci-jvm
     env:
       CIB_SUBPROJECT: honoka-sdk-android
-      REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
       CIB_ARTIFACT_NAME: maven-repo-changes-android
     steps:
       - name: Download CI Builders
@@ -78,7 +78,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CIB_SUBPROJECT: honoka-sdk-js
-      REMOTE_NPM_REGISTRY_URL: ${{ secrets.REMOTE_NPM_REGISTRY_URL }}
       CIB_ARTIFACT_NAME: npm-packages-js
     steps:
       - name: Download CI Builders

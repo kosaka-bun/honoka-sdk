@@ -20,7 +20,8 @@ object HttpServer {
         fun getApiUrlByPath(path: String): String = getUrlByPath("/api$path")
     }
 
-    internal var server: KtorEngine? = null
+    var server: KtorEngine? = null
+        private set
 
     val isActive: Boolean
         get() = server?.isActive == true
