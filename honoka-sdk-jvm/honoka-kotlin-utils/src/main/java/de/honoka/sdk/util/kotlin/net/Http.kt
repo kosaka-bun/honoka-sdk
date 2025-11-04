@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.net.http
+package de.honoka.sdk.util.kotlin.net
 
 import cn.hutool.http.HttpRequest
 import cn.hutool.json.JSONObject

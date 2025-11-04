@@ -37,11 +37,13 @@ public class ConsoleWindow {
     //全局初始化，先于所有类型的初始化执行
     static {
         //设置本机系统外观
+        //noinspection CodeBlock2Expr
         ActionUtils.doIgnoreException(() -> {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         });
     }
 
+    @SuppressWarnings("unused")
     public static class Builder {
 
         private Builder() {}
@@ -144,8 +146,7 @@ public class ConsoleWindow {
             @Override
             public void windowClosing(WindowEvent e) {
                 int option = JOptionPane.showConfirmDialog(
-                        frame, "确定退出吗？",
-                        windowName, JOptionPane.OK_CANCEL_OPTION
+                    frame, "确定退出吗？", windowName, JOptionPane.OK_CANCEL_OPTION
                 );
                 if(option != JOptionPane.OK_OPTION) return;
                 //通过新线程执行退出方法，避免卡住界面
@@ -160,8 +161,9 @@ public class ConsoleWindow {
     void initBackgroundMode(URL iconPath, ThrowsRunnable onExit) {
         init();
         //未提供图标则加载默认图标
-        if(iconPath == null)
+        if(iconPath == null) {
             iconPath = this.getClass().getResource("/img/java.png");
+        }
         //创建图片对象
         ImageIcon icon = new ImageIcon(Objects.requireNonNull(iconPath));
         //加载系统托盘图标
@@ -175,9 +177,7 @@ public class ConsoleWindow {
     void showInputField() {
         inputFieldContainer.setVisible(true);
         //显示输入框后将焦点放在输入框上
-        inputField.dispatchEvent(new FocusEvent(
-                inputField, FocusEvent.FOCUS_GAINED, true
-        ));
+        inputField.dispatchEvent(new FocusEvent(inputField, FocusEvent.FOCUS_GAINED, true));
         inputField.requestFocusInWindow();
     }
 
@@ -191,10 +191,12 @@ public class ConsoleWindow {
         frame.setVisible(true);
         //将窗口显示出来（如果是最小化到任务栏的状态）
         switch(frame.getExtendedState()) {
-            case JFrame.ICONIFIED:    //最小化
+            //最小化
+            case JFrame.ICONIFIED:
                 frame.setExtendedState(JFrame.NORMAL);
                 break;
-            case 7:  //7表示最大化的窗口被最小化到任务栏
+            //7表示最大化的窗口被最小化到任务栏
+            case 7:
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 break;
         }
@@ -243,7 +245,9 @@ public class ConsoleWindow {
                                 //字符不足缩进，去除左侧空格，保留右侧空格
                                 content.append(StrUtil.trimStart(line));
                             }
-                        } else break;
+                        } else {
+                            break;
+                        }
                     }
                     //转义<>符号，然后添加到列表中，表示一个span标签的文本内容
                     String contentStr = content.toString()
@@ -269,7 +273,7 @@ public class ConsoleWindow {
             int colorPos = style.indexOf("color:");
             style = style.substring(colorPos, style.indexOf(";", colorPos) + 1);
             result.append("<pre style=\"").append(style).append("\">")
-                    .append(contents.get(i)).append("</pre>");
+                .append(contents.get(i)).append("</pre>");
         }
         //判断是否需要截取
         String resultStr = result.toString();
@@ -280,8 +284,7 @@ public class ConsoleWindow {
             int removeLineCount = lineCount - limit;
             resultStr = resultStr.substring(
                 resultStr.indexOf(
-                    "<pre",
-                    StrUtil.ordinalIndexOf(resultStr, "<br>", removeLineCount)
+                    "<pre", StrUtil.ordinalIndexOf(resultStr, "<br>", removeLineCount)
                 )
             );
         }
@@ -303,11 +306,7 @@ public class ConsoleWindow {
     }
 
     public void setTextPaneFont(String fontFamily) {
-        setTextPaneFont(new Font(
-                fontFamily,
-                textPaneFont.getStyle(),
-                textPaneFont.getSize()
-        ));
+        setTextPaneFont(new Font(fontFamily, textPaneFont.getStyle(), textPaneFont.getSize()));
     }
 
     public void addTrayIconMenuItem(String name, boolean needConfirm, ThrowsRunnable action) {
@@ -317,9 +316,9 @@ public class ConsoleWindow {
         item.addActionListener(e -> {
             //进行操作确认
             if(needConfirm) {
-                int option = JOptionPane.showConfirmDialog(frame,
-                        "确定执行" + name + "吗？", windowName,
-                        JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(
+                    frame, "确定执行" + name + "吗？", windowName, JOptionPane.OK_CANCEL_OPTION
+                );
                 //判断是否选择了“是”选项
                 if(option != JOptionPane.OK_OPTION) return;
             }
@@ -347,9 +346,9 @@ public class ConsoleWindow {
         textPane.setEditable(false);
         //监听ScrollLock
         textPane.addKeyListener(new KeyListener() {
+
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
+            public void keyTyped(KeyEvent e) {}
 
             @Override
             public void keyPressed(KeyEvent e) {
@@ -359,12 +358,12 @@ public class ConsoleWindow {
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {
-            }
+            public void keyReleased(KeyEvent e) {}
         });
         //设置当文本框内容改变时要执行的操作
         Document doc = textPane.getDocument();
         doc.addDocumentListener(new DocumentListener() {
+
             private volatile Thread runningScrollThread;
 
             @Override
@@ -373,7 +372,9 @@ public class ConsoleWindow {
                 synchronized(this) {
                     if(runningScrollThread != null) return;
                     runningScrollThread = new Thread(() -> {
-                        if(isAutoScroll()) doAutoScroll();
+                        if(isAutoScroll()) {
+                            doAutoScroll();
+                        }
                         runningScrollThread = null;
                     });
                     runningScrollThread.start();
@@ -382,12 +383,10 @@ public class ConsoleWindow {
 
             //仅添加内容时滚动，其他修改不进行操作
             @Override
-            public void removeUpdate(DocumentEvent e) {
-            }
+            public void removeUpdate(DocumentEvent e) {}
 
             @Override
-            public void changedUpdate(DocumentEvent e) {
-            }
+            public void changedUpdate(DocumentEvent e) {}
         });
         //添加textPane右键弹出菜单
         initTextPaneMenu(textPane);
@@ -429,8 +428,7 @@ public class ConsoleWindow {
         resizeItem.addActionListener(e -> frame.setSize(defaultFrameSize));
         textAreaMenu.add(resizeItem);
         //自动滚屏项
-        JCheckBoxMenuItem autoScrollItem = new JCheckBoxMenuItem(
-                "自动滚屏 / 限制窗口内最大行数");
+        JCheckBoxMenuItem autoScrollItem = new JCheckBoxMenuItem("自动滚屏 / 限制窗口内最大行数");
         autoScrollItem.setFont(menuItemFont);
         autoScrollItem.addItemListener(e -> {
             boolean state = e.getStateChange() == ItemEvent.SELECTED;
@@ -476,10 +474,8 @@ public class ConsoleWindow {
      */
     private void initScrollPane() {
         scrollPane.setViewportView(textPane);
-        scrollPane.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         frame.add(scrollPane);
     }
 
@@ -514,10 +510,9 @@ public class ConsoleWindow {
             }
         };
         inputField.registerKeyboardAction(
-                actionListener,
-                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0,
-                        false),
-                JComponent.WHEN_FOCUSED
+            actionListener,
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false),
+            JComponent.WHEN_FOCUSED
         );
         inputFieldContainer.add(inputField);
         //frame
@@ -540,8 +535,9 @@ public class ConsoleWindow {
      */
     @SneakyThrows
     private void initSystemTrayIcon(Image systemTrayIcon, ThrowsRunnable onExit) {
-        if(!SystemTray.isSupported())
+        if(!SystemTray.isSupported()) {
             throw new RuntimeException("不支持系统托盘");
+        }
         //获取当前平台的系统托盘
         SystemTray tray = SystemTray.getSystemTray();
         //region 创建点击图标时的弹出菜单
@@ -581,26 +577,18 @@ public class ConsoleWindow {
             }
 
             private void onRightClick(MouseEvent e) {
-                double width, height;
                 if(trayIconMenuSize == null) {
                     trayIconMenuContainer.setVisible(true);
                     trayIconMenu.show(trayIconMenuContainer, 0, 0);
                     trayIconMenuSize = trayIconMenu.getSize();
                 }
-                width = trayIconMenuSize.getWidth();
-                height = trayIconMenuSize.getHeight();
-                trayIconMenuContainer.setLocation(
-                        (int) (e.getX() / screenZoomScale -
-                                width / screenZoomScale -
-                                trayIconMenuLocationOffset.getWidth() *
-                                        screenZoomScale
-                        ),
-                        (int) (e.getY() / screenZoomScale -
-                                height / screenZoomScale -
-                                trayIconMenuLocationOffset.getHeight() *
-                                        screenZoomScale
-                        )
-                );
+                double width = trayIconMenuSize.getWidth();
+                double height = trayIconMenuSize.getHeight();
+                double containerX = e.getX() / screenZoomScale - width / screenZoomScale -
+                    trayIconMenuLocationOffset.getWidth() * screenZoomScale;
+                double containerY = e.getY() / screenZoomScale - height / screenZoomScale -
+                    trayIconMenuLocationOffset.getHeight() * screenZoomScale;
+                trayIconMenuContainer.setLocation((int) containerX, (int) containerY);
                 trayIconMenuContainer.setVisible(true);
                 trayIconMenu.show(trayIconMenuContainer, 0, 0);
             }
@@ -622,8 +610,7 @@ public class ConsoleWindow {
         exitItem.addActionListener(e -> {
             //点击菜单的退出按钮时，执行退出时方法，然后退出程序
             int option = JOptionPane.showConfirmDialog(
-                    frame, "确定退出吗？",
-                    windowName, JOptionPane.OK_CANCEL_OPTION
+                frame, "确定退出吗？", windowName, JOptionPane.OK_CANCEL_OPTION
             );
             //判断是否选择了“是”选项
             if(option == JOptionPane.OK_OPTION) {
@@ -662,7 +649,9 @@ public class ConsoleWindow {
     @SneakyThrows
     private synchronized void writeToTextPane(String str, AttributeSet attributeSet) {
         StyledDocument doc = textPane.getStyledDocument();
-        if(attributeSet == null) attributeSet = defaultAttributeSet;
+        if(attributeSet == null) {
+            attributeSet = defaultAttributeSet;
+        }
         doc.insertString(doc.getLength(), str, attributeSet);
     }
 
@@ -672,8 +661,9 @@ public class ConsoleWindow {
     private synchronized void textPaneScrollToEnd() {
         int docLength = textPane.getDocument().getLength();
         //防止当光标位置等于要移动到的位置时，移动光标位置不触发滚动的问题
-        if(textPane.getCaretPosition() == docLength && docLength > 0)
+        if(textPane.getCaretPosition() == docLength && docLength > 0) {
             textPane.setCaretPosition(docLength - 1);
+        }
         textPane.setCaretPosition(docLength);
     }
 
@@ -683,9 +673,7 @@ public class ConsoleWindow {
     @SneakyThrows
     private synchronized void removeSurplusTextInTextPane() {
         Document doc = textPane.getDocument();
-        int lineCount = TextUtils.getLines(
-                doc.getText(0, doc.getLength())
-        ).size();
+        int lineCount = TextUtils.getLines(doc.getText(0, doc.getLength())).size();
         if(lineCount <= textPaneMaxLine) return;
         //清除多余的行
         int offset = StrUtil.ordinalIndexOf(
@@ -704,7 +692,9 @@ public class ConsoleWindow {
 
     private void updateAutoScrollLockItem(boolean autoScroll) {
         autoScrollItem.setState(autoScroll);
-        if(autoScroll) doAutoScroll();
+        if(autoScroll) {
+            doAutoScroll();
+        }
     }
 
     private void exitApplication(JMenuItem exitItem, ThrowsRunnable onExit) {
@@ -719,17 +709,21 @@ public class ConsoleWindow {
     private void exitApplication(ThrowsRunnable onExit) {
         System.out.println("正在退出……");
         try {
-            if(onExit != null) onExit.throwsRun();
+            if(onExit != null) {
+                onExit.throwsRun();
+            }
             System.exit(0);
         } catch(Throwable t) {
             //noinspection CallToPrintStackTrace
             t.printStackTrace();
             //退出失败，询问是否强行退出
             int option = JOptionPane.showConfirmDialog(
-                    frame, "退出时出现了异常，是否强制退出应用？",
-                    windowName, JOptionPane.OK_CANCEL_OPTION
+                frame, "退出时出现了异常，是否强制退出应用？",
+                windowName, JOptionPane.OK_CANCEL_OPTION
             );
-            if(option == JOptionPane.OK_OPTION) System.exit(-1);
+            if(option == JOptionPane.OK_OPTION) {
+                System.exit(-1);
+            }
         }
     }
 }

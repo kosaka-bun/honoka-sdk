@@ -82,25 +82,29 @@ public class ConsoleWindowBuilder {
         return this;
     }
 
+    @SuppressWarnings("MagicConstant")
     public ConsoleWindow build() {
         //注入参数
         ConsoleWindow consoleWindow = new ConsoleWindow();
         consoleWindow.windowName = windowName;
         consoleWindow.screenZoomScale = screenZoomScale;
         consoleWindow.defaultFrameSize = new Dimension(windowWidth, windowHeight);
-        consoleWindow.menuItemFont = new Font(menuItemFontName,
-                menuItemFontStyle, menuItemFontSize);
-        consoleWindow.textPaneFont = new Font(textPaneFontName,
-                textPaneFontStyle, textPaneFontSize);
+        consoleWindow.menuItemFont = new Font(menuItemFontName, menuItemFontStyle, menuItemFontSize);
+        consoleWindow.textPaneFont = new Font(textPaneFontName, textPaneFontStyle, textPaneFontSize);
         consoleWindow.textPaneMaxLine = textPaneMaxLine;
         consoleWindow.trayIconMenuLocationOffset = trayIconMenuLocationOffset;
         //构建
         if(backgroundMode) {
             consoleWindow.initBackgroundMode(trayIconPath, onExit);
-            if(showOnBuild) consoleWindow.show();
+            if(showOnBuild) {
+                consoleWindow.show();
+            }
         } else {
-            if(onExit == null) consoleWindow.init();
-            else consoleWindow.init(onExit);
+            if(onExit == null) {
+                consoleWindow.init();
+            } else {
+                consoleWindow.init(onExit);
+            }
             consoleWindow.show();
         }
         return consoleWindow;

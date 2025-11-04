@@ -46,9 +46,8 @@ object HttpServer {
         options?.let {
             usingOptions = it
         }
-        server = KtorEngine(usingOptions).apply {
-            start()
-        }
+        server = KtorEngine(usingOptions)
+        server!!.start()
         return server!!
     }
 

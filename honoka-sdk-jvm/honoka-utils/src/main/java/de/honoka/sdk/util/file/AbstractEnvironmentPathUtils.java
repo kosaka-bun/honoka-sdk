@@ -1,21 +1,22 @@
 package de.honoka.sdk.util.file;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-public abstract class AbstractEnvironmentPathUtils {
+@Setter
+@Getter
+public class AbstractEnvironmentPathUtils {
 
     public enum BuildTool {
 
         MAVEN, GRADLE
     }
 
-    private final BuildTool buildTool;
-
-    public AbstractEnvironmentPathUtils(BuildTool buildTool) {
-        this.buildTool = buildTool;
-    }
+    private BuildTool buildTool = BuildTool.GRADLE;
 
     public String getDataDirPathOfApp() {
         String mainClasspath = FileUtils.getMainClasspath();

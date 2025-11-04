@@ -2,7 +2,7 @@ package de.honoka.sdk.util.android.server.ktor
 
 import de.honoka.sdk.util.android.server.HttpServer
 import de.honoka.sdk.util.android.server.RoutingDefinition
-import de.honoka.sdk.util.kotlin.net.socket.SocketUtils
+import de.honoka.sdk.util.kotlin.net.SocketUtils
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import kotlinx.coroutines.isActive
@@ -24,14 +24,15 @@ class KtorEngine(private val options: Options = Options()) {
     var port: Int = 0
         private set
 
+    @Synchronized
     fun start() {
         if(isActive) stop()
         port = SocketUtils.findAvailablePort(options.firstTryPort, 10)
-        rawEngine = embeddedServer(CIO, port, module = KtorModule.getModule(options)).apply {
-            start(false)
-        }
+        rawEngine = embeddedServer(CIO, port, module = KtorModule.getModule(options))
+        rawEngine!!.start(false)
     }
 
+    @Synchronized
     fun stop() {
         rawEngine?.stop(timeoutMillis = 10 * 1000L)
     }

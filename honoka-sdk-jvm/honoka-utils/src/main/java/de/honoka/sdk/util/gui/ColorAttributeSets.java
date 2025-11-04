@@ -20,16 +20,26 @@ public class ColorAttributeSets {
     }
 
     private static void init() {
-        color(255, 255, 255);   //30
-        color(255, 107, 105);   //31
-        color(168, 192, 35);   //32
-        color(213, 191, 86);   //33
-        color(83, 147, 236);   //34
-        color(173, 138, 190);    //35
-        color(40, 153, 153);   //36
-        color(153, 153, 153);    //37
-        color(187, 187, 187);    //38
-        color(187, 187, 187);   //39
+        //30
+        color(255, 255, 255);
+        //31
+        color(255, 107, 105);
+        //32
+        color(168, 192, 35);
+        //33
+        color(213, 191, 86);
+        //34
+        color(83, 147, 236);
+        //35
+        color(173, 138, 190);
+        //36
+        color(40, 153, 153);
+        //37
+        color(153, 153, 153);
+        //38
+        color(187, 187, 187);
+        //39
+        color(187, 187, 187);
     }
 
     private static void color(int r, int g, int b) {
