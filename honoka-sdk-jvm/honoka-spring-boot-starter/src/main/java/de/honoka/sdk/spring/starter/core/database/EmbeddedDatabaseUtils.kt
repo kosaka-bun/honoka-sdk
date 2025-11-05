@@ -1,7 +1,6 @@
 package de.honoka.sdk.spring.starter.core.database
 
 import cn.hutool.core.util.StrUtil
-import de.honoka.sdk.util.file.AbstractEnvironmentPathUtils
 import de.honoka.sdk.util.kotlin.file.EnvironmentPathUtils
 import kotlin.io.path.Path
 
@@ -12,14 +11,12 @@ object EmbeddedDatabaseUtils {
         SQLITE, H2
     }
 
-    var environmentPathUtils: AbstractEnvironmentPathUtils = EnvironmentPathUtils
-
     /**
      * 获取相对于Java应用数据目录（由[EnvironmentPathUtils.getDataDirPathOfApp]
      * 方法获得的一个自定义目录）的嵌入式数据库的JDBC URL。
      */
     fun getJdbcUrlRelatedWithDataDir(dbType: DbType, databaseFilePath: String): String {
-        val dataDirPath = environmentPathUtils.getDataDirPathOfApp().run {
+        val dataDirPath = EnvironmentPathUtils.getDataDirPathOfApp().run {
             val p = replace("\\", "/")
             if(p.endsWith("/")) p else "$p/"
         }

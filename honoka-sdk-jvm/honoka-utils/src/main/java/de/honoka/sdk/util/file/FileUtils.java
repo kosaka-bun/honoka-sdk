@@ -60,12 +60,13 @@ public class FileUtils {
         try {
             Path path = Paths.get(file.getAbsolutePath());
             BasicFileAttributeView basicView = Files.getFileAttributeView(
-                    path, BasicFileAttributeView.class,
-                    LinkOption.NOFOLLOW_LINKS);
+                path, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS
+            );
             BasicFileAttributes attr = basicView.readAttributes();
             return new Date(attr.creationTime().toMillis());
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(Throwable t) {
+            //noinspection CallToPrintStackTrace
+            t.printStackTrace();
             return new Date(file.lastModified());
         }
     }
@@ -79,10 +80,10 @@ public class FileUtils {
     }
 
     /**
-     * 获取当前运行环境的主classpath的绝对路径
+     * 获取当前运行环境的主classpath的绝对路径。
      * <p>
      * 当Java应用程序在jar包中被运行时，此路径为jar包所在目录的路径。在IDE中直接运行时，此路径为
-     * 项目构建目录中的java源代码编译输出路径（如Maven中为“[项目目录]/target/classes”）。
+     * 项目构建目录中的Java源代码编译输出路径（如Maven中为“[项目目录]/target/classes/main”）。
      */
     @SneakyThrows
     public static String getMainClasspath() {
