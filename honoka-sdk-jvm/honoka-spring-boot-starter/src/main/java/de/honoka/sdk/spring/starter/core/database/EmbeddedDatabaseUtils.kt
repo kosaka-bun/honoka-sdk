@@ -1,6 +1,5 @@
 package de.honoka.sdk.spring.starter.core.database
 
-import cn.hutool.core.util.StrUtil
 import de.honoka.sdk.util.kotlin.file.EnvironmentPathUtils
 import kotlin.io.path.Path
 
@@ -20,7 +19,7 @@ object EmbeddedDatabaseUtils {
             val p = replace("\\", "/")
             if(p.endsWith("/")) p else "$p/"
         }
-        val databaseFilePath = StrUtil.strip(databaseFilePath, "/\\", "")
+        val databaseFilePath = databaseFilePath.removePrefix("/\\")
         val absoluteDatabaseFilePath = "$dataDirPath$databaseFilePath"
         val absoluteDatabaseFileDirPath = absoluteDatabaseFilePath.run {
             substring(0, lastIndexOf("/"))

@@ -12,16 +12,16 @@ abstract class MiddleIoStream : Closeable {
     @NotThreadSafe
     private inner class In : InputStream() {
         
-        override fun read(): Int = this@MiddleIoStream.read()
+        override fun read(): Int = stream.read()
         
-        override fun read(b: ByteArray, off: Int, len: Int): Int = this@MiddleIoStream.read(b, off, len)
+        override fun read(b: ByteArray, off: Int, len: Int): Int = stream.read(b, off, len)
         
         fun superRead(b: ByteArray, off: Int, len: Int): Int = super.read(b, off, len)
         
-        override fun available(): Int = this@MiddleIoStream.available()
+        override fun available(): Int = stream.available()
         
         override fun close() {
-            this@MiddleIoStream.doClose()
+            stream.doClose()
         }
     }
     
@@ -29,11 +29,11 @@ abstract class MiddleIoStream : Closeable {
     private inner class Out : OutputStream() {
         
         override fun write(b: Int) {
-            this@MiddleIoStream.write(b)
+            stream.write(b)
         }
         
         override fun write(b: ByteArray, off: Int, len: Int) {
-            this@MiddleIoStream.write(b, off, len)
+            stream.write(b, off, len)
         }
         
         fun superWrite(b: ByteArray, off: Int, len: Int) {
@@ -41,13 +41,15 @@ abstract class MiddleIoStream : Closeable {
         }
         
         override fun flush() {
-            this@MiddleIoStream.flush()
+            stream.flush()
         }
         
         override fun close() {
-            this@MiddleIoStream.doClose()
+            stream.doClose()
         }
     }
+    
+    private val stream = this
     
     private val inputStream = In()
     
