@@ -7,7 +7,7 @@ import android.view.WindowManager
 import de.honoka.sdk.util.android.activity.AbstractWebActivity
 import de.honoka.sdk.util.android.activity.DefaultWebActivity
 import de.honoka.sdk.util.android.activity.WebActivityExtras
-import de.honoka.sdk.util.android.server.HttpServer
+import de.honoka.sdk.util.android.server.HttpServerService
 import de.honoka.sdk.util.kotlin.text.toJsonString
 import de.honoka.sdk.util.kotlin.text.toJsonWrapper
 import kotlin.reflect.KClass
@@ -29,7 +29,7 @@ fun Activity.switchActivity(clazz: KClass<out Activity>, extras: Any? = null) {
 
 fun Activity.startRootWebActivty(
     webActivityClass: KClass<out AbstractWebActivity> = DefaultWebActivity::class,
-    url: String = HttpServer.Variables.getUrlByPath("/")
+    url: String = HttpServerService.getUrlByPath("/")
 ) {
     switchActivity(webActivityClass, WebActivityExtras(url, true))
 }

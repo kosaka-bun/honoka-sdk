@@ -18,7 +18,7 @@ import de.honoka.sdk.util.android.basic.getDefaultExtras
 import de.honoka.sdk.util.android.basic.launchOnUi
 import de.honoka.sdk.util.android.basic.toast
 import de.honoka.sdk.util.android.jsinterface.JsInterfaceRegistrar
-import de.honoka.sdk.util.android.server.HttpServer
+import de.honoka.sdk.util.android.server.HttpServerService
 import kotlinx.coroutines.delay
 import org.intellij.lang.annotations.Language
 import kotlin.system.exitProcess
@@ -160,7 +160,7 @@ abstract class AbstractWebActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        HttpServer.restartIfStopped()
+        HttpServerService.restartIfStopped()
         onResumeExt()
         super.onResume()
         dispatchEventToListenersInWebViewDirectly("onActivityResume")

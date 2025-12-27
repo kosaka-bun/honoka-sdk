@@ -1,56 +1,47 @@
 package de.honoka.sdk.util.android.server
 
-import de.honoka.sdk.util.android.server.ktor.KtorEngine
-import de.honoka.sdk.util.concurrent.ThreadPoolUtils
-import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.TimeUnit
+import de.honoka.sdk.util.kotlin.net.SocketUtils
+import io.ktor.server.cio.*
+import io.ktor.server.engine.*
+import kotlinx.coroutines.isActive
 
-object HttpServer {
+class HttpServer(private val options: Options) {
 
-    object Variables {
+    data class Options(
 
-        internal const val FIRST_TRY_PORT = 38081
+        val port: Int,
 
-        internal const val IMAGE_URL_PREFIX = "/android/img"
+        val tryOtherPorts: Boolean = true,
 
-        fun getUrlByPath(path: String): String = "http://localhost:${server!!.port}$path"
+        val tryPortsCount: Int = 10,
 
-        fun getImageUrlByPath(path: String): String = getUrlByPath("$IMAGE_URL_PREFIX$path")
+        var customRoutings: List<RoutingDefinition> = listOf()
+    )
 
-        fun getApiUrlByPath(path: String): String = getUrlByPath("/api$path")
-    }
-
-    var server: KtorEngine? = null
-        private set
+    private var rawServer: EmbeddedServer<*, *>? = null
 
     val isActive: Boolean
-        get() = server?.isActive == true
+        get() = rawServer?.application?.isActive == true
 
-    internal val threadPool = ThreadPoolUtils.newEagerThreadPool(
-        5, 30, 60, TimeUnit.SECONDS
-    )
-
-    internal val coroutineDispatcher = threadPool.asCoroutineDispatcher()
-
-    internal val staticResourcesPrefixes = arrayOf(
-        "/assets", "/font", "/img", "/js", "/favicon.ico"
-    )
-
-    private var usingOptions: KtorEngine.Options = KtorEngine.Options()
+    var port: Int = 0
+        private set
 
     @Synchronized
-    fun start(options: KtorEngine.Options? = null): KtorEngine {
-        if(isActive) {
-            server!!.stop()
+    fun start() {
+        if(isActive) stop()
+        port = options.run {
+            if(tryOtherPorts) {
+                SocketUtils.findAvailablePort(port, tryPortsCount)
+            } else {
+                port
+            }
         }
-        options?.let {
-            usingOptions = it
-        }
-        server = KtorEngine(usingOptions)
-        server!!.start()
-        return server!!
+        rawServer = embeddedServer(CIO, port, module = KtorModule.getModule(options))
+        rawServer!!.start(false)
     }
 
     @Synchronized
-    fun restartIfStopped(): KtorEngine = if(isActive) server!! else start()
+    fun stop() {
+        rawServer?.stop(timeoutMillis = 10 * 1000L)
+    }
 }

@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.android.server.ktor
+package de.honoka.sdk.util.android.server
 
 import android.util.Log
 import android.webkit.MimeTypeMap
@@ -6,9 +6,6 @@ import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.json.JSONObject
 import de.honoka.sdk.util.android.basic.global
 import de.honoka.sdk.util.android.jsinterface.JsInterfaceRegistrar
-import de.honoka.sdk.util.android.server.HttpServer
-import de.honoka.sdk.util.android.server.StatusPageHandler
-import de.honoka.sdk.util.android.server.respondJson
 import de.honoka.sdk.util.web.ApiResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -24,7 +21,7 @@ import java.io.FileNotFoundException
 
 internal object KtorModule {
 
-    fun getModule(options: KtorEngine.Options): Application.() -> Unit = {
+    fun getModule(options: HttpServer.Options): Application.() -> Unit = {
         routing {
             options.customRoutings.forEach {
                 it()
@@ -109,7 +106,7 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
     }
 
     fun staticResource() {
-        HttpServer.staticResourcesPrefixes.forEach {
+        HttpServerService.staticResourcesPrefixes.forEach {
             val mappingPath = if(it.contains(".")) it else "$it/{...}"
             routing.get(mappingPath) {
                 respondAsset("web${call.request.path()}")
@@ -118,7 +115,7 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
     }
 
     fun androidImage() {
-        val prefix = HttpServer.Variables.IMAGE_URL_PREFIX
+        val prefix = HttpServerService.IMAGE_URL_PREFIX
         fun handler(subPath: String): RoutingHandler = {
             val imagePath = call.request.path().removePrefix("$prefix/$subPath")
             val filePath = "${global.application.dataDir}/$subPath/image$imagePath"
@@ -131,7 +128,7 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
     fun jsInterface() {
         routing.post("/jsInterface/{...}") {
             val path = call.request.path().removePrefix("/jsInterface/").split("/")
-            withContext(HttpServer.coroutineDispatcher) {
+            withContext(HttpServerService.coroutineDispatcher) {
                 try {
                     val result = JsInterfaceRegistrar.invokeAsyncMethod(
                         path[0], path[1], call.receiveText()

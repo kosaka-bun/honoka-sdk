@@ -14,7 +14,8 @@ abstract class SingletonService : Service() {
     abstract class AbstractCompanion<T : SingletonService>(internal val clazz: KClass<T>) {
 
         @Volatile
-        internal var instance: SingletonService? = null
+        var instance: T? = null
+            internal set
 
         @Volatile
         internal var instanceId: String? = null
@@ -25,6 +26,12 @@ abstract class SingletonService : Service() {
             instanceId = UUID.randomUUID().toString()
             global.startService(clazz) {
                 putExtra("instanceId", instanceId)
+            }
+        }
+
+        open fun ensureStarted() {
+            while(instance?.started != true) {
+                Thread.sleep(10)
             }
         }
 
@@ -54,19 +61,24 @@ abstract class SingletonService : Service() {
     protected abstract val companion: AbstractCompanion<out SingletonService>
 
     @Volatile
+    internal var started = false
+
+    @Volatile
     internal var destroyed = false
 
     override fun onBind(intent: Intent): IBinder? = null
 
+    @Suppress("UNCHECKED_CAST")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val instanceId = intent?.getStringExtra("instanceId")
         if(instanceId != companion.instanceId || instanceId == null) {
             stopSelf()
             return START_NOT_STICKY
         }
-        companion.instance = this
+        (companion as AbstractCompanion<SingletonService>).instance = this
         super.onStartCommand(intent, flags, startId)
         onStartCommandExt(intent, flags, startId)
+        started = true
         return START_REDELIVER_INTENT
     }
 
