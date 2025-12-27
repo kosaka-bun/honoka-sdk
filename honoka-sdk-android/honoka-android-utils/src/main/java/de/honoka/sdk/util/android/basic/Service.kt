@@ -9,21 +9,12 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 
-abstract class LoopTaskService(private val options: Options) : Service() {
+abstract class SingletonService : Service() {
 
-    data class Options(
-
-        val waitDuration: Long,
-
-        val timeUnit: TimeUnit = TimeUnit.SECONDS,
-
-        val stopOnException: Boolean = true
-    )
-
-    abstract class AbstractCompanion(internal val clazz: KClass<out LoopTaskService>) {
+    abstract class AbstractCompanion<T : SingletonService>(internal val clazz: KClass<T>) {
 
         @Volatile
-        internal var instance: LoopTaskService? = null
+        internal var instance: SingletonService? = null
 
         @Volatile
         internal var instanceId: String? = null
@@ -60,9 +51,7 @@ abstract class LoopTaskService(private val options: Options) : Service() {
     }
 
     //在实现类中定义基于AbstractCompanion的companion object，并将其赋值给这个字段
-    protected abstract val companion: AbstractCompanion
-
-    private lateinit var thread: Thread
+    protected abstract val companion: AbstractCompanion<out SingletonService>
 
     @Volatile
     internal var destroyed = false
@@ -77,33 +66,61 @@ abstract class LoopTaskService(private val options: Options) : Service() {
         }
         companion.instance = this
         super.onStartCommand(intent, flags, startId)
-        startThread()
+        onStartCommandExt(intent, flags, startId)
         return START_REDELIVER_INTENT
     }
 
-    private fun startThread() {
-        thread = thread {
-            while(true) {
-                if(thread.isInterrupted) break
-                runCatching {
-                    doTask()
-                }.getOrElse {
-                    Log.e(companion.clazz.simpleName, "", it)
-                    if(!options.stopOnException) return@getOrElse
-                    stopSelf()
-                    thread.interrupt()
-                    break
-                }
-                options.timeUnit.sleep(options.waitDuration)
+    protected abstract fun onStartCommandExt(intent: Intent?, flags: Int, startId: Int)
+
+    override fun onDestroy() {
+        super.onDestroy()
+        onDestroyExt()
+        destroyed = true
+    }
+
+    protected abstract fun onDestroyExt()
+}
+
+abstract class LoopTaskService : SingletonService() {
+
+    data class Options(
+
+        val waitDuration: Long,
+
+        val timeUnit: TimeUnit = TimeUnit.SECONDS,
+
+        val stopOnException: Boolean = true
+    )
+
+    abstract override val companion: AbstractCompanion<out LoopTaskService>
+
+    protected abstract val options: Options
+
+    private lateinit var thread: Thread
+
+    override fun onStartCommandExt(intent: Intent?, flags: Int, startId: Int) {
+        thread = thread(block = ::threadRun)
+    }
+
+    private fun threadRun() {
+        while(true) {
+            if(thread.isInterrupted) break
+            runCatching {
+                doTask()
+            }.getOrElse {
+                Log.e(companion.clazz.simpleName, "", it)
+                if(!options.stopOnException) return@getOrElse
+                stopSelf()
+                thread.interrupt()
+                break
             }
+            options.timeUnit.sleep(options.waitDuration)
         }
     }
 
     protected abstract fun doTask()
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyExt() {
         thread.interrupt()
-        destroyed = true
     }
 }
