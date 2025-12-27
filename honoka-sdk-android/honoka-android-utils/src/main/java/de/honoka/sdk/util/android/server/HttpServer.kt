@@ -1,5 +1,6 @@
 package de.honoka.sdk.util.android.server
 
+import de.honoka.sdk.util.android.server.ktor.KtorModule
 import de.honoka.sdk.util.kotlin.net.SocketUtils
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
@@ -20,15 +21,15 @@ class HttpServer(private val options: Options) {
 
     private var rawServer: EmbeddedServer<*, *>? = null
 
-    val isActive: Boolean
-        get() = rawServer?.application?.isActive == true
-
     var port: Int = 0
         private set
 
+    val active: Boolean
+        get() = rawServer?.application?.isActive == true
+
     @Synchronized
     fun start() {
-        if(isActive) stop()
+        if(active) stop()
         port = options.run {
             if(tryOtherPorts) {
                 SocketUtils.findAvailablePort(port, tryPortsCount)

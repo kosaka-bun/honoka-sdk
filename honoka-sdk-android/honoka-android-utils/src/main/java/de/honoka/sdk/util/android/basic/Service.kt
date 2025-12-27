@@ -20,6 +20,12 @@ abstract class SingletonService : Service() {
         @Volatile
         internal var instanceId: String? = null
 
+        val starting: Boolean
+            get() = instanceId != null && instance?.started != true
+
+        val active: Boolean
+            get() = instance?.active == true
+
         @Synchronized
         fun start() {
             if(instanceId != null) return
@@ -30,7 +36,7 @@ abstract class SingletonService : Service() {
         }
 
         open fun ensureStarted() {
-            while(instance?.started != true) {
+            while(!active) {
                 Thread.sleep(10)
             }
         }
@@ -43,16 +49,23 @@ abstract class SingletonService : Service() {
             instance = null
         }
 
+        open fun ensureStopped() {
+            while(active) {
+                Thread.sleep(10)
+            }
+        }
+
         @Synchronized
         fun restart() {
             stop()
+            ensureStopped()
             start()
+            ensureStarted()
         }
 
         @Synchronized
         fun restartIfStopped() {
-            val stopped = instanceId == null || instance?.destroyed == true
-            if(!stopped) return
+            if(starting || active) return
             restart()
         }
     }
@@ -61,10 +74,15 @@ abstract class SingletonService : Service() {
     protected abstract val companion: AbstractCompanion<out SingletonService>
 
     @Volatile
-    internal var started = false
+    var started = false
+        internal set
 
     @Volatile
-    internal var destroyed = false
+    var destroyed = false
+        internal set
+
+    open val active: Boolean
+        get() = started && !destroyed
 
     override fun onBind(intent: Intent): IBinder? = null
 

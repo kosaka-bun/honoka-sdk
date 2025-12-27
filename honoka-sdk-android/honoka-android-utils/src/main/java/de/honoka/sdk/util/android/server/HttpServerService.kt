@@ -52,11 +52,11 @@ class HttpServerService : SingletonService() {
     val server: HttpServer
         get() = serverOrNull!!
 
-    val isActive: Boolean
-        get() = serverOrNull?.isActive == true
+    override val active: Boolean
+        get() = serverOrNull?.active == true
 
     override fun onStartCommandExt(intent: Intent?, flags: Int, startId: Int) {
-        if(isActive) {
+        if(active) {
             server.stop()
         }
         serverOrNull = HttpServer(options)
