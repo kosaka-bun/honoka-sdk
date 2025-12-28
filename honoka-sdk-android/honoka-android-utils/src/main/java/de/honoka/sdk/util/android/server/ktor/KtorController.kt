@@ -1,25 +1,15 @@
 package de.honoka.sdk.util.android.server.ktor
 
-import de.honoka.sdk.util.android.server.RoutingDefinition
 import de.honoka.sdk.util.android.server.respondJson
 import de.honoka.sdk.util.kotlin.reflect.callSuspendAdaptive
 import de.honoka.sdk.util.kotlin.reflect.findAnyAnnotation
 import de.honoka.sdk.util.kotlin.reflect.getString
 import io.ktor.server.routing.*
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.findAnnotation
 
-abstract class KtorController {
-
-    val routingDefinition: RoutingDefinition = {
-        val classAnnotation = this::class.findAnnotation<RequestMapping>()
-        val pathPrefix = classAnnotation?.getString("prefix") ?: ""
-        this::class.declaredMemberFunctions.forEach {
-            parse(it, pathPrefix)
-        }
-    }
-}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class RestController
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
@@ -38,7 +28,7 @@ private val handlerAnnotations = arrayOf(
     PostMapping::class
 )
 
-private fun Routing.parse(function: KFunction<*>, pathPrefix: String) {
+internal fun Routing.parseHandler(function: KFunction<*>, pathPrefix: String) {
     val annotation = function.findAnyAnnotation(*handlerAnnotations) ?: return
     val path = annotation.getString("path")
     when(annotation) {

@@ -1,5 +1,6 @@
 package de.honoka.sdk.util.kotlin.basic
 
+import de.honoka.sdk.util.kotlin.reflect.isSubclassOfAny
 import kotlin.reflect.KClass
 
 fun <T : Throwable> Throwable?.isAny(vararg types: KClass<out T>): Boolean {

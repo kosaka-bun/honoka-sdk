@@ -10,10 +10,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.starProjectedType
 
-fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = run {
-    classes.firstOrNull { isSubclassOf(it) } != null
-}
-
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
 inline fun <T> Any?.cast(): T = this as T
 
