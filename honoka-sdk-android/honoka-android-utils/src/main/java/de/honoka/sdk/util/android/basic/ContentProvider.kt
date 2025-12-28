@@ -13,6 +13,7 @@ import cn.hutool.core.util.StrUtil
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
+import de.honoka.sdk.util.kotlin.basic.RemoteInvokeException
 import de.honoka.sdk.util.kotlin.basic.tryCastOrNull
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -69,13 +70,6 @@ abstract class BaseContentProvider : ContentProvider() {
     abstract fun call(method: String?, args: JSON?): Any?
 }
 
-data class ContentProviderCallException(
-
-    val info: String,
-
-    val stackTraceText: String
-) : RuntimeException(info)
-
 fun ContentResolver.call(authority: String, method: String? = null, args: Any? = null): Any? {
     val uri = "content://$authority".toUri()
     val argsStr = args?.let { JSONUtil.toJsonStr(args) }
@@ -83,7 +77,7 @@ fun ContentResolver.call(authority: String, method: String? = null, args: Any? =
         it.getString("json").let { jsonStr ->
             val json = JSONUtil.parseObj(jsonStr)
             json.getJSONObject("error")?.let { error ->
-                throw ContentProviderCallException(
+                throw RemoteInvokeException(
                     error.getStr("info"),
                     error.getStr("stackTrace")
                 )

@@ -179,12 +179,14 @@ private class StatusHandlerRegistrar(private val config: StatusPagesConfig) {
 
     fun exception() {
         config.exception<Throwable> { call, t ->
+            val realException = ExceptionUtil.getRootCause(t)
             val status = HttpStatusCode.InternalServerError
             val res = ApiResponse.of<Any>().apply {
                 code = status.value
-                msg = t.message ?: t::class.qualifiedName
+                this.status = false
+                msg = ExceptionUtil.getMessage(realException)
                 data = JSONObject().also {
-                    it["stackTrace"] = ExceptionUtil.stacktraceToString(t)
+                    it["stackTrace"] = ExceptionUtil.stacktraceToString(realException)
                 }
             }
             call.respondJson(res, status)

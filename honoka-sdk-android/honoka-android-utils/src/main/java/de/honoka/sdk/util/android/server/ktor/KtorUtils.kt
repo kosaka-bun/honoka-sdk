@@ -9,13 +9,13 @@ import kotlin.reflect.full.hasAnnotation
 object KtorUtils {
 
     fun parseRoutingDefinition(controller: Any): RoutingDefinition = {
-        if(!this::class.hasAnnotation<RestController>()) {
+        if(!controller::class.hasAnnotation<RestController>()) {
             error("A controller must be annotated with @RestController.")
         }
-        val requestMapping = this::class.findAnnotation<RequestMapping>()
+        val requestMapping = controller::class.findAnnotation<RequestMapping>()
         val pathPrefix = requestMapping?.getString("prefix") ?: ""
-        this::class.declaredMemberFunctions.forEach {
-            parseHandler(it, pathPrefix)
+        controller::class.declaredMemberFunctions.forEach {
+            parseHandler(controller, it, pathPrefix)
         }
     }
 }

@@ -28,21 +28,21 @@ private val handlerAnnotations = arrayOf(
     PostMapping::class
 )
 
-internal fun Routing.parseHandler(function: KFunction<*>, pathPrefix: String) {
+internal fun Routing.parseHandler(controller: Any, function: KFunction<*>, pathPrefix: String) {
     val annotation = function.findAnyAnnotation(*handlerAnnotations) ?: return
     val path = annotation.getString("path")
     when(annotation) {
         is GetMapping -> get("$pathPrefix$path") {
-            handle(function)
+            handle(controller, function)
         }
         is PostMapping -> post("$pathPrefix$path") {
-            handle(function)
+            handle(controller, function)
         }
     }
 }
 
-private suspend fun RoutingContext.handle(handler: KFunction<*>) {
-    val result = handler.callSuspendAdaptive(this, call)
+private suspend fun RoutingContext.handle(controller: Any, handler: KFunction<*>) {
+    val result = handler.callSuspendAdaptive(controller, call)
     if(result == Unit) return
     call.respondJson(result)
 }

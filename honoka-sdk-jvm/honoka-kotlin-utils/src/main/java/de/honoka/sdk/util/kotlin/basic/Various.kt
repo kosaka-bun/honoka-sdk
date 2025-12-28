@@ -37,7 +37,7 @@ fun <T> Any?.tryCastOrNull(type: KType): T? {
             }
             return toBean(clazz.java) as T
         }
-        else -> throw ClassCastException("Cannot cast ${javaClass.name} to $type")
+        else -> return this as T
     }
 }
 
