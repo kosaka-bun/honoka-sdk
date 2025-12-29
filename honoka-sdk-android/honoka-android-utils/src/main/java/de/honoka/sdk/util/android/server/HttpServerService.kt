@@ -2,8 +2,8 @@ package de.honoka.sdk.util.android.server
 
 import android.content.Intent
 import cn.hutool.core.io.FileUtil
-import de.honoka.sdk.util.android.basic.SingletonService
 import de.honoka.sdk.util.android.basic.global
+import de.honoka.sdk.util.android.service.SingletonService
 import de.honoka.sdk.util.concurrent.ThreadPoolUtils
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.io.File
@@ -20,7 +20,7 @@ class HttpServerService : SingletonService() {
         )
 
         internal val firstTryPortFile: File = run {
-            File("${global.application.dataDir}/httpServer/port.txt").apply {
+            File("${global.application.filesDir}/httpServer/port.txt").apply {
                 if(exists()) return@apply
                 FileUtil.touch(this)
                 writeText("38081")
@@ -65,7 +65,7 @@ class HttpServerService : SingletonService() {
     }
 
     override fun onDestroyExt() {
-        server.stop()
+        serverOrNull?.stop()
         serverOrNull = null
     }
 }

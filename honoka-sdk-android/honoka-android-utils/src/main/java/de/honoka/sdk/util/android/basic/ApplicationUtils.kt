@@ -1,6 +1,7 @@
 package de.honoka.sdk.util.android.basic
 
 import android.content.Context
+import android.util.Log
 
 abstract class AbstractApplicationUtils {
 
@@ -11,8 +12,17 @@ abstract class AbstractApplicationUtils {
     @Synchronized
     fun initApplication(context: Context) {
         if(inited) return
-        context.initGlobalComponents()
-        initApplication()
+        try {
+            context.initGlobalComponents()
+            initApplication()
+        } catch(t: Throwable) {
+            Log.e(
+                this::class.simpleName,
+                "Application failed to initialize.",
+                t
+            )
+            throw t
+        }
         inited = true
     }
 

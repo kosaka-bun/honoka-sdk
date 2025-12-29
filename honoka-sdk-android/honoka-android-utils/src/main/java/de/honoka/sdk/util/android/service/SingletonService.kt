@@ -1,12 +1,10 @@
-package de.honoka.sdk.util.android.basic
+package de.honoka.sdk.util.android.service
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
+import de.honoka.sdk.util.android.basic.global
 import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 
 abstract class SingletonService : Service() {
@@ -109,48 +107,4 @@ abstract class SingletonService : Service() {
     }
 
     protected abstract fun onDestroyExt()
-}
-
-abstract class LoopTaskService : SingletonService() {
-
-    data class Options(
-
-        val waitDuration: Long,
-
-        val timeUnit: TimeUnit = TimeUnit.SECONDS,
-
-        val stopOnException: Boolean = true
-    )
-
-    abstract override val companion: AbstractCompanion<out LoopTaskService>
-
-    protected abstract val options: Options
-
-    private lateinit var thread: Thread
-
-    override fun onStartCommandExt(intent: Intent?, flags: Int, startId: Int) {
-        thread = thread(block = ::threadRun)
-    }
-
-    private fun threadRun() {
-        while(true) {
-            if(thread.isInterrupted) break
-            runCatching {
-                doTask()
-            }.getOrElse {
-                Log.e(companion.clazz.simpleName, "", it)
-                if(!options.stopOnException) return@getOrElse
-                stopSelf()
-                thread.interrupt()
-                break
-            }
-            options.timeUnit.sleep(options.waitDuration)
-        }
-    }
-
-    protected abstract fun doTask()
-
-    override fun onDestroyExt() {
-        thread.interrupt()
-    }
 }
