@@ -31,9 +31,6 @@ abstract class SingletonService : Service() {
             global.startService(clazz) {
                 putExtra("instanceId", instanceId)
             }
-        }
-
-        open fun ensureStarted() {
             while(!active) {
                 Thread.sleep(10)
             }
@@ -43,22 +40,17 @@ abstract class SingletonService : Service() {
         fun stop() {
             instanceId ?: return
             instance!!.stopSelf()
-            instanceId = null
-            instance = null
-        }
-
-        open fun ensureStopped() {
             while(active) {
                 Thread.sleep(10)
             }
+            instanceId = null
+            instance = null
         }
 
         @Synchronized
         fun restart() {
             stop()
-            ensureStopped()
             start()
-            ensureStarted()
         }
 
         @Synchronized

@@ -4,15 +4,15 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.full.callSuspend
 
 fun <T> KCallable<T>.callAdaptive(vararg args: Any?): T = run {
-    call(*toAdaptiveArgs(this, args))
+    call(*args.adaptWith(this))
 }
 
 suspend fun <T> KCallable<T>.callSuspendAdaptive(vararg args: Any?): T = run {
-    callSuspend(*toAdaptiveArgs(this, args))
+    callSuspend(*args.adaptWith(this))
 }
 
-private fun toAdaptiveArgs(callable: KCallable<*>, args: Array<*>): Array<Any?> {
-    val realArgs = args.take(callable.parameters.size)
+private fun Array<*>.adaptWith(callable: KCallable<*>): Array<Any?> {
+    val realArgs = take(callable.parameters.size)
     if(realArgs.size != callable.parameters.size) {
         error("The args size is not equal with parameters size.")
     }

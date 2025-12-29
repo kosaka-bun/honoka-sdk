@@ -9,12 +9,23 @@ abstract class AbstractApplicationUtils {
     var inited: Boolean = false
         private set
 
+    @Volatile
+    var foregroundInited: Boolean = false
+        private set
+
     @Synchronized
-    fun initApplication(context: Context) {
-        if(inited) return
+    fun initApplication(context: Context, foreground: Boolean = true) {
+        if(inited && foregroundInited) return
         try {
             context.initGlobalComponents()
-            initApplication()
+            if(!inited) {
+                initApplication()
+                inited = true
+            }
+            if(foreground && !foregroundInited) {
+                initForegroundApplication()
+                foregroundInited = true
+            }
         } catch(t: Throwable) {
             Log.e(
                 this::class.simpleName,
@@ -23,8 +34,9 @@ abstract class AbstractApplicationUtils {
             )
             throw t
         }
-        inited = true
     }
 
     protected abstract fun initApplication()
+
+    protected open fun initForegroundApplication() {}
 }

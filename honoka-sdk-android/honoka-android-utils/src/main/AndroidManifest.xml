@@ -4,6 +4,6 @@
         <activity android:name=".activity.DefaultWebActivity"
                   android:configChanges="orientation|screenSize"
                   android:exported="false" />
-        <service android:name=".server.HttpServerService" />
+        <service android:name=".service.HttpServerService" />
     </application>
 </manifest>

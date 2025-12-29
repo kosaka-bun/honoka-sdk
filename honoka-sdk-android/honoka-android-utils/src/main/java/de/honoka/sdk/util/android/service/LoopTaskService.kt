@@ -20,7 +20,10 @@ abstract class LoopTaskService : SingletonService() {
 
     protected abstract val options: Options
 
-    private lateinit var thread: Thread
+    private var thread: Thread? = null
+
+    override val active: Boolean
+        get() = thread?.isInterrupted == false
 
     override fun onStartCommandExt(intent: Intent?, flags: Int, startId: Int) {
         thread = thread(block = ::threadRun)
@@ -28,14 +31,14 @@ abstract class LoopTaskService : SingletonService() {
 
     private fun threadRun() {
         while(true) {
-            if(thread.isInterrupted) break
+            if(Thread.currentThread().isInterrupted) break
             runCatching {
                 doTask()
             }.getOrElse {
                 Log.e(companion.clazz.simpleName, "", it)
                 if(!options.stopOnException) return@getOrElse
                 stopSelf()
-                thread.interrupt()
+                Thread.currentThread().interrupt()
                 break
             }
             options.timeUnit.sleep(options.waitDuration)
@@ -45,6 +48,7 @@ abstract class LoopTaskService : SingletonService() {
     protected abstract fun doTask()
 
     override fun onDestroyExt() {
-        thread.interrupt()
+        thread?.interrupt()
+        thread == null
     }
 }

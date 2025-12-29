@@ -6,8 +6,8 @@ import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.json.JSONObject
 import de.honoka.sdk.util.android.basic.global
 import de.honoka.sdk.util.android.jsinterface.JsInterfaceRegistrar
+import de.honoka.sdk.util.android.server.DefaultHttpServer
 import de.honoka.sdk.util.android.server.HttpServer
-import de.honoka.sdk.util.android.server.HttpServerService
 import de.honoka.sdk.util.android.server.StatusPageHandler
 import de.honoka.sdk.util.android.server.respondJson
 import de.honoka.sdk.util.web.ApiResponse
@@ -110,7 +110,7 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
     }
 
     fun staticResource() {
-        HttpServerService.staticResourcesPrefixes.forEach {
+        DefaultHttpServer.staticResourcesPrefixes.forEach {
             val mappingPath = if(it.contains(".")) it else "$it/{...}"
             routing.get(mappingPath) {
                 respondAsset("web${call.request.path()}")
@@ -119,7 +119,7 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
     }
 
     fun androidImage() {
-        val prefix = HttpServerService.IMAGE_URL_PREFIX
+        val prefix = DefaultHttpServer.IMAGE_URL_PREFIX
         fun handler(subPath: String): RoutingHandler = {
             val imagePath = call.request.path().removePrefix("$prefix/$subPath")
             val filePath = "${global.application.dataDir}/$subPath/image$imagePath"
@@ -132,7 +132,7 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
     fun jsInterface() {
         routing.post("/jsInterface/{...}") {
             val path = call.request.path().removePrefix("/jsInterface/").split("/")
-            withContext(HttpServerService.coroutineDispatcher) {
+            withContext(DefaultHttpServer.coroutineDispatcher) {
                 try {
                     val result = JsInterfaceRegistrar.invokeAsyncMethod(
                         path[0], path[1], call.receiveText()
