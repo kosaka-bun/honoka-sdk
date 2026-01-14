@@ -26,7 +26,7 @@ class MybatisPlusConfig(private val mybatisPlusProperties: MybatisPlusProperties
         val dbType = mybatisPlusProperties.dbType ?: jdbcDriverClassName?.lowercase()?.run {
             DbType.entries.firstOrNull { contains(it.db.lowercase()) }
         } ?: DbType.OTHER
-        log.info("Used DbType: ${dbType.name}")
+        log.info("Use DbType: ${dbType.name}")
         addInnerInterceptor(PaginationInnerInterceptor(dbType))
     }
 }

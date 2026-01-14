@@ -14,7 +14,9 @@ inline fun <T> MutableIterable<T>.iterate(block: MutableIterator<T>.(T) -> Unit)
 
 inline fun <K, V> MutableMap<K, V>.iterate(
     block: MutableIterator<MutableMap.MutableEntry<K, V>>.(MutableMap.MutableEntry<K, V>) -> Unit
-) = entries.iterate(block)
+) {
+    entries.iterate(block)
+}
 
 inline fun <K, V> MutableMap<K, V>.removeIf(block: (Map.Entry<K, V>) -> Boolean) {
     iterate {

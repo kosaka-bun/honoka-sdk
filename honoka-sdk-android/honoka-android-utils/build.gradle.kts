@@ -34,7 +34,7 @@ android {
     }
 
     sourceSets["main"].java {
-        srcDir("/patchSrc/main/java")
+        srcDir("/src/patch/java")
     }
 }
 
