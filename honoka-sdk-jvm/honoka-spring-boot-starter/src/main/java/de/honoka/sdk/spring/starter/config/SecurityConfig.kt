@@ -81,7 +81,7 @@ data class SecurityProperties(
     
     companion object {
         
-        const val PREFIX = "${MainProperties.PREFIX}.security"
+        const val PREFIX = "honoka.security"
     }
     
     data class Token(

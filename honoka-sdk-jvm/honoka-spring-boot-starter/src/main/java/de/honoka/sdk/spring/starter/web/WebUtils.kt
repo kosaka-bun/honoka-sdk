@@ -1,10 +1,10 @@
-package de.honoka.sdk.spring.starter.core.web
+package de.honoka.sdk.spring.starter.web
 
 /**
  * Web相关工具
  */
 object WebUtils {
-    
+
     fun cookieStringToMap(cookieString: String): Map<String, String> {
         val map = HashMap<String, String>()
         cookieString.split("; ").forEach {

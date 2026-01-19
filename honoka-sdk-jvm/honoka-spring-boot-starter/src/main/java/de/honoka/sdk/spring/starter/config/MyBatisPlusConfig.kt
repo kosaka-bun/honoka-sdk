@@ -13,10 +13,10 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 
 @ComponentScan("de.honoka.sdk.spring.starter.mybatis")
-@EnableConfigurationProperties(MybatisPlusProperties::class)
-@ConditionalOnProperty(prefix = MybatisPlusProperties.PREFIX, name = ["enabled"])
-@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}MybatisPlusConfig")
-class MybatisPlusConfig(private val mybatisPlusProperties: MybatisPlusProperties) {
+@EnableConfigurationProperties(MyBatisPlusProperties::class)
+@ConditionalOnProperty(prefix = MyBatisPlusProperties.PREFIX, name = ["enabled"])
+@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}MyBatisPlusConfig")
+class MyBatisPlusConfig(private val mybatisPlusProperties: MyBatisPlusProperties) {
     
     @Value($$"${spring.datasource.driver-class-name}")
     private var jdbcDriverClassName: String? = null
@@ -31,16 +31,16 @@ class MybatisPlusConfig(private val mybatisPlusProperties: MybatisPlusProperties
     }
 }
 
-@ConfigurationProperties(MybatisPlusProperties.PREFIX)
-data class MybatisPlusProperties(
+@ConfigurationProperties(MyBatisPlusProperties.PREFIX)
+data class MyBatisPlusProperties(
     
     var enabled: Boolean = false,
 
     var dbType: DbType? = null
 ) {
-    
+
     companion object {
-        
-        const val PREFIX = "${MainProperties.PREFIX}.mybatis"
+
+        const val PREFIX = "honoka.mybatis"
     }
 }

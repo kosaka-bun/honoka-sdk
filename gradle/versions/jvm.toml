@@ -1,7 +1,7 @@
 [versions]
 # dependencies version
-d-spring-boot = "3.5.4"
-d-mybatis-plus = "3.5.12"
+d-spring-boot = "3.5.9"
+d-mybatis-plus = "3.5.16"
 
 [libraries]
 mybatis-plus = { module = "com.baomidou:mybatis-plus-spring-boot3-starter", version.ref = "d-mybatis-plus" }
