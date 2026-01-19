@@ -34,7 +34,7 @@ data class WebFluxProperties(
 
     var enabled: Boolean = true,
 
-    @field:NestedConfigurationProperty
+    @NestedConfigurationProperty
     var cors: WebProperties.Cors = WebProperties.Cors()
 ) {
 

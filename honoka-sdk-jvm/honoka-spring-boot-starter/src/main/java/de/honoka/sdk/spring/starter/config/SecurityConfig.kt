@@ -1,7 +1,7 @@
 package de.honoka.sdk.spring.starter.config
 
-import de.honoka.sdk.spring.starter.security.AccessDeniedHandlerImpl
-import de.honoka.sdk.spring.starter.security.AuthenticationEntryPointImpl
+import de.honoka.sdk.spring.starter.security.DefaultAccessDeniedHandler
+import de.honoka.sdk.spring.starter.security.DefaultAuthenticationEntryPoint
 import de.honoka.sdk.spring.starter.security.DefaultAuthorizationFilter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -51,8 +51,8 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
              * authentication信息时，则调用此处配置的authenticationEntryPoint中的方法，来执行开发者
              * 定义的后续行为。
              */
-            it.authenticationEntryPoint(AuthenticationEntryPointImpl)
-            it.accessDeniedHandler(AccessDeniedHandlerImpl)
+            it.authenticationEntryPoint(DefaultAuthenticationEntryPoint)
+            it.accessDeniedHandler(DefaultAccessDeniedHandler)
         }
         authorizeHttpRequests {
             val whiteListMatchers = whiteList.map { s ->

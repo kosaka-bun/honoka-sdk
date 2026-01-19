@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.access.AccessDeniedHandler
+import org.springframework.security.web.access.ExceptionTranslationFilter
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -21,17 +23,18 @@ class SecurityExceptionHandler {
     
     @ExceptionHandler
     fun handle(e: AccessDeniedException, request: HttpServletRequest, response: HttpServletResponse) {
-        AccessDeniedHandlerImpl.handle(request, response, e)
+        DefaultAccessDeniedHandler.handle(request, response, e)
     }
 }
 
 /**
- * 当`ExceptionTranslationFilter`之后存在Filter抛出`AccessDeniedException`时，`ExceptionTranslationFilter`
- * 会检查`SecurityContextHolder`的`context`中是否存在`authentication`信息，若不存在，则视为请求方未登录，调用
- * 本类中的方法对请求和响应进行处理。
+ * 当[ExceptionTranslationFilter]之后存在`Filter`抛出[AccessDeniedException]时，[ExceptionTranslationFilter]
+ * 会检查[SecurityContextHolder.context]中是否存在`authentication`信息。若不存在，则视为请求方未登录，调用本类中
+ * 的方法对请求和响应进行处理。
+ *
  * 此处为返回一段JSON提示信息。
  */
-object AuthenticationEntryPointImpl : AuthenticationEntryPoint {
+object DefaultAuthenticationEntryPoint : AuthenticationEntryPoint {
 
     override fun commence(
         request: HttpServletRequest,
@@ -43,12 +46,13 @@ object AuthenticationEntryPointImpl : AuthenticationEntryPoint {
 }
 
 /**
- * 当ExceptionTranslationFilter之后存在Filter抛出AccessDeniedException时，ExceptionTranslationFilter
- * 会检查SecurityContextHolder的context中是否存在authentication信息，若存在，则视为请求方已登录但无权访问
+ * 当[ExceptionTranslationFilter]之后存在`Filter`抛出[AccessDeniedException]时，[ExceptionTranslationFilter]
+ * 会检查[SecurityContextHolder.context]中是否存在`authentication`信息。若存在，则视为请求方已登录但无权访问
  * 指定的路径，调用本类中的方法对请求和响应进行处理。
+ *
  * 此处为返回一段JSON提示信息。
  */
-object AccessDeniedHandlerImpl : AccessDeniedHandler {
+object DefaultAccessDeniedHandler : AccessDeniedHandler {
 
     override fun handle(
         request: HttpServletRequest,
