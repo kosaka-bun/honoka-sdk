@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.core.context
+package de.honoka.sdk.spring.starter.core
 
 import org.springframework.core.env.PropertyResolver
 import kotlin.reflect.KClass

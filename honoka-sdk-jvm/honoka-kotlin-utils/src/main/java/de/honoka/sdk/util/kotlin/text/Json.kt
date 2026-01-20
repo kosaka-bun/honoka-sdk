@@ -13,8 +13,8 @@ fun JSON.wrapper(): JsonWrapper = JsonWrapper(this)
 
 fun String.toJsonWrapper(): JsonWrapper = JSONUtil.parse(this).wrapper()
 
-fun Any?.toJsonString(pretty: Boolean = false): String = run {
-    if(pretty) {
+fun Any?.toJsonString(pretty: Boolean = false): String {
+    return if(pretty) {
         JSONUtil.toJsonPrettyStr(this)
     } else {
         JSONUtil.toJsonStr(this)
@@ -22,5 +22,7 @@ fun Any?.toJsonString(pretty: Boolean = false): String = run {
 }
 
 inline fun JSONArray.forEachWrapper(block: (JsonWrapper) -> Unit) {
-    forEach { block((it as JSON).wrapper()) }
+    forEach {
+        block((it as JSON).wrapper())
+    }
 }

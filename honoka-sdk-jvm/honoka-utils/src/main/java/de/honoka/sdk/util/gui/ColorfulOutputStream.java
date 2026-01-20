@@ -1,7 +1,7 @@
 package de.honoka.sdk.util.gui;
 
 import cn.hutool.core.util.ArrayUtil;
-import de.honoka.sdk.util.basic.ActionUtils;
+import de.honoka.sdk.util.lang.ActionUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;

@@ -32,25 +32,29 @@ fun ExecutorService.shutdownNowAndWait(
     timeout: Long = Long.MAX_VALUE,
     unit: TimeUnit = TimeUnit.SECONDS,
     ignoreIfAlreadyShutdown: Boolean = true
-): List<Runnable> = run {
-    if(isShutdown && ignoreIfAlreadyShutdown) return@run listOf()
-    shutdownNow().apply { awaitTermination(timeout, unit) }
+): List<Runnable> {
+    if(isShutdown && ignoreIfAlreadyShutdown) {
+        return listOf()
+    }
+    val result = shutdownNow()
+    awaitTermination(timeout, unit)
+    return result
 }
 
-inline fun <T> synchronized2(lock1: Any, lock2: Any, block: () -> T): T = run {
+inline fun <T> synchronized2(lock1: Any, lock2: Any, block: () -> T): T {
     synchronized(lock1) {
-        synchronized(lock2, block)
+        return synchronized(lock2, block)
     }
 }
 
-inline fun <T> synchronized3(lock1: Any, lock2: Any, lock3: Any, block: () -> T): T = run {
+inline fun <T> synchronized3(lock1: Any, lock2: Any, lock3: Any, block: () -> T): T {
     synchronized(lock1) {
         synchronized(lock2) {
-            synchronized(lock3, block)
+             return synchronized(lock3, block)
         }
     }
 }
 
-fun <T> synchronizedItems(vararg items: Any, block: () -> T): T = run {
-    LockUtils.synchronizedItems(items.asIterable(), block)
+fun <T> synchronizedItems(vararg items: Any, block: () -> T): T {
+    return LockUtils.synchronizedItems(items.asIterable(), block)
 }

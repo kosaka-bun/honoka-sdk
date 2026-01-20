@@ -3,13 +3,11 @@ package de.honoka.sdk.util.kotlin.reflect
 import kotlin.reflect.KCallable
 import kotlin.reflect.full.callSuspend
 
-fun <T> KCallable<T>.callAdaptive(vararg args: Any?): T = run {
+fun <T> KCallable<T>.callAdaptive(vararg args: Any?): T =
     call(*args.adaptWith(this))
-}
 
-suspend fun <T> KCallable<T>.callSuspendAdaptive(vararg args: Any?): T = run {
+suspend fun <T> KCallable<T>.callSuspendAdaptive(vararg args: Any?): T =
     callSuspend(*args.adaptWith(this))
-}
 
 private fun Array<*>.adaptWith(callable: KCallable<*>): Array<Any?> {
     val realArgs = take(callable.parameters.size)

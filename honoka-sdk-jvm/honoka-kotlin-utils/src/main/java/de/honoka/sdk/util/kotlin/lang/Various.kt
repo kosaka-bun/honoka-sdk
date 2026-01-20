@@ -1,8 +1,8 @@
-package de.honoka.sdk.util.kotlin.basic
+package de.honoka.sdk.util.kotlin.lang
 
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
-import de.honoka.sdk.util.basic.CodeUtils
+import de.honoka.sdk.util.lang.CodeUtils
 import org.slf4j.event.Level
 import java.util.*
 import kotlin.reflect.KClass
@@ -73,17 +73,18 @@ inline fun <T> tryBlockOrNull(
 inline fun repeatCatching(times: Int, block: (Int) -> Unit) {
     repeat(times) {
         runCatching {
-            block(times)
+            block(it)
         }
     }
 }
 
 val Date.weekdayNum: Int
-    get() = Calendar.getInstance().run {
-        setTime(this@weekdayNum)
-        get(Calendar.DAY_OF_WEEK).let {
-            if(it != Calendar.SUNDAY) it - 1 else 7
+    get() {
+        val dayOfWeek = Calendar.getInstance().run {
+            setTime(this@weekdayNum)
+            get(Calendar.DAY_OF_WEEK)
         }
+        return if(dayOfWeek != Calendar.SUNDAY) dayOfWeek - 1 else 7
     }
 
 fun <T> Result<T>.printStackIfFailed() {

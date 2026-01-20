@@ -19,7 +19,6 @@ object HttpUtilExt {
         return request.execute().body()
     }
 
-    fun getWithBrowserApiHeaders(url: String, timeout: Int? = null): String = run {
+    fun getWithBrowserApiHeaders(url: String, timeout: Int? = null): String =
         getWithBrowserHeaders(url, timeout, true)
-    }
 }

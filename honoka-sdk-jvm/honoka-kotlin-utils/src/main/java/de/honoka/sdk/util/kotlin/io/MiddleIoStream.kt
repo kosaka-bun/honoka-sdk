@@ -1,7 +1,7 @@
 package de.honoka.sdk.util.kotlin.io
 
-import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
-import de.honoka.sdk.util.basic.javadoc.ThreadSafe
+import de.honoka.sdk.util.various.javadoc.NotThreadSafe
+import de.honoka.sdk.util.various.javadoc.ThreadSafe
 import java.io.Closeable
 import java.io.InputStream
 import java.io.OutputStream

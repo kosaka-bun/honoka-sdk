@@ -3,8 +3,8 @@ package de.honoka.sdk.util.android.basic
 import android.content.ContentResolver
 import androidx.core.net.toUri
 import cn.hutool.json.JSONUtil
-import de.honoka.sdk.util.kotlin.basic.RemoteInvokeException
-import de.honoka.sdk.util.kotlin.basic.tryCastOrNull
+import de.honoka.sdk.util.kotlin.lang.tryCastOrNull
+import de.honoka.sdk.util.kotlin.various.RemoteInvokeException
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

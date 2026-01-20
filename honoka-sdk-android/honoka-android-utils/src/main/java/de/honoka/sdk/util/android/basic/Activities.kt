@@ -49,7 +49,6 @@ fun Activity.fullScreen() {
         WindowManager.LayoutParams.FLAG_FULLSCREEN
     )
     //隐藏虚拟按键
-    window.decorView.systemUiVisibility = run {
-        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
-    }
+    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+        View.SYSTEM_UI_FLAG_FULLSCREEN
 }

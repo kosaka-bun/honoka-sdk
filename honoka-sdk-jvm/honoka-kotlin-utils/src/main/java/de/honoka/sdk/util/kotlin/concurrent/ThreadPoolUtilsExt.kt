@@ -9,7 +9,7 @@ object ThreadPoolUtilsExt {
     
     fun newScheduledPool(
         coreSize: Int, rejectedExecutionHandler: RejectedExecutionHandler = AbortPolicy()
-    ): ScheduledThreadPoolExecutor = run {
-        ThreadPoolUtils.newScheduledPool(coreSize, rejectedExecutionHandler)
+    ): ScheduledThreadPoolExecutor {
+        return ThreadPoolUtils.newScheduledPool(coreSize, rejectedExecutionHandler)
     }
 }

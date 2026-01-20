@@ -2,9 +2,11 @@
 # dependencies version
 d-spring-boot = "3.5.9"
 d-mybatis-plus = "3.5.16"
+d-redisson = "3.52.0"
 
 [libraries]
-mybatis-plus = { module = "com.baomidou:mybatis-plus-spring-boot3-starter", version.ref = "d-mybatis-plus" }
-mybatis-plus-jsqlparser = { module = "com.baomidou:mybatis-plus-jsqlparser", version.ref = "d-mybatis-plus" }
 slf4j-api = "org.slf4j:slf4j-api:2.0.17"
 logback = "ch.qos.logback:logback-classic:1.5.18"
+mybatis-plus-spring-boot-starter = { module = "com.baomidou:mybatis-plus-spring-boot3-starter", version.ref = "d-mybatis-plus" }
+mybatis-plus-jsqlparser = { module = "com.baomidou:mybatis-plus-jsqlparser", version.ref = "d-mybatis-plus" }
+redisson-spring-boot-starter = { module = "org.redisson:redisson-spring-boot-starter", version.ref = "d-redisson" }

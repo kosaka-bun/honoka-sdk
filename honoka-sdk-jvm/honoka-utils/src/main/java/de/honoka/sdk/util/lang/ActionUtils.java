@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.basic;
+package de.honoka.sdk.util.lang;
 
 public class ActionUtils {
 

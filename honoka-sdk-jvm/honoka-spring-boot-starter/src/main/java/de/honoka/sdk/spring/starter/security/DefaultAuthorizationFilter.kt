@@ -3,7 +3,7 @@ package de.honoka.sdk.spring.starter.security
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import de.honoka.sdk.spring.starter.config.SecurityProperties
-import de.honoka.sdk.spring.starter.core.context.springBean
+import de.honoka.sdk.spring.starter.core.springBean
 import de.honoka.sdk.spring.starter.security.token.JwtUtils
 import de.honoka.sdk.spring.starter.security.token.TempTokenUtils
 import de.honoka.sdk.spring.starter.web.authorization
@@ -25,7 +25,9 @@ object DefaultAuthorizationFilter : OncePerRequestFilter() {
     private val securityProperties = SecurityProperties::class.springBean
     
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        val token = request.run { authorization[1] ?: cookies[securityProperties.token.name] }
+        val token = request.run {
+            authorization[1] ?: cookies[securityProperties.token.name]
+        }
         val tempToken = request.cookies[securityProperties.token.tempName]
         when {
             !token.isNullOrBlank() -> tokenAuthentication(token)
@@ -35,9 +37,9 @@ object DefaultAuthorizationFilter : OncePerRequestFilter() {
     }
     
     private fun tokenAuthentication(token: String) {
-        val jwt = try {
+        val jwt = runCatching {
             JwtUtils.parseAvaliableJwt(token)
-        } catch(t: Throwable) {
+        }.getOrElse {
             return
         }
         val user = JSONUtil.toBean(jwt.payloads["user"] as? JSONObject, DefaultUser::class.java)

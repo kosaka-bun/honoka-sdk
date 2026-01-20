@@ -88,8 +88,8 @@ data class SecurityProperties(
         
         var jwtKey: String = "abcde12345",
         
-        var name: String = "token",
+        var name: String = "access_token",
         
-        var tempName: String = "temp-token"
+        var tempName: String = "temp_access_token"
     )
 }

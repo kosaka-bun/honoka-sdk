@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.various
+package de.honoka.sdk.util.kotlin.lang
 
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
@@ -10,9 +10,8 @@ object DirectProxy {
 
     private class Handler(private val target: () -> Any) : InvocationHandler {
 
-        override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? = run {
+        override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? =
             method.invoke(target(), *args)
-        }
     }
 
     fun <T : Any> of(target: () -> Any, clazz: KClass<T>): T {

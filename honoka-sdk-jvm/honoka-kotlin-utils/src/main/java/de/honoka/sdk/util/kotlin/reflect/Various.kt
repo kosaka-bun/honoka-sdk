@@ -9,12 +9,13 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible
 
-fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = run {
+fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean =
     classes.firstOrNull { isSubclassOf(it) } != null
-}
 
 fun <T : Any> KClass<T>.setInstanceProp(receiver: T, name: String, value: Any?) {
-    val prop = declaredMemberProperties.firstOrNull { it.name == name } ?: allSuperclasses.firstNotNullOf { c ->
+    val prop = declaredMemberProperties.firstOrNull {
+        it.name == name
+    } ?: allSuperclasses.firstNotNullOf { c ->
         c.declaredMemberProperties.firstOrNull { it.name == name }
     }
     prop as KMutableProperty1<T, Any?>

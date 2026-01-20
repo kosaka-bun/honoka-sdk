@@ -1,6 +1,6 @@
-package de.honoka.sdk.spring.starter.core.context
+package de.honoka.sdk.spring.starter.core
 
-import de.honoka.sdk.spring.starter.core.context.ApplicationContextHolder.context
+import de.honoka.sdk.spring.starter.config.MainConfig
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.stereotype.Component
@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
 
 object ApplicationContextHolder {
     
-    @Component
+    @Component("${MainConfig.STARTER_BEAN_NAME_PREFIX}ApplicationContextHolderInjector")
     class Injector : ApplicationContextAware {
         
         override fun setApplicationContext(applicationContext: ApplicationContext) {
@@ -20,4 +20,4 @@ object ApplicationContextHolder {
 }
 
 val <T : Any> KClass<T>.springBean: T
-    get() = context.getBean(java)
+    get() = ApplicationContextHolder.context.getBean(java)

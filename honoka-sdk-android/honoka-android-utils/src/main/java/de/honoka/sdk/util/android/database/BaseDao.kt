@@ -91,15 +91,15 @@ abstract class BaseDao<T : Any>(internal val entityClass: KClass<T>) {
 
     fun getByIdCached(id: Any): T? = getById(id, true)
 
-    fun query(condition: QueryBuilder<T, Any>.() -> Unit): List<T> = run {
+    fun query(condition: QueryBuilder<T, Any>.() -> Unit): List<T> =
         rawDao.query(buildQuery(condition))
-    }
 
-    fun queryOne(condition: QueryBuilder<T, Any>.() -> Unit): T? = run {
-        query {
+    fun queryOne(condition: QueryBuilder<T, Any>.() -> Unit): T? {
+        val result = query {
             condition()
             limit(1)
-        }.firstOrNull()
+        }
+        return result.firstOrNull()
     }
 
     private fun getId(entity: T): Any = idProp.get(entity)!!

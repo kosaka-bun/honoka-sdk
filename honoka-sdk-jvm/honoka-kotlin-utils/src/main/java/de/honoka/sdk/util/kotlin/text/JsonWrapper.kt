@@ -38,7 +38,8 @@ class JsonWrapper internal constructor(private val json: JSON) {
     
     inline fun <reified T> getBeanOrNull(path: String): T? = getObjOrNull(path)?.toBean(T::class.java)
     
-    inline fun <reified T> getListOrNull(path: String): List<T>? = getArrayOrNull(path)?.toList(T::class.java)
+    inline fun <reified T> getListOrNull(path: String): List<T>? =
+        getArrayOrNull(path)?.toList(T::class.java)
     
     fun getStrOrNull(path: String): String? = json.getByPath(path)?.toString()
     

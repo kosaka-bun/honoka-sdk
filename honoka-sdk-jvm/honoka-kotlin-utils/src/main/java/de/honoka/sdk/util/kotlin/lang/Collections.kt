@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.basic
+package de.honoka.sdk.util.kotlin.lang
 
 import java.util.concurrent.ConcurrentMap
 

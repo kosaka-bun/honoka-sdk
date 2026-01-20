@@ -1,8 +1,8 @@
 package de.honoka.sdk.util.kotlin.net
 
-import de.honoka.sdk.util.kotlin.basic.cast
-import de.honoka.sdk.util.kotlin.basic.error
-import de.honoka.sdk.util.kotlin.basic.tryBlock
+import de.honoka.sdk.util.kotlin.lang.cast
+import de.honoka.sdk.util.kotlin.lang.error
+import de.honoka.sdk.util.kotlin.lang.tryBlock
 import java.net.BindException
 import java.net.InetSocketAddress
 import java.nio.channels.ServerSocketChannel

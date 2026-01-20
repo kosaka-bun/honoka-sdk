@@ -4,7 +4,7 @@ import de.honoka.sdk.util.various.RuntimeUtils
 
 object RuntimeUtilsExt {
 
-    inline fun exec(block: RuntimeUtils.Commands.() -> Unit): String = run {
-        RuntimeUtils.exec(RuntimeUtils.Commands().apply(block))
+    inline fun exec(block: RuntimeUtils.Commands.() -> Unit): String {
+        return RuntimeUtils.exec(RuntimeUtils.Commands().apply(block))
     }
 }

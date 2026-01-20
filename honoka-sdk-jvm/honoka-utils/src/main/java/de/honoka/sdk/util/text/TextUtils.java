@@ -2,10 +2,7 @@ package de.honoka.sdk.util.text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class TextUtils {
 
@@ -34,10 +31,10 @@ public class TextUtils {
         type = type.toLowerCase();
         switch(type) {
             case "chinese":
-                return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+                return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.CHINA);
             case "normal":
             default:
-                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         }
     }
 

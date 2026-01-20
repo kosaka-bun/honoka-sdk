@@ -21,6 +21,5 @@ fun Annotation.getInt(key: String): Int = this[key] as Int
 
 fun Annotation.getBoolean(key: String): Boolean = this[key] as Boolean
 
-fun KAnnotatedElement.findAnyAnnotation(vararg classes: KClass<out Annotation>): Annotation? = run {
+fun KAnnotatedElement.findAnyAnnotation(vararg classes: KClass<out Annotation>): Annotation? =
     classes.firstNotNullOfOrNull { findAnnotations(it).firstOrNull() }
-}

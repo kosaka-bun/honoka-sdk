@@ -25,8 +25,8 @@ fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, text, duration).show()
 }
 
-private fun launchCoroutine(block: suspend () -> Unit, dispatcher: CoroutineDispatcher): Job = run {
-    CoroutineScope(dispatcher).launch {
+private fun launchCoroutine(block: suspend () -> Unit, dispatcher: CoroutineDispatcher): Job {
+    return CoroutineScope(dispatcher).launch {
         block()
     }
 }
@@ -86,9 +86,8 @@ fun Collection<*>.toFunctionArgs(function: KFunction<*>): Array<Any?> {
     val dataTypes = arrayOf(JSONObject::class.java, JSONArray::class.java, String::class.java)
     forEachIndexed { i, arg ->
         val type = function.javaMethod!!.genericParameterTypes[i]
-        val shouldAddDirectly = arg == null || run {
-            type is Class<*> && (ClassUtil.isBasicType(type) || type in dataTypes)
-        }
+        val shouldAddDirectly = arg == null || type is Class<*> &&
+            (ClassUtil.isBasicType(type) || type in dataTypes)
         if(shouldAddDirectly) {
             result.add(arg)
             return@forEachIndexed

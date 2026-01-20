@@ -14,11 +14,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 @Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}WebFluxConfig")
 class WebFluxConfig(private val webFluxProperties: WebFluxProperties) {
 
-    @ConditionalOnProperty(
-        prefix = "${WebFluxProperties.PREFIX}.cors",
-        name = ["enabled"],
-        havingValue = "true"
-    )
+    @ConditionalOnProperty(prefix = "${WebFluxProperties.PREFIX}.cors", name = ["enabled"])
     @Bean
     fun corsWebFilter(): CorsWebFilter {
         val config = webFluxProperties.cors.newCorsConfiguration()

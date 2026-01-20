@@ -56,6 +56,6 @@ fun String?.find(@Language("RegExp") regex: String): List<String> {
 
 fun String?.findOne(@Language("RegExp") regex: String): String? = find(regex).firstOrNull()
 
-fun String.trimAllLines(): String = run {
-    trim().lineSequence().map { it.trim() }.joinToString("\n")
+fun String.trimAllLines(): String {
+    return trim().lineSequence().map { it.trim() }.joinToString("\n")
 }

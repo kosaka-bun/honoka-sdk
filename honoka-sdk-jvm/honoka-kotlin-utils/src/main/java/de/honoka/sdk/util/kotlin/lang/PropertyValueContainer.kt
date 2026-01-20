@@ -1,8 +1,6 @@
-package de.honoka.sdk.util.kotlin.various
+package de.honoka.sdk.util.kotlin.lang
 
-import de.honoka.sdk.util.basic.javadoc.ThreadSafe
-import de.honoka.sdk.util.kotlin.basic.cast
-import de.honoka.sdk.util.kotlin.basic.removeIf
+import de.honoka.sdk.util.various.javadoc.ThreadSafe
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -65,9 +63,8 @@ object PropertyValueContainer {
         return if(result === nullValue) null else result as T?
     }
 
-    fun <T : Any> getOrInit(property: KProperty<*>, initialValue: T): T = run {
+    fun <T : Any> getOrInit(property: KProperty<*>, initialValue: T): T =
         getOrInit(property, initialValue as T?)!!
-    }
 
     @JvmName("getOrInitNullable")
     fun <T> getOrInit(property: KProperty<*>, initialValue: T?): T? {

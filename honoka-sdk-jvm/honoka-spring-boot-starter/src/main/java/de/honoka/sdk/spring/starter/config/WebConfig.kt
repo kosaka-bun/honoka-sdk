@@ -16,11 +16,7 @@ import org.springframework.web.filter.CorsFilter
 @Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}WebConfig")
 class WebConfig(private val webProperties: WebProperties) {
 
-    @ConditionalOnProperty(
-        prefix = "${WebProperties.PREFIX}.cors",
-        name = ["enabled"],
-        havingValue = "true"
-    )
+    @ConditionalOnProperty(prefix = "${WebProperties.PREFIX}.cors", name = ["enabled"])
     @Bean
     fun corsFilter(): CorsFilter {
         val config = webProperties.cors.newCorsConfiguration()

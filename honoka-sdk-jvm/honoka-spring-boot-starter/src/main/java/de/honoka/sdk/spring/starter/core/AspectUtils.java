@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.core.aop;
+package de.honoka.sdk.spring.starter.core;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.CodeSignature;

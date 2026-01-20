@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.kotlin.io
 
-import de.honoka.sdk.util.basic.javadoc.NotThreadSafe
+import de.honoka.sdk.util.various.javadoc.NotThreadSafe
 
 @NotThreadSafe
 class ByteBufferIoStream : MiddleIoStream() {
