@@ -48,9 +48,6 @@ public static void main(String[] args) {
 
 ![](docs/img/2.png)
 
-### [ImageUtils](./honoka-sdk-jvm/honoka-utils/src/main/java/de/honoka/sdk/util/various/ImageUtils.java)
-文字转图片工具类，转换时图片的高度是自适应的，图片的宽度可以自行指定。可以指定每行最大字符数，或是为图片指定一个固定宽度。此外，它还具有一定的渲染HTML的能力。
-
 ### [ReflectUtils](./honoka-sdk-jvm/honoka-utils/src/main/java/de/honoka/sdk/util/various/ReflectUtils.java)
 强大的反射工具类，可以方便地获取和修改被`private`和`final`所修饰的字段的值，以及方便地自动查找和调用指定名称的`private`方法，具有一定的类型推断能力。
 

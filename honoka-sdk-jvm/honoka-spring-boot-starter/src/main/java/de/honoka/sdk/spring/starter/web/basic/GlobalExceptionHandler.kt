@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.web
+package de.honoka.sdk.spring.starter.web.basic
 
 import cn.hutool.core.exceptions.ExceptionUtil
 import de.honoka.sdk.spring.starter.config.MainConfig

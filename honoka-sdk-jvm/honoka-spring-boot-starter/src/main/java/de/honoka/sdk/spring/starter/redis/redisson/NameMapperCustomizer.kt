@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.redisson
+package de.honoka.sdk.spring.starter.redis.redisson
 
 import de.honoka.sdk.spring.starter.config.MainConfig
 import de.honoka.sdk.spring.starter.config.RedisProperties

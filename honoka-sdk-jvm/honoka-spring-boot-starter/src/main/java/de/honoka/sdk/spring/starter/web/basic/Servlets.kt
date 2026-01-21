@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.web
+package de.honoka.sdk.spring.starter.web.basic
 
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest

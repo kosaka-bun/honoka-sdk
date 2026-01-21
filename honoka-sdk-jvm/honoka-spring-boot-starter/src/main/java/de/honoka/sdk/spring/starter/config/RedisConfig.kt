@@ -6,11 +6,17 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 
-@ComponentScan("de.honoka.sdk.spring.starter.redis")
+@ComponentScan("de.honoka.sdk.spring.starter.redis.basic")
 @EnableConfigurationProperties(RedisProperties::class)
 @ConditionalOnProperty(prefix = RedisProperties.PREFIX, name = ["enabled"])
 @Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}RedisConfig")
 class RedisConfig
+
+@ComponentScan("de.honoka.sdk.spring.starter.redis.redisson")
+@EnableConfigurationProperties(RedissonProperties::class)
+@ConditionalOnProperty(prefix = RedissonProperties.PREFIX, name = ["enabled"])
+@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}RedissonConfig")
+class RedissonConfig
 
 @ConfigurationProperties(RedisProperties.PREFIX)
 data class RedisProperties(
@@ -23,5 +29,17 @@ data class RedisProperties(
     companion object {
 
         const val PREFIX = "honoka.redis"
+    }
+}
+
+@ConfigurationProperties(RedissonProperties.PREFIX)
+data class RedissonProperties(
+
+    var enabled: Boolean = false
+) {
+
+    companion object {
+
+        const val PREFIX = "honoka.redisson"
     }
 }

@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.redis
+package de.honoka.sdk.spring.starter.redis.basic
 
 import de.honoka.sdk.spring.starter.config.RedisProperties
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration

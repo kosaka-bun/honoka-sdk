@@ -2,7 +2,7 @@ package de.honoka.sdk.spring.starter.security
 
 import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.json.JSONObject
-import de.honoka.sdk.spring.starter.web.canAcceptJson
+import de.honoka.sdk.spring.starter.web.basic.canAcceptJson
 import de.honoka.sdk.util.web.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
