@@ -15,7 +15,9 @@ class RedisConfig
 @ConfigurationProperties(RedisProperties.PREFIX)
 data class RedisProperties(
 
-    var enabled: Boolean = false
+    var enabled: Boolean = false,
+
+    var keyPrefix: String? = null
 ) {
 
     companion object {

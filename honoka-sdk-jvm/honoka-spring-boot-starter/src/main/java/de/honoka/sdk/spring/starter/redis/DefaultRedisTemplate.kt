@@ -1,6 +1,6 @@
 package de.honoka.sdk.spring.starter.redis
 
-import de.honoka.sdk.spring.starter.core.SpringPropertiesHolder
+import de.honoka.sdk.spring.starter.config.RedisProperties
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component
  */
 @Component("redisTemplate")
 class DefaultRedisTemplate(
-    private val springPropertiesHolder: SpringPropertiesHolder,
+    private val redisProperties: RedisProperties,
     redisConnectionFactory: RedisConnectionFactory
 ) : RedisTemplate<String, Any>() {
 
     private inner class KeySerializer : StringRedisSerializer() {
 
-        private val prefix = "${springPropertiesHolder.applicationName}:"
+        private val prefix = "${redisProperties.keyPrefix}:"
 
         override fun serialize(value: String?): ByteArray? =
             super.serialize(value?.let { "$prefix$it" })
@@ -30,7 +30,7 @@ class DefaultRedisTemplate(
 
     init {
         connectionFactory = redisConnectionFactory
-        keySerializer = if(springPropertiesHolder.applicationName.isNullOrBlank()) {
+        keySerializer = if(redisProperties.keyPrefix.isNullOrBlank()) {
             RedisSerializer.string()
         } else {
             KeySerializer()

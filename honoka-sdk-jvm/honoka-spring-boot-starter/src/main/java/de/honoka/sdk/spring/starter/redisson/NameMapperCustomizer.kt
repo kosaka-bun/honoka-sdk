@@ -1,7 +1,7 @@
 package de.honoka.sdk.spring.starter.redisson
 
 import de.honoka.sdk.spring.starter.config.MainConfig
-import de.honoka.sdk.spring.starter.core.SpringPropertiesHolder
+import de.honoka.sdk.spring.starter.config.RedisProperties
 import de.honoka.sdk.util.kotlin.lang.MultiActionTrier
 import org.redisson.api.NameMapper
 import org.redisson.config.Config
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component
 
 @Component("${MainConfig.STARTER_BEAN_NAME_PREFIX}RedissonNameMapperCustomizer")
 class NameMapperCustomizer(
-    private val springPropertiesHolder: SpringPropertiesHolder
+    private val redisProperties: RedisProperties
 ) : RedissonAutoConfigurationCustomizer {
 
     private inner class NameMapperImpl : NameMapper {
 
-        private val prefix = "${springPropertiesHolder.applicationName}:"
+        private val prefix = "${redisProperties.keyPrefix}:"
 
         override fun map(name: String): String = "$prefix$name"
 
@@ -23,7 +23,7 @@ class NameMapperCustomizer(
     }
 
     override fun customize(configuration: Config) {
-        if(springPropertiesHolder.applicationName.isNullOrBlank()) return
+        if(redisProperties.keyPrefix.isNullOrBlank()) return
         val mapper = NameMapperImpl()
         configuration.run {
             when {
