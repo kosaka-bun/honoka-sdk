@@ -11,7 +11,7 @@ public class ApiResponse<T> {
     
     private Integer code;
     
-    private Boolean status;
+    private Boolean success;
     
     private String msg;
     
@@ -26,7 +26,7 @@ public class ApiResponse<T> {
     public static <T1> ApiResponse<T1> success(String msg, T1 data) {
         return new ApiResponse<T1>()
             .setCode(HttpStatus.HTTP_OK)
-            .setStatus(true)
+            .setSuccess(true)
             .setMsg(msg)
             .setData(data);
     }
@@ -42,7 +42,7 @@ public class ApiResponse<T> {
     public static ApiResponse<?> fail(int httpStatus, String msg) {
         return new ApiResponse<>()
             .setCode(httpStatus)
-            .setStatus(false)
+            .setSuccess(false)
             .setMsg(msg)
             .setData(null);
     }

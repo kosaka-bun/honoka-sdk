@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -20,10 +21,13 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 
 @EnableMethodSecurity
 @EnableWebSecurity
-@ComponentScan("de.honoka.sdk.spring.starter.security")
+@ComponentScan(
+    "de.honoka.sdk.spring.starter.security",
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
+)
 @EnableConfigurationProperties(SecurityProperties::class)
 @ConditionalOnProperty(prefix = SecurityProperties.PREFIX, name = ["enabled"])
-@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}SecurityConfig")
+@Configuration
 class SecurityConfig(private val securityProperties: SecurityProperties) {
     
     @Bean

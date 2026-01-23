@@ -1,10 +1,9 @@
 package de.honoka.sdk.spring.starter.core
 
-import de.honoka.sdk.spring.starter.config.MainConfig
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
-@Component("${MainConfig.STARTER_BEAN_NAME_PREFIX}SpringPropertiesHolder")
+@Component
 class SpringPropertiesHolder {
 
     @Value($$"${spring.application.name:#{null}}")

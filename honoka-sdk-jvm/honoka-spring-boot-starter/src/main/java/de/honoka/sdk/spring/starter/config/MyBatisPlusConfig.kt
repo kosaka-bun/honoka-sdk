@@ -8,19 +8,21 @@ import de.honoka.sdk.util.kotlin.lang.log
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.*
 
-@ComponentScan("de.honoka.sdk.spring.starter.mybatis")
+@Import(TransactionConfig::class)
+@ComponentScan(
+    "de.honoka.sdk.spring.starter.mybatis",
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
+)
 @EnableConfigurationProperties(MyBatisPlusProperties::class)
 @ConditionalOnProperty(prefix = MyBatisPlusProperties.PREFIX, name = ["enabled"])
-@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}MyBatisPlusConfig")
+@Configuration
 class MyBatisPlusConfig(
     private val springPropertiesHolder: SpringPropertiesHolder,
     private val mybatisPlusProperties: MyBatisPlusProperties
 ) {
-    
+
     @Bean
     fun mybatisPlusInterceptor(): MybatisPlusInterceptor = MybatisPlusInterceptor().apply {
         val dbType = mybatisPlusProperties.dbType ?: run {

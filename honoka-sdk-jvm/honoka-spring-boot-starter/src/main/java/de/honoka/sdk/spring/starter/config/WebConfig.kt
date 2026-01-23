@@ -7,16 +7,20 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.cors.reactive.CorsWebFilter
 import org.springframework.web.filter.CorsFilter
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource as ReactiveUrlCorsConfigSource
 
-@ComponentScan("de.honoka.sdk.spring.starter.web.basic")
+@ComponentScan(
+    "de.honoka.sdk.spring.starter.web.basic",
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
+)
 @EnableConfigurationProperties(WebProperties::class)
 @ConditionalOnProperty(prefix = WebProperties.PREFIX, name = ["enabled"], matchIfMissing = true)
-@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}WebConfig")
+@Configuration
 class WebConfig(private val webProperties: WebProperties) {
 
     @ConditionalOnProperty(prefix = "${WebProperties.PREFIX}.cors", name = ["enabled"])
@@ -30,10 +34,13 @@ class WebConfig(private val webProperties: WebProperties) {
     }
 }
 
-@ComponentScan("de.honoka.sdk.spring.starter.web.webflux")
+@ComponentScan(
+    "de.honoka.sdk.spring.starter.web.webflux",
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
+)
 @EnableConfigurationProperties(WebFluxProperties::class)
 @ConditionalOnProperty(prefix = WebFluxProperties.PREFIX, name = ["enabled"])
-@Configuration("${MainConfig.STARTER_BEAN_NAME_PREFIX}WebFluxConfig")
+@Configuration
 class WebFluxConfig(private val webFluxProperties: WebFluxProperties) {
 
     @ConditionalOnProperty(prefix = "${WebFluxProperties.PREFIX}.cors", name = ["enabled"])

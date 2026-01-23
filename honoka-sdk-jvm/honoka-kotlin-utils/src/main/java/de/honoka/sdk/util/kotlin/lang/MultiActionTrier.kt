@@ -13,7 +13,7 @@ class MultiActionTrier {
         inline fun start(block: MultiActionTrier.() -> Unit): Any? {
             MultiActionTrier().run {
                 block()
-                if(succeeded) {
+                if(success) {
                     return result
                 } else {
                     throwable?.let { throw it }
@@ -23,17 +23,20 @@ class MultiActionTrier {
         }
     }
 
-    var succeeded: Boolean = false
+    @PublishedApi
+    internal var success: Boolean = false
 
-    var result: Any? = null
+    @PublishedApi
+    internal var result: Any? = null
 
-    var throwable: Throwable? = null
+    @PublishedApi
+    internal var throwable: Throwable? = null
 
     inline fun doOne(block: () -> Any?) {
-        if(succeeded) return
+        if(success) return
         try {
             result = block()
-            succeeded = true
+            success = true
         } catch(t: Throwable) {
             throwable = t
         }

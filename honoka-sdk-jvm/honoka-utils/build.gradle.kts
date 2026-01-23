@@ -7,7 +7,7 @@ dependencies {
     api(libs.slf4j.api)
     implementation(libs.logback)
     compileOnly("org.jetbrains:annotations:24.0.0")
-    runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    runtimeOnly("org.bouncycastle:bcpkix-jdk18on:1.80")
 }
 
 honoka.basic {

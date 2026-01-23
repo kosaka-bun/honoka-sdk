@@ -1,5 +1,7 @@
 package de.honoka.sdk.util.kotlin.lang
 
+import cn.hutool.core.bean.BeanUtil
+import cn.hutool.core.bean.copier.CopyOptions
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
 import de.honoka.sdk.util.lang.CodeUtils
@@ -103,4 +105,14 @@ fun <T> Result<T>.logIfFailed(level: Level = Level.ERROR, msg: String = "") {
         Level.DEBUG -> log.debug(msg, throwable)
         Level.TRACE -> log.trace(msg, throwable)
     }
+}
+
+inline fun <T : Any> T.copyFrom(from: Any, options: CopyOptions.() -> Unit = {}): T {
+    BeanUtil.copyProperties(from, this, CopyOptions().apply(options))
+    return this
+}
+
+inline fun <T : Any> Any.copyTo(target: T, options: CopyOptions.() -> Unit = {}): T {
+    BeanUtil.copyProperties(this, target, CopyOptions().apply(options))
+    return target
 }

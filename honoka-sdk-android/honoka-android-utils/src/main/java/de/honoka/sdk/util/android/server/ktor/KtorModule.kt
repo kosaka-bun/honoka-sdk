@@ -183,7 +183,7 @@ private class StatusHandlerRegistrar(private val config: StatusPagesConfig) {
             val status = HttpStatusCode.InternalServerError
             val res = ApiResponse.of<Any>().apply {
                 code = status.value
-                this.status = false
+                this.success = false
                 msg = ExceptionUtil.getMessage(realException)
                 data = JSONObject().also {
                     it["stackTrace"] = ExceptionUtil.stacktraceToString(realException)

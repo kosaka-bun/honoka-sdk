@@ -1,6 +1,5 @@
 package de.honoka.sdk.spring.starter.redis.redisson
 
-import de.honoka.sdk.spring.starter.config.MainConfig
 import de.honoka.sdk.spring.starter.config.RedisProperties
 import de.honoka.sdk.util.kotlin.lang.MultiActionTrier
 import org.redisson.api.NameMapper
@@ -8,7 +7,7 @@ import org.redisson.config.Config
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer
 import org.springframework.stereotype.Component
 
-@Component("${MainConfig.STARTER_BEAN_NAME_PREFIX}RedissonNameMapperCustomizer")
+@Component
 class NameMapperCustomizer(
     private val redisProperties: RedisProperties
 ) : RedissonAutoConfigurationCustomizer {
