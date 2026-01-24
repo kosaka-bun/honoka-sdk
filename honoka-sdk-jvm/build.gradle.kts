@@ -1,3 +1,4 @@
+import de.honoka.gradle.util.dsl.classifyProjects
 import de.honoka.gradle.util.dsl.projects
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.charset.StandardCharsets
@@ -15,11 +16,10 @@ plugins {
 group = "de.honoka.sdk"
 version = commonLibs.versions.p.root.get()
 
-//纯Java项目
-val javaProjects = projects("honoka-utils")
-
-//非Java 8项目
-val notJava8Projects = projects("honoka-spring-boot-starter")
+val projects = classifyProjects {
+    java8 = subprojects - projects("honoka-spring-boot-starter")
+    kotlin = subprojects - projects("honoka-utils")
+}
 
 subprojects {
     apply(plugin = "java")
@@ -30,7 +30,7 @@ subprojects {
     group = rootProject.group
 
     java {
-        if(project !in notJava8Projects) {
+        if(project in projects.java8) {
             toolchain.languageVersion = JavaLanguageVersion.of(8)
         }
         withSourcesJar()
@@ -47,8 +47,7 @@ subprojects {
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     }
     
-    //Kotlin项目
-    if(project !in javaProjects) {
+    if(project in projects.kotlin) {
         apply(plugin = "org.jetbrains.kotlin.jvm")
         apply(plugin = "org.jetbrains.kotlin.kapt")
         apply(plugin = "org.jetbrains.kotlin.plugin.lombok")

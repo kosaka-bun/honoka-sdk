@@ -15,7 +15,7 @@ inline fun <reified T : Any> BaseMapper<T>.updateChainWrapper(): KtUpdateChainWr
 inline fun <reified T : Any> BaseMapper<T>.query(
     limit: Long = 0, block: KtQueryChainWrapper<T>.() -> Unit
 ): List<T> = queryChainWrapper().run {
-    apply(block)
+    block()
     if(limit < 1) {
         list()
     } else {

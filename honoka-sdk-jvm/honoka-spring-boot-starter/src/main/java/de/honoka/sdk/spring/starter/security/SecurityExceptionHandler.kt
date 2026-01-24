@@ -3,11 +3,13 @@ package de.honoka.sdk.spring.starter.security
 import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.json.JSONObject
 import de.honoka.sdk.spring.starter.web.basic.canAcceptJson
+import de.honoka.sdk.spring.starter.web.webflux.canAcceptJson
 import de.honoka.sdk.util.web.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.AuthenticationException
@@ -15,8 +17,12 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.access.ExceptionTranslationFilter
+import org.springframework.security.web.server.ServerAuthenticationEntryPoint
+import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Mono
 
 @RestControllerAdvice
 class SecurityExceptionHandler {
@@ -41,8 +47,18 @@ object DefaultAuthenticationEntryPoint : AuthenticationEntryPoint {
         response: HttpServletResponse,
         authException: AuthenticationException?
     ) {
-        respondError(request, response, HttpStatus.UNAUTHORIZED, "未登录或Token已失效", authException)
+        respondError(
+            request, response,
+            HttpStatus.UNAUTHORIZED, Messages.UNAUTHORIZED,
+            authException
+        )
     }
+}
+
+object DefaultServerAuthenticationEntryPoint : ServerAuthenticationEntryPoint {
+
+    override fun commence(exchange: ServerWebExchange, ex: AuthenticationException): Mono<Void> =
+        respondError(exchange, HttpStatus.UNAUTHORIZED, Messages.UNAUTHORIZED, ex)
 }
 
 /**
@@ -59,8 +75,25 @@ object DefaultAccessDeniedHandler : AccessDeniedHandler {
         response: HttpServletResponse,
         accessDeniedException: AccessDeniedException?
     ) {
-        respondError(request, response, HttpStatus.FORBIDDEN, "访问被拒绝", accessDeniedException)
+        respondError(
+            request, response,
+            HttpStatus.FORBIDDEN, Messages.FORBIDDEN,
+            accessDeniedException
+        )
     }
+}
+
+object DefaultServerAccessDeniedHandler : ServerAccessDeniedHandler {
+
+    override fun handle(exchange: ServerWebExchange, denied: AccessDeniedException): Mono<Void> =
+        respondError(exchange, HttpStatus.FORBIDDEN, Messages.FORBIDDEN, denied)
+}
+
+private object Messages {
+
+    const val UNAUTHORIZED = "未登录或Token已失效"
+
+    const val FORBIDDEN = "访问被拒绝"
 }
 
 private fun respondError(
@@ -73,7 +106,7 @@ private fun respondError(
     response.outputStream.writer(Charsets.UTF_8).use {
         val apiResponse = ApiResponse.of<JSONObject>().also { ar ->
             ar.code = status.value()
-            ar.status = false
+            ar.success = false
             ar.msg = msg
             ar.data = JSONObject().also { jo ->
                 jo["exception"] = ExceptionUtil.getMessage(exception)
@@ -81,4 +114,24 @@ private fun respondError(
         }
         it.write(apiResponse.toJsonString())
     }
+}
+
+private fun respondError(
+    exchange: ServerWebExchange, status: HttpStatusCode, msg: String, exception: Throwable?
+): Mono<Void> = exchange.run {
+    response.statusCode = status
+    if(!request.canAcceptJson()) {
+        return response.setComplete()
+    }
+    response.headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+    val apiResponse = ApiResponse.of<JSONObject>().also { ar ->
+        ar.code = status.value()
+        ar.success = false
+        ar.msg = msg
+        ar.data = JSONObject().also { jo ->
+            jo["exception"] = ExceptionUtil.getMessage(exception)
+        }
+    }
+    val data = response.bufferFactory().wrap(apiResponse.toJsonString().toByteArray())
+    return response.writeWith(Mono.just(data))
 }
