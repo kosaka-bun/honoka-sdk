@@ -1,8 +1,10 @@
+import de.honoka.gradle.util.dsl.*
+
 plugins {
     alias(commonLibs.plugins.kotlin.spring)
 }
 
-version = commonLibs.versions.p.honoka.spring.boot.starter.get()
+honoka.basic.publishing.version = libs.common.versions.p.honoka.spring.boot.starter.get()
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -16,7 +18,7 @@ honoka.basic {
 }
 
 dependencies {
-    api(commonLibs.honoka.kotlin.utils)
+    api(libs.common.honoka.kotlin.utils)
     compileOnly("org.springframework.boot:spring-boot-starter")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-aop")
@@ -25,10 +27,5 @@ dependencies {
     compileOnly(libs.mybatis.plus.jsqlparser)
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
     compileOnly(libs.redisson.spring.boot.starter)
-}
-
-honoka.basic {
-    publishing {
-        default()
-    }
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

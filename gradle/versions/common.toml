@@ -7,10 +7,10 @@ p-honoka-spring-boot-starter = "1.1.0-dev"
 p-honoka-android-utils = "1.2.0-dev"
 
 # gradle plugins version
-gp-honoka-basic = "1.0.4-dev"
+gp-honoka-basic = "1.1.0-dev"
 
 # dependencies version
-d-kotlin = "2.2.0"
+d-kotlin = "2.2.21"
 d-kotlin-coroutines = "1.10.2"
 d-lombok = "1.18.42"
 d-honoka-utils = "1.2.0-dev"

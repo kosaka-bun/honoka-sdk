@@ -13,13 +13,14 @@ pluginManagement {
     val versionCatalogFilePrefix = "../gradle/versions"
     repositories(customRepositories)
     dependencyResolutionManagement {
+        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+        repositories(customRepositories)
         versionCatalogs {
-            fun versionCatalogFile(name: String): ConfigurableFileCollection = run {
+            fun versionCatalogFile(name: String): ConfigurableFileCollection =
                 files("$versionCatalogFilePrefix/$name.toml")
-            }
-            create("commonLibs", Action {
+            create("commonLibs") {
                 from(versionCatalogFile("common"))
-            })
+            }
         }
     }
 }

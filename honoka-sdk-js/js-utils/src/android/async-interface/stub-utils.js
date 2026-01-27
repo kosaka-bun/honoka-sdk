@@ -20,7 +20,7 @@ class AndroidInterfaceStubUtils {
       timeout: 10 * 1000
     })
     this.#axios.interceptors.response.use(response => {
-      if(response.status === 200 && response.data.status) {
+      if(response.status === 200 && response.data.success) {
         console.log(
           `Call ${response.config.url}`,
           '\nparams:', response.config.data,

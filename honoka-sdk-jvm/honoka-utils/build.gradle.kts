@@ -1,4 +1,6 @@
-version = commonLibs.versions.p.honoka.utils.get()
+import de.honoka.gradle.util.dsl.*
+
+honoka.basic.publishing.version = libs.common.versions.p.honoka.utils.get()
 
 dependencies {
     api("cn.hutool:hutool-all:5.8.25")
@@ -8,10 +10,5 @@ dependencies {
     implementation(libs.logback)
     compileOnly("org.jetbrains:annotations:24.0.0")
     runtimeOnly("org.bouncycastle:bcpkix-jdk18on:1.80")
-}
-
-honoka.basic {
-    publishing {
-        default()
-    }
+    testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
 }

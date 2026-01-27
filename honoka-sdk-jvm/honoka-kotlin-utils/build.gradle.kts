@@ -1,12 +1,8 @@
-version = commonLibs.versions.p.honoka.kotlin.utils.get()
+import de.honoka.gradle.util.dsl.*
+
+honoka.basic.publishing.version = libs.common.versions.p.honoka.kotlin.utils.get()
 
 dependencies {
-    api(commonLibs.honoka.utils)
+    api(libs.common.honoka.utils)
     implementation(libs.logback)
-}
-
-honoka.basic {
-    publishing {
-        default()
-    }
 }

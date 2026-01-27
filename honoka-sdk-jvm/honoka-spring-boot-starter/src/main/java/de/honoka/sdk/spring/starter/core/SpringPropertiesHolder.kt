@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component
 @Component
 class SpringPropertiesHolder {
 
+    @Value($$"${server.port:#{null}}")
+    var serverPort: Int? = null
+
     @Value($$"${spring.application.name:#{null}}")
     var applicationName: String? = null
 

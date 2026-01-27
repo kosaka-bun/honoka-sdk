@@ -2,7 +2,7 @@ name: Multiple CI
 
 env:
   CIB_DOWNLOADER: https://mirrors.honoka.de/ci-builders/downloader.sh
-  CIB_VERSION: 1.0.2
+  CIB_VERSION: 1.0.3
   CIB_GIT_INFO: ${{ secrets.CIB_GIT_INFO }}
   REMOTE_MAVEN_REPO_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
   REMOTE_NPM_REGISTRY_URL: ${{ secrets.REMOTE_MAVEN_REPO_URL }}
