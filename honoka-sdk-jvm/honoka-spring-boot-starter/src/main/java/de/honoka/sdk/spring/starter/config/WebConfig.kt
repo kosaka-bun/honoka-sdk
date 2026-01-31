@@ -4,10 +4,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.NestedConfigurationProperty
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
+import org.springframework.context.annotation.*
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.cors.reactive.CorsWebFilter
@@ -15,7 +12,13 @@ import org.springframework.web.filter.CorsFilter
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource as ReactiveUrlCorsConfigSource
 
 @ComponentScan(
-    "de.honoka.sdk.spring.starter.web.basic",
+    "de.honoka.sdk.spring.starter.web",
+    excludeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.ASPECTJ,
+            pattern = ["de.honoka.sdk.spring.starter.web.webflux..*"]
+        )
+    ],
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
 @EnableConfigurationProperties(WebProperties::class)
@@ -103,11 +106,18 @@ data class WebFluxProperties(
     var enabled: Boolean = false,
 
     @NestedConfigurationProperty
-    var cors: WebProperties.Cors = WebProperties.Cors()
+    var cors: WebProperties.Cors = WebProperties.Cors(),
+
+    var gateway: Gateway = Gateway()
 ) {
 
     companion object {
 
         const val PREFIX = "honoka.webflux"
     }
+
+    data class Gateway(
+
+        var enabled: Boolean = false
+    )
 }

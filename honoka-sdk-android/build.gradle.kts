@@ -1,8 +1,10 @@
-import de.honoka.gradle.plugin.android.dsl.*
+import de.honoka.gradle.plugin.android.dsl.androidTestImplementation
 import de.honoka.gradle.plugin.android.ext.kotlinAndroid
 import de.honoka.gradle.plugin.android.ext.useOwnProjectName
 import de.honoka.gradle.plugin.basic.dsl.*
-import de.honoka.gradle.util.dsl.*
+import de.honoka.gradle.util.dsl.applier
+import de.honoka.gradle.util.dsl.common
+import de.honoka.gradle.util.dsl.libs
 
 plugins {
     alias(libs.plugins.android.library) apply false
@@ -23,40 +25,42 @@ subprojects {
 
     group = rootProject.group
 
-    android {
-        compileSdk = libs.versions.a.compile.sdk.get().toInt()
-
-        defaultConfig {
-            minSdk = libs.versions.a.min.sdk.get().toInt()
-            testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
-            consumerProguardFiles("consumer-rules.pro")
-        }
-
-        buildTypes {
-            release {
-                isMinifyEnabled = false
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
-                )
-            }
-        }
-    }
-
     honoka.basic {
-        dependencies {
-            kotlinAndroid()
-            lombok()
-        }
-
         configs {
             java(8, true)
             javaTask()
             kotlin()
         }
 
+        dependencies {
+            kotlinAndroid()
+            lombok()
+        }
+
         publishing {
             useOwnProjectName = true
+        }
+    }
+
+    honoka.android {
+        library {
+            compileSdk = libs.versions.a.compile.sdk.get().toInt()
+
+            defaultConfig {
+                minSdk = libs.versions.a.min.sdk.get().toInt()
+                testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+                consumerProguardFiles("consumer-rules.pro")
+            }
+
+            buildTypes {
+                release {
+                    isMinifyEnabled = false
+                    proguardFiles(
+                        getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro"
+                    )
+                }
+            }
         }
     }
 

@@ -6,8 +6,8 @@ import de.honoka.sdk.spring.starter.config.SecurityProperties
 import de.honoka.sdk.spring.starter.core.springBean
 import de.honoka.sdk.spring.starter.security.token.JwtUtils
 import de.honoka.sdk.spring.starter.security.token.TempTokenUtils
-import de.honoka.sdk.spring.starter.web.basic.authorization
-import de.honoka.sdk.spring.starter.web.basic.get
+import de.honoka.sdk.spring.starter.web.authorization
+import de.honoka.sdk.spring.starter.web.get
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

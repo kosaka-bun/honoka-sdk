@@ -1,7 +1,7 @@
 # Honoka SDK
 ![Java 8](./docs/img/badge/Java-8-brightgreen.svg)
 ![Java 17](./docs/img/badge/Java-17-brightgreen.svg)
-![Kotlin](https://img.shields.io/badge/Kotlin-2.2.0-brightgreen?logo=Kotlin)<br />
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-brightgreen?logo=Kotlin)<br />
 [![License](https://img.shields.io/github/license/kosaka-bun/honoka-sdk?label=License&color=blue&logo=GitHub)](./LICENSE)
 ![GitHub Stars](https://img.shields.io/github/stars/kosaka-bun/honoka-sdk?label=Stars&logo=GitHub&style=flat)
 [![Release](https://img.shields.io/github/release/kosaka-bun/honoka-sdk?label=Release&logo=GitHub)](../../releases)

@@ -5,6 +5,14 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.functions
 
 /**
+ * 用于表示这个类被哪个配置类所按条件加载（仅作为标记）
+ */
+@MustBeDocumented
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.CLASS)
+annotation class ConditionalComponent(val value: KClass<*>)
+
+/**
  * 解决PropertyResolver.getProperty()无法获取到yaml中的List类型的属性值的问题
  */
 @Suppress("UNCHECKED_CAST")

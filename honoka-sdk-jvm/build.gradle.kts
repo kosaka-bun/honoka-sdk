@@ -27,13 +27,13 @@ subprojects {
     group = rootProject.group
 
     honoka.basic {
-        dependencies {
-            lombok()
-        }
-
         configs {
             java(8, true)
             javaTask()
+        }
+
+        dependencies {
+            lombok()
         }
     }
 }
@@ -46,13 +46,13 @@ projects.kotlin {
     }
 
     honoka.basic {
-        dependencies {
-            kotlin()
-        }
-
         configs {
             kotlin()
             kapt()
+        }
+
+        dependencies {
+            kotlin()
         }
     }
 }

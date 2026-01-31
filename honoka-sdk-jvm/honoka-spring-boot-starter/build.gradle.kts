@@ -4,13 +4,13 @@ plugins {
     alias(commonLibs.plugins.kotlin.spring)
 }
 
-honoka.basic.publishing.version = libs.common.versions.p.honoka.spring.boot.starter.get()
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
-
 honoka.basic {
+    publishing.version = libs.common.versions.p.honoka.spring.boot.starter.get()
+
+    configs {
+        java(17)
+    }
+
     dependencies {
         springBootBom()
         springBootConfigProcessor()

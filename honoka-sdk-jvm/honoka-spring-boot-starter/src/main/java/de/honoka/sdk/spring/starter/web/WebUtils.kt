@@ -1,4 +1,4 @@
-package de.honoka.sdk.spring.starter.web.basic
+package de.honoka.sdk.spring.starter.web
 
 /**
  * Web相关工具

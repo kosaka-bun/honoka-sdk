@@ -5,10 +5,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
 
 @ComponentScan(
-    "de.honoka.sdk.spring.starter.redis.basic",
+    "de.honoka.sdk.spring.starter.redis",
+    excludeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.ASPECTJ,
+            pattern = ["de.honoka.sdk.spring.starter.redis.redisson..*"]
+        )
+    ],
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
 @EnableConfigurationProperties(RedisProperties::class)
