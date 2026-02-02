@@ -61,8 +61,8 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
         authorizeHttpRequests {
             val whiteListMatchers = whiteList.map { s ->
                 PathPatternRequestMatcher.withDefaults().matcher(s)
-            }.toTypedArray()
-            it.requestMatchers(*whiteListMatchers).permitAll()
+            }
+            it.requestMatchers(*whiteListMatchers.toTypedArray()).permitAll()
             it.anyRequest().authenticated()
         }
         build()

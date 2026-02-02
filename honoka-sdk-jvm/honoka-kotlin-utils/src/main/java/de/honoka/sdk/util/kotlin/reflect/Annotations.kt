@@ -9,9 +9,7 @@ import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.memberProperties
 
 operator fun Annotation.get(key: String): Any {
-    val prop = annotationClass.memberProperties.run {
-        first { it.name == key } as KProperty1<Annotation, Any>
-    }
+    val prop = annotationClass.memberProperties.first { it.name == key } as KProperty1<Annotation, Any>
     return prop.get(this)
 }
 

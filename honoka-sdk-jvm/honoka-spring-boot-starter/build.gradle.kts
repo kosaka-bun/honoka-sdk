@@ -1,8 +1,5 @@
-import de.honoka.gradle.util.dsl.*
-
-plugins {
-    alias(commonLibs.plugins.kotlin.spring)
-}
+import de.honoka.gradle.util.dsl.common
+import de.honoka.gradle.util.dsl.libs
 
 honoka.basic {
     publishing.version = libs.common.versions.p.honoka.spring.boot.starter.get()
@@ -18,14 +15,14 @@ honoka.basic {
 }
 
 dependencies {
-    api(libs.common.honoka.kotlin.utils)
-    compileOnly("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.boot:spring-boot-starter-aop")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
-    compileOnly("org.springframework.boot:spring-boot-starter-aop")
     compileOnly("org.springframework.boot:spring-boot-starter-security")
     compileOnly(libs.mybatis.plus.spring.boot.starter)
     compileOnly(libs.mybatis.plus.jsqlparser)
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
     compileOnly(libs.redisson.spring.boot.starter)
+    api(libs.common.honoka.kotlin.utils)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

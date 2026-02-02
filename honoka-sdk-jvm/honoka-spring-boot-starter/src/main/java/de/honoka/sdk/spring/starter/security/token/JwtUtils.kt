@@ -13,9 +13,10 @@ import org.springframework.security.web.authentication.rememberme.InvalidCookieE
 import java.util.concurrent.TimeUnit
 
 object JwtUtils {
+
+    private val securityProperties = SecurityProperties::class.springBean
     
-    @Suppress("MemberVisibilityCanBePrivate")
-    var key: String = SecurityProperties::class.springBean.token.jwtKey
+    var key = securityProperties.token.jwtKey
     
     private val tokenCache = CacheUtil.newTimedCache<String, String?>(0).apply {
         /**
@@ -27,10 +28,7 @@ object JwtUtils {
          */
         schedulePrune(TimeUnit.HOURS.toMillis(1))
     }
-    
-    private val JWT.cacheKey
-        get() = "${payloads.getByPath("user.id")}-${payloads["iat"]}"
-    
+
     fun newJwt(user: DefaultUser, periodDays: Int = 7): String = JWT.create().run {
         setKey(key.toByteArray())
         val payload = mapOf("user" to BeanUtil.beanToMap(user))
@@ -57,3 +55,6 @@ object JwtUtils {
         tokenCache.remove(jwt.cacheKey)
     }
 }
+
+private val JWT.cacheKey: String
+    get() = "${payloads.getByPath("user.id")}-${payloads["iat"]}"

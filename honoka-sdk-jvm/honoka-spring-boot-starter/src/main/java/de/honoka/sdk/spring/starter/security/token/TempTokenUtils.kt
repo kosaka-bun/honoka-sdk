@@ -1,7 +1,6 @@
 package de.honoka.sdk.spring.starter.security.token
 
 import cn.hutool.cache.CacheUtil
-import cn.hutool.core.lang.Assert
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -15,15 +14,16 @@ object TempTokenUtils {
         schedulePrune(TimeUnit.HOURS.toMillis(1))
     }
     
-    fun newToken(periodHours: Long = 1): String {
+    fun newToken(timeout: Long = 1, unit: TimeUnit = TimeUnit.HOURS): String {
         val token = UUID.randomUUID().toString()
-        val timeout = TimeUnit.HOURS.toMillis(periodHours)
-        tokenCache.put(token, null, timeout)
+        tokenCache.put(token, null, unit.toMillis(timeout))
         return token
     }
     
     fun checkToken(token: String) {
-        Assert.isTrue(tokenCache.containsKey(token), "token不存在或已过期")
+        require(tokenCache.containsKey(token)) {
+            "token不存在或已过期"
+        }
     }
     
     fun cancelToken(token: String) {

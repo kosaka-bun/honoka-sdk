@@ -19,6 +19,7 @@ d-honoka-kotlin-utils = "1.2.0-dev"
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "d-kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "d-kotlin" }
+kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "d-kotlin" }
 kotlin-lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "d-kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "d-kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "d-kotlin" }

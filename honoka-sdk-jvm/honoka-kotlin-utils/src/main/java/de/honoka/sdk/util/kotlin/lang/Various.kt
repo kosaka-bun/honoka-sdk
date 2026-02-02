@@ -1,7 +1,5 @@
 package de.honoka.sdk.util.kotlin.lang
 
-import cn.hutool.core.bean.BeanUtil
-import cn.hutool.core.bean.copier.CopyOptions
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
 import de.honoka.sdk.util.lang.CodeUtils
@@ -11,6 +9,19 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.starProjectedType
+
+@Retention(AnnotationRetention.BINARY)
+@Target(AnnotationTarget.CLASS)
+annotation class AllOpen
+
+val Date.weekdayNum: Int
+    get() {
+        val dayOfWeek = Calendar.getInstance().run {
+            setTime(this@weekdayNum)
+            get(Calendar.DAY_OF_WEEK)
+        }
+        return if(dayOfWeek != Calendar.SUNDAY) dayOfWeek - 1 else 7
+    }
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
 inline fun <T> Any?.cast(): T = this as T
@@ -80,15 +91,6 @@ inline fun repeatCatching(times: Int, block: (Int) -> Unit) {
     }
 }
 
-val Date.weekdayNum: Int
-    get() {
-        val dayOfWeek = Calendar.getInstance().run {
-            setTime(this@weekdayNum)
-            get(Calendar.DAY_OF_WEEK)
-        }
-        return if(dayOfWeek != Calendar.SUNDAY) dayOfWeek - 1 else 7
-    }
-
 fun <T> Result<T>.printStackIfFailed() {
     if(isSuccess) return
     exceptionOrNull()?.printStackTrace()
@@ -105,14 +107,4 @@ fun <T> Result<T>.logIfFailed(level: Level = Level.ERROR, msg: String = "") {
         Level.DEBUG -> log.debug(msg, throwable)
         Level.TRACE -> log.trace(msg, throwable)
     }
-}
-
-inline fun <T : Any> T.copyFrom(from: Any, options: CopyOptions.() -> Unit = {}): T {
-    BeanUtil.copyProperties(from, this, CopyOptions().apply(options))
-    return this
-}
-
-inline fun <T : Any> Any.copyTo(target: T, options: CopyOptions.() -> Unit = {}): T {
-    BeanUtil.copyProperties(this, target, CopyOptions().apply(options))
-    return target
 }

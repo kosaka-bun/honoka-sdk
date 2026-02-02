@@ -1,11 +1,14 @@
 package de.honoka.sdk.spring.starter.security
 
+import de.honoka.sdk.util.kotlin.lang.AllOpen
+import de.honoka.sdk.util.kotlin.text.toJsonArray
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
-open class DefaultUser {
+@AllOpen
+class DefaultUser {
     
     var id: Long? = null
     
@@ -22,34 +25,28 @@ open class DefaultUser {
     var expireTime: Date? = null
     
     var credentialsExpireTime: Date? = null
-    
-    fun toUserDetails(): DefaultUserDetails = DefaultUserDetails(this)
 }
 
-@Suppress("MemberVisibilityCanBePrivate")
 open class DefaultUserDetails(private val user: DefaultUser) : UserDetails {
     
-    val authorityList: List<String>?
-        get() = user.authorities?.split(",")
+    override fun getUsername(): String = user.username!!
     
-    val authorityObjects: List<GrantedAuthority>?
-        get() = authorityList?.map { SimpleGrantedAuthority(it) }
+    override fun getPassword(): String = user.password!!
     
-    override fun getUsername(): String? = user.username
+    override fun getAuthorities(): Collection<GrantedAuthority> =
+        user.authorities!!.toJsonArray().map { SimpleGrantedAuthority(it as String) }
     
-    override fun getPassword(): String? = user.password
+    override fun isEnabled(): Boolean = user.enabled != false
     
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority>? = authorityObjects?.toMutableList()
+    override fun isAccountNonLocked(): Boolean = user.locked != true
     
-    override fun isEnabled(): Boolean = user.enabled == true
-    
-    override fun isAccountNonLocked(): Boolean = user.locked == false
-    
-    override fun isAccountNonExpired(): Boolean = run {
-        System.currentTimeMillis() < (user.expireTime?.time ?: Long.MAX_VALUE)
+    override fun isAccountNonExpired(): Boolean = user.expireTime.let {
+        if(it != null) System.currentTimeMillis() <= it.time else true
     }
-    
-    override fun isCredentialsNonExpired(): Boolean = run {
-        System.currentTimeMillis() < (user.credentialsExpireTime?.time ?: Long.MAX_VALUE)
+
+    override fun isCredentialsNonExpired(): Boolean = user.credentialsExpireTime.let {
+        if(it != null) System.currentTimeMillis() <= it.time else true
     }
 }
+
+fun DefaultUser.toUserDetails(): DefaultUserDetails = DefaultUserDetails(this)

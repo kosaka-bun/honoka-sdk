@@ -17,10 +17,10 @@ version = libs.common.versions.p.root.get()
 
 subprojects {
     applier {
-        alias(libs.plugins.android.library)
-        alias(libs.common.plugins.kotlin.android)
         `maven-publish`
-        alias(libs.plugins.honoka.android)
+        `android-library`
+        `kotlin-android`
+        `honoka-android`
     }
 
     group = rootProject.group

@@ -7,7 +7,11 @@ import cn.hutool.json.JSONUtil
 
 fun String.toJsonObject(): JSONObject = JSONUtil.parseObj(this)
 
+fun Any.toJsonObject(): JSONObject = JSONUtil.parseObj(this)
+
 fun String.toJsonArray(): JSONArray = JSONUtil.parseArray(this)
+
+fun Iterable<*>.toJsonArray(): JSONArray = JSONUtil.parseArray(this)
 
 fun JSON.wrapper(): JsonWrapper = JsonWrapper(this)
 

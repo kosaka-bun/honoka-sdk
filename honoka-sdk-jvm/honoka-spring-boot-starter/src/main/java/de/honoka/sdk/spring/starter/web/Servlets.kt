@@ -29,7 +29,7 @@ val HttpServletRequest.clientRealIp: String?
     }
 
 /**
- * 长度为2的`List`，第一个元素为Token类型（如Bearer），第二个元素为Token值
+ * 长度为2的[List]，第一个元素为token类型（如Bearer），第二个元素为token值
  */
 val HttpServletRequest.authorization: List<String?>
     get() {
