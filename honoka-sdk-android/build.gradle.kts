@@ -28,7 +28,6 @@ subprojects {
     honoka.basic {
         configs {
             java(8, true)
-            javaTask()
             kotlin()
         }
 

@@ -28,7 +28,7 @@ object DefaultAuthorizationFilter : OncePerRequestFilter() {
         request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain
     ) {
         val token = request.authorization[1]
-        val tempToken = request.cookies[securityProperties.token.tempName]
+        val tempToken = request.cookies[securityProperties.jwt.tempName]
         when {
             !token.isNullOrBlank() -> tokenAuthentication(token)
             !tempToken.isNullOrBlank() -> tempTokenAuthentication(tempToken)

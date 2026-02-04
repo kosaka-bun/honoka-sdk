@@ -1,7 +1,7 @@
 package de.honoka.sdk.spring.starter.security
 
-import de.honoka.sdk.util.kotlin.lang.AllOpen
 import de.honoka.sdk.util.kotlin.text.toJsonArray
+import de.honoka.sdk.util.kotlin.various.AllOpen
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

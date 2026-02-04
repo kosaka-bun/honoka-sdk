@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers
-import de.honoka.sdk.util.kotlin.lang.copyFrom
+import de.honoka.sdk.util.kotlin.bean.copyFrom
 import kotlin.reflect.full.createInstance
 
 inline fun <reified T : Any> BaseMapper<T>.queryChainWrapper(): KtQueryChainWrapper<T> =
@@ -45,6 +45,18 @@ inline fun <reified T : Any> BaseMapper<T>.first(block: KtQueryChainWrapper<T>.(
 inline fun <reified T : Any> BaseMapper<T>.firstOrNullBy(params: Any): T? = queryBy(params, 1).firstOrNull()
 
 inline fun <reified T : Any> BaseMapper<T>.firstBy(params: Any): T = firstOrNullBy(params)!!
+
+inline fun <reified T : Any> BaseMapper<T>.exists(block: KtQueryChainWrapper<T>.() -> Unit): Boolean =
+    firstOrNull(block) != null
+
+inline fun <reified T : Any> BaseMapper<T>.existsBy(params: Any): Boolean = firstOrNullBy(params) != null
+
+inline fun <reified T : Any> BaseMapper<T>.existsById(id: Any): Boolean {
+    val one = firstOrNull {
+        eq(MyBatisPlusUtils.getTableIdProp(T::class), id)
+    }
+    return one != null
+}
 
 inline fun <reified T : Any> BaseMapper<T>.update(block: KtUpdateChainWrapper<T>.() -> Unit): Boolean =
     updateChainWrapper().apply(block).update()

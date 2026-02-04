@@ -5,8 +5,8 @@ import cn.hutool.json.JSONUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-@Data
 @Accessors(chain = true)
+@Data
 public class ApiResponse<T> {
     
     private Integer code;

@@ -2,7 +2,7 @@ package de.honoka.sdk.spring.starter.various;
 
 import de.honoka.sdk.util.gui.ConsoleWindow;
 import de.honoka.sdk.util.gui.ConsoleWindowBuilder;
-import de.honoka.sdk.util.lang.ThrowsRunnable;
+import de.honoka.sdk.util.various.ThrowsRunnable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

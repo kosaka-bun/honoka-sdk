@@ -17,7 +17,7 @@ fun JSON.wrapper(): JsonWrapper = JsonWrapper(this)
 
 fun String.toJsonWrapper(): JsonWrapper = JSONUtil.parse(this).wrapper()
 
-fun Any?.toJsonString(pretty: Boolean = false): String {
+fun Any.toJsonString(pretty: Boolean = false): String {
     return if(pretty) {
         JSONUtil.toJsonPrettyStr(this)
     } else {

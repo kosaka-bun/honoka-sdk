@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.lang
+package de.honoka.sdk.util.kotlin.various
 
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method

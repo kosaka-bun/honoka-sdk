@@ -34,8 +34,7 @@ subprojects {
 
     honoka.basic {
         configs {
-            java(8, true)
-            javaTask()
+            java(if(project in projects.springBoot) 17 else 8, true)
         }
 
         dependencies {

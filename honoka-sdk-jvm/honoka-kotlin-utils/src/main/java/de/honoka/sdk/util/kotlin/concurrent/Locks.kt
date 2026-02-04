@@ -1,9 +1,10 @@
-package de.honoka.sdk.util.kotlin.lang
+package de.honoka.sdk.util.kotlin.concurrent
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.Lock
 
-class LockFailException private constructor() : RuntimeException() {
+@PublishedApi
+internal class LockFailException private constructor() : RuntimeException() {
 
     companion object {
 

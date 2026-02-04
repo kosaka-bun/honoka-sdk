@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.concurrent;
 
-import de.honoka.sdk.util.lang.CodeUtils;
+import de.honoka.sdk.util.various.CodeUtils;
 
 import java.util.Iterator;
 import java.util.concurrent.Callable;

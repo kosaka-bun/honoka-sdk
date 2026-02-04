@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.lang;
+package de.honoka.sdk.util.various;
 
 import lombok.SneakyThrows;
 

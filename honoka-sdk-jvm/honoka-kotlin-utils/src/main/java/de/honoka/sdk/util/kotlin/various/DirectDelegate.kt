@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.lang
+package de.honoka.sdk.util.kotlin.various
 
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty

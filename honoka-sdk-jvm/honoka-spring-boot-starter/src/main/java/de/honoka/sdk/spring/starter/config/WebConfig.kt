@@ -22,6 +22,9 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource as 
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
 @EnableConfigurationProperties(WebProperties::class)
+@ConditionalOnProperty(
+    prefix = WebFluxProperties.PREFIX, name = ["enabled"], havingValue = "false", matchIfMissing = true
+)
 @ConditionalOnProperty(prefix = WebProperties.PREFIX, name = ["enabled"], matchIfMissing = true)
 @Configuration
 class WebConfig(private val webProperties: WebProperties) {

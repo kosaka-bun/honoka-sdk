@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.lang
+package de.honoka.sdk.util.kotlin.various
 
 /**
  * 依次执行传入的block，只要有一个block执行成功，即忽略后续所有block。

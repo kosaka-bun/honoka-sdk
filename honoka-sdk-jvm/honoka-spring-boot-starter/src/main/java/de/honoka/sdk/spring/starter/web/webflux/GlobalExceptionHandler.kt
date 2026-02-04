@@ -1,8 +1,8 @@
 package de.honoka.sdk.spring.starter.web.webflux
 
 import cn.hutool.core.exceptions.ExceptionUtil
-import de.honoka.sdk.util.kotlin.lang.isAny
-import de.honoka.sdk.util.kotlin.lang.log
+import de.honoka.sdk.util.kotlin.various.isAny
+import de.honoka.sdk.util.kotlin.various.log
 import de.honoka.sdk.util.web.ApiResponse
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
@@ -18,7 +18,7 @@ import org.springframework.web.server.WebExceptionHandler
 import reactor.core.publisher.Mono
 import kotlin.reflect.KClass
 
-@NotGatewayComponent
+@NotForGateway
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
@@ -73,7 +73,7 @@ class GlobalExceptionHandler {
     )
 }
 
-@GatewayComponent
+@ForGateway
 @Order(-1)
 @Component
 class GatewayExceptionHandler : WebExceptionHandler {

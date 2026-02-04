@@ -1,18 +1,19 @@
 package de.honoka.sdk.spring.starter.config
 
+import de.honoka.sdk.spring.starter.config.SecurityProperties.Jwt
 import de.honoka.sdk.spring.starter.security.DefaultAccessDeniedHandler
 import de.honoka.sdk.spring.starter.security.DefaultAuthenticationEntryPoint
 import de.honoka.sdk.spring.starter.security.DefaultAuthorizationFilter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
+import org.springframework.boot.context.properties.NestedConfigurationProperty
+import org.springframework.context.annotation.*
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
@@ -23,6 +24,12 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 @EnableWebSecurity
 @ComponentScan(
     "de.honoka.sdk.spring.starter.security",
+    excludeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.ASPECTJ,
+            pattern = ["de.honoka.sdk.spring.starter.security.webflux..*"]
+        )
+    ],
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
 @EnableConfigurationProperties(SecurityProperties::class)
@@ -73,6 +80,17 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
     fun userDetailService(): UserDetailsService = InMemoryUserDetailsManager()
 }
 
+@EnableReactiveMethodSecurity
+@EnableWebFluxSecurity
+@ComponentScan(
+    "de.honoka.sdk.spring.starter.security.webflux",
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
+)
+@EnableConfigurationProperties(WebFluxSecurityProperties::class)
+@ConditionalOnProperty(prefix = WebFluxSecurityProperties.PREFIX, name = ["enabled"])
+@Configuration
+class WebFluxSecurityConfig
+
 @ConfigurationProperties(SecurityProperties.PREFIX)
 data class SecurityProperties(
     
@@ -80,20 +98,35 @@ data class SecurityProperties(
     
     var whiteList: List<String> = listOf(),
     
-    var token: Token = Token()
+    var jwt: Jwt = Jwt()
 ) {
-    
+
     companion object {
-        
-        const val PREFIX = "honoka.security"
+
+        const val PREFIX = "${WebProperties.PREFIX}.security"
     }
-    
-    data class Token(
+
+    data class Jwt(
         
-        var jwtKey: String = "abcde12345",
-        
-        var name: String = "access_token",
-        
+        var key: String = "abcde12345",
+
         var tempName: String = "temp_access_token"
     )
+}
+
+@ConfigurationProperties(WebFluxSecurityProperties.PREFIX)
+data class WebFluxSecurityProperties(
+
+    var enabled: Boolean = false,
+
+    var whiteList: List<String> = listOf(),
+
+    @NestedConfigurationProperty
+    var jwt: Jwt = Jwt()
+) {
+
+    companion object {
+
+        const val PREFIX = "${WebFluxProperties.PREFIX}.security"
+    }
 }

@@ -1,8 +1,8 @@
-package de.honoka.sdk.util.kotlin.lang
+package de.honoka.sdk.util.kotlin.various
 
 import cn.hutool.json.JSON
 import cn.hutool.json.JSONArray
-import de.honoka.sdk.util.lang.CodeUtils
+import de.honoka.sdk.util.various.CodeUtils
 import org.slf4j.event.Level
 import java.util.*
 import kotlin.reflect.KClass

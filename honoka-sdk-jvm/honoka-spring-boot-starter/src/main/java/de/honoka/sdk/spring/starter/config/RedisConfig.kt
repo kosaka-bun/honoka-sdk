@@ -54,6 +54,6 @@ data class RedissonProperties(
 
     companion object {
 
-        const val PREFIX = "honoka.redisson"
+        const val PREFIX = "${RedisProperties.PREFIX}.redisson"
     }
 }

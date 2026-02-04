@@ -4,10 +4,6 @@ import de.honoka.gradle.util.dsl.libs
 honoka.basic {
     publishing.version = libs.common.versions.p.honoka.spring.boot.starter.get()
 
-    configs {
-        java(17)
-    }
-
     dependencies {
         springBootBom()
         springBootConfigProcessor()
@@ -18,7 +14,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter")
     api("org.springframework.boot:spring-boot-starter-aop")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
-    compileOnly("org.springframework.boot:spring-boot-starter-security")
+    compileOnly("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
     compileOnly(libs.mybatis.plus.spring.boot.starter)
     compileOnly(libs.mybatis.plus.jsqlparser)
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")

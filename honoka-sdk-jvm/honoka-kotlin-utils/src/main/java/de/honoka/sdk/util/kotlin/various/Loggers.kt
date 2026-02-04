@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.lang
+package de.honoka.sdk.util.kotlin.various
 
 import ch.qos.logback.classic.Level
 import org.slf4j.Logger

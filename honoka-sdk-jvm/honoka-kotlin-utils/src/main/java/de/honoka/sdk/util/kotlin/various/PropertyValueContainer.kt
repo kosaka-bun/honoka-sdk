@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.lang
+package de.honoka.sdk.util.kotlin.various
 
 import de.honoka.sdk.util.various.javadoc.ThreadSafe
 import java.lang.ref.WeakReference
@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty
  * 注意：对象的属性在使用本类存取属性值时会有一定性能问题，速度在理论上远不如直接使用对象中的字段来
  * 进行属性值存取的属性。
  */
-@Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
+@Suppress("UNCHECKED_CAST")
 @ThreadSafe
 object PropertyValueContainer {
 
@@ -55,19 +55,19 @@ object PropertyValueContainer {
     @Volatile
     private var lastCleanTime = 0L
 
-    fun <T : Any> get(property: KProperty<*>): T = getOrNull(property)!!
+    fun <T : Any> get(property: KProperty<T>): T = getOrNull(property)!!
 
-    fun <T> getOrNull(property: KProperty<*>): T? {
+    fun <T> getOrNull(property: KProperty<T>): T? {
         val result = map[KPropertyReference(property)]
         clean()
         return if(result === nullValue) null else result as T?
     }
 
-    fun <T : Any> getOrInit(property: KProperty<*>, initialValue: T): T =
+    fun <T : Any> getOrInit(property: KProperty<T>, initialValue: T): T =
         getOrInit(property, initialValue as T?)!!
 
     @JvmName("getOrInitNullable")
-    fun <T> getOrInit(property: KProperty<*>, initialValue: T?): T? {
+    fun <T> getOrInit(property: KProperty<T>, initialValue: T?): T? {
         try {
             property as CallableReference
             val ref = KPropertyReference(property)
@@ -86,7 +86,7 @@ object PropertyValueContainer {
         }
     }
 
-    fun set(property: KProperty<*>, value: Any?) {
+    fun <T> set(property: KProperty<T>, value: T?) {
         map[KPropertyReference(property)] = value ?: nullValue
         clean()
     }

@@ -11,8 +11,8 @@ object EmbeddedDatabaseUtils {
     }
 
     /**
-     * 获取相对于Java应用数据目录（由[de.honoka.sdk.util.kotlin.file.EnvironmentPathUtils.getDataDirPathOfApp]
-     * 方法获得的一个自定义目录）的嵌入式数据库的JDBC URL。
+     * 获取相对于Java应用数据目录（由[EnvironmentPathUtils.getDataDirPathOfApp]方法获得的一个自定义目录）的
+     * 嵌入式数据库的JDBC URL。
      */
     fun getJdbcUrlRelatedWithDataDir(dbType: DbType, databaseFilePath: String): String {
         val dataDirPath = EnvironmentPathUtils.getDataDirPathOfApp().run {

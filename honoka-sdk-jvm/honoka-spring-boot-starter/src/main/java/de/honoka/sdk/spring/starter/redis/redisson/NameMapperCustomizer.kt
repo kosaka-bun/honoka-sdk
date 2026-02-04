@@ -1,7 +1,7 @@
 package de.honoka.sdk.spring.starter.redis.redisson
 
 import de.honoka.sdk.spring.starter.config.RedisProperties
-import de.honoka.sdk.util.kotlin.lang.MultiActionTrier
+import de.honoka.sdk.util.kotlin.various.MultiActionTrier
 import org.redisson.api.NameMapper
 import org.redisson.config.Config
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer

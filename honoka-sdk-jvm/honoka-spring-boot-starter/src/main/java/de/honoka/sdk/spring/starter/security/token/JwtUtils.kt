@@ -9,15 +9,15 @@ import de.honoka.sdk.spring.starter.config.SecurityProperties
 import de.honoka.sdk.spring.starter.core.springBean
 import de.honoka.sdk.spring.starter.security.DefaultUser
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException
 import java.util.concurrent.TimeUnit
 
 object JwtUtils {
 
     private val securityProperties = SecurityProperties::class.springBean
-    
-    var key = securityProperties.token.jwtKey
-    
+
     private val tokenCache = CacheUtil.newTimedCache<String, String?>(0).apply {
         /**
          * 设置间隔多长时间主动清理过期缓存，防止过期缓存长时间未读取而滞留在内存中。
@@ -29,12 +29,12 @@ object JwtUtils {
         schedulePrune(TimeUnit.HOURS.toMillis(1))
     }
 
-    fun newJwt(user: DefaultUser, periodDays: Int = 7): String = JWT.create().run {
-        setKey(key.toByteArray())
+    fun newJwt(user: DefaultUser, timeoutDays: Int = 7): String = JWT.create().run {
+        setKey(securityProperties.jwt.key.toByteArray())
         val payload = mapOf("user" to BeanUtil.beanToMap(user))
         addPayloads(payload)
         val now = DateTime.now()
-        val expireAt = now.offsetNew(DateField.DAY_OF_YEAR, periodDays)
+        val expireAt = now.offsetNew(DateField.DAY_OF_YEAR, timeoutDays)
         setIssuedAt(now)
         setNotBefore(now)
         setExpiresAt(expireAt)
@@ -44,7 +44,7 @@ object JwtUtils {
     }
     
     fun parseAvaliableJwt(token: String): JWT = JWT(token).apply {
-        setKey(key.toByteArray())
+        setKey(securityProperties.jwt.key.toByteArray())
         if(!validate(0) && tokenCache.containsKey(cacheKey)) {
             throw InvalidCookieException("JWT无效或已过期")
         }
@@ -53,6 +53,19 @@ object JwtUtils {
     fun cancelJwt() {
         val jwt = SecurityContextHolder.getContext().authentication.credentials as JWT
         tokenCache.remove(jwt.cacheKey)
+    }
+
+    fun newJwtAuthenticationConverter(
+        authoritiesClaimName: String = "authorities", authorityPrefix: String = ""
+    ): JwtAuthenticationConverter {
+        val authoritiesConverter = JwtGrantedAuthoritiesConverter().apply {
+            setAuthoritiesClaimName(authoritiesClaimName)
+            setAuthorityPrefix(authorityPrefix)
+        }
+        val authenticationConverter = JwtAuthenticationConverter().apply {
+            setJwtGrantedAuthoritiesConverter(authoritiesConverter)
+        }
+        return authenticationConverter
     }
 }
 

@@ -1,8 +1,8 @@
 package de.honoka.sdk.spring.starter.web
 
 import cn.hutool.core.exceptions.ExceptionUtil
-import de.honoka.sdk.util.kotlin.lang.isAny
-import de.honoka.sdk.util.kotlin.lang.log
+import de.honoka.sdk.util.kotlin.various.isAny
+import de.honoka.sdk.util.kotlin.various.log
 import de.honoka.sdk.util.web.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -20,7 +20,7 @@ class GlobalExceptionHandler {
         MethodArgumentNotValidException::class,
         NoResourceFoundException::class
     )
-    
+
     private fun handleDefault(
         t: Throwable,
         request: HttpServletRequest,

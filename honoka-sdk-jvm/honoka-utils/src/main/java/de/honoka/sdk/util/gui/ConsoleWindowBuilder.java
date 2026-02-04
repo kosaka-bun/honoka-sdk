@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.gui;
 
-import de.honoka.sdk.util.lang.ThrowsRunnable;
+import de.honoka.sdk.util.various.ThrowsRunnable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,9 +12,9 @@ import java.net.URL;
 /**
  * ConsoleWindow初始化时的默认参数
  */
-@Getter
-@Setter
 @Accessors(chain = true)
+@Setter
+@Getter
 public class ConsoleWindowBuilder {
 
     private String windowName = "Untitled";
