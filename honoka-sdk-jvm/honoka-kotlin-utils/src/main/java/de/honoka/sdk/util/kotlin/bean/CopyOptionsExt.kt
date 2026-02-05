@@ -1,17 +1,24 @@
 package de.honoka.sdk.util.kotlin.bean
 
 import cn.hutool.core.bean.copier.CopyOptions
+import cn.hutool.core.convert.TypeConverter
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 
+@Suppress("PROPERTY_HIDES_JAVA_FIELD")
 class CopyOptionsExt<T : Any>(internal val source: Any, val target: T) : CopyOptions() {
 
-    @Suppress("PROPERTY_HIDES_JAVA_FIELD")
     internal var ignoreNullValue: Boolean
         get() = super.ignoreNullValue
         set(value) {
-            setIgnoreNullValue(value)
+            super.ignoreNullValue = value
+        }
+
+    internal var converter: TypeConverter
+        get() = super.converter
+        set(value) {
+            super.converter = value
         }
 
     @PublishedApi
@@ -19,9 +26,10 @@ class CopyOptionsExt<T : Any>(internal val source: Any, val target: T) : CopyOpt
 
     private val ignoredPropNames = HashSet<String>()
 
-    var convertDifferentTypes = false
+    var convertDifferentTypes = true
 
     init {
+        ignoreNullValue = true
         initDifferentTypePropNames()
     }
 

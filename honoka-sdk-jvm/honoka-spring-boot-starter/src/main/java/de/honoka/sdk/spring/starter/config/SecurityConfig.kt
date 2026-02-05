@@ -1,9 +1,11 @@
 package de.honoka.sdk.spring.starter.config
 
+import de.honoka.sdk.spring.starter.config.SecurityProperties.Authority
 import de.honoka.sdk.spring.starter.config.SecurityProperties.Jwt
 import de.honoka.sdk.spring.starter.security.DefaultAccessDeniedHandler
 import de.honoka.sdk.spring.starter.security.DefaultAuthenticationEntryPoint
 import de.honoka.sdk.spring.starter.security.DefaultAuthorizationFilter
+import de.honoka.sdk.spring.starter.security.hasWildcardAuthority
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -18,7 +20,6 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.intercept.AuthorizationFilter
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
 
 @EnableMethodSecurity
 @EnableWebSecurity
@@ -39,7 +40,16 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
     
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http.run {
-        val whiteList = securityProperties.whiteList + "/error"
+        authorizeHttpRequests {
+            val whiteList = securityProperties.whiteList + "/error"
+            it.requestMatchers(*whiteList.toTypedArray()).permitAll()
+            securityProperties.authorities.forEach { e ->
+                it.requestMatchers(*e.paths.toTypedArray()).hasWildcardAuthority(e.name!!)
+            }
+            it.anyRequest().authenticated()
+        }
+        //添加能够识别自定义登录态，并将其放入SecurityContextHolder中的处理器
+        addFilterBefore(DefaultAuthorizationFilter, AuthorizationFilter::class.java)
         csrf {
             /*
              * CSRF攻击防护仅在由服务端从Cookie中取得token时有意义，若服务端不从请求方提供的Cookie中
@@ -50,8 +60,6 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
              */
             it.disable()
         }
-        //添加能够识别自定义登录态，并将其放入SecurityContextHolder中的处理器
-        addFilterBefore(DefaultAuthorizationFilter, AuthorizationFilter::class.java)
         logout {
             it.disable()
         }
@@ -64,13 +72,6 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
              */
             it.authenticationEntryPoint(DefaultAuthenticationEntryPoint)
             it.accessDeniedHandler(DefaultAccessDeniedHandler)
-        }
-        authorizeHttpRequests {
-            val whiteListMatchers = whiteList.map { s ->
-                PathPatternRequestMatcher.withDefaults().matcher(s)
-            }
-            it.requestMatchers(*whiteListMatchers.toTypedArray()).permitAll()
-            it.anyRequest().authenticated()
         }
         build()
     }
@@ -97,6 +98,8 @@ data class SecurityProperties(
     var enabled: Boolean = false,
     
     var whiteList: List<String> = listOf(),
+
+    var authorities: List<Authority> = listOf(),
     
     var jwt: Jwt = Jwt()
 ) {
@@ -105,6 +108,13 @@ data class SecurityProperties(
 
         const val PREFIX = "${WebProperties.PREFIX}.security"
     }
+
+    data class Authority(
+
+        var name: String? = null,
+
+        var paths: List<String> = listOf()
+    )
 
     data class Jwt(
         
@@ -120,6 +130,8 @@ data class WebFluxSecurityProperties(
     var enabled: Boolean = false,
 
     var whiteList: List<String> = listOf(),
+
+    var authorities: List<Authority> = listOf(),
 
     @NestedConfigurationProperty
     var jwt: Jwt = Jwt()

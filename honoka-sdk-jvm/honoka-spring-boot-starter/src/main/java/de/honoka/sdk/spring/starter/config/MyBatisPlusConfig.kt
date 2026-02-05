@@ -8,9 +8,14 @@ import de.honoka.sdk.util.kotlin.various.log
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.*
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
+import org.springframework.transaction.annotation.EnableTransactionManagement
+import org.springframework.transaction.annotation.RollbackOn
 
-@Import(TransactionConfig::class)
+@EnableTransactionManagement(rollbackOn = RollbackOn.ALL_EXCEPTIONS)
 @ComponentScan(
     "de.honoka.sdk.spring.starter.mybatis",
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class

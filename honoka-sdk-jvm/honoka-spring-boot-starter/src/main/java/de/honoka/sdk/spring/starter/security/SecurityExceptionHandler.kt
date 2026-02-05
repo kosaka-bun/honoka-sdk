@@ -2,8 +2,8 @@ package de.honoka.sdk.spring.starter.security
 
 import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.json.JSONObject
+import de.honoka.sdk.spring.starter.various.toApiResponse
 import de.honoka.sdk.spring.starter.web.canAcceptJson
-import de.honoka.sdk.util.web.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
@@ -88,14 +88,10 @@ private fun respondError(
     if(!request.canAcceptJson()) return
     response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
     response.outputStream.writer(Charsets.UTF_8).use {
-        val apiResponse = ApiResponse.of<JSONObject>().also { ar ->
-            ar.code = status.value()
-            ar.success = false
-            ar.msg = msg
-            ar.data = JSONObject().also { jo ->
-                jo["exception"] = ExceptionUtil.getMessage(exception)
-            }
+        val json = JSONObject().also { jo ->
+            jo["exception"] = ExceptionUtil.getMessage(exception)
         }
+        val apiResponse = json.toApiResponse(msg, false, status.value())
         it.write(apiResponse.toJsonString())
     }
 }

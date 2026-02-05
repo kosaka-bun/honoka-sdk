@@ -3,8 +3,8 @@ package de.honoka.sdk.spring.starter.security.webflux
 import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.json.JSONObject
 import de.honoka.sdk.spring.starter.security.SecurityExceptionHandler
+import de.honoka.sdk.spring.starter.various.toApiResponse
 import de.honoka.sdk.spring.starter.web.webflux.canAcceptJson
-import de.honoka.sdk.util.web.ApiResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -44,14 +44,10 @@ private fun respondError(
         return response.setComplete()
     }
     response.headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-    val apiResponse = ApiResponse.of<JSONObject>().also { ar ->
-        ar.code = status.value()
-        ar.success = false
-        ar.msg = msg
-        ar.data = JSONObject().also { jo ->
-            jo["exception"] = ExceptionUtil.getMessage(exception)
-        }
+    val json = JSONObject().also { jo ->
+        jo["exception"] = ExceptionUtil.getMessage(exception)
     }
+    val apiResponse = json.toApiResponse(msg, false, status.value())
     val data = response.bufferFactory().wrap(apiResponse.toJsonString().toByteArray())
     return response.writeWith(Mono.just(data))
 }
