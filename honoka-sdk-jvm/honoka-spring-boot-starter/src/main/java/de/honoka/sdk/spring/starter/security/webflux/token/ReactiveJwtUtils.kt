@@ -4,10 +4,14 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtGrantedAuthoritiesConverterAdapter
 
-object JwtReactiveUtils {
+object ReactiveJwtUtils {
 
-    fun newJwtAuthenticationConverter(
-        authoritiesClaimName: String = "authorities", authorityPrefix: String = ""
+    val authenticationConverter by lazy {
+        newAuthenticationConverter("authorities")
+    }
+
+    fun newAuthenticationConverter(
+        authoritiesClaimName: String, authorityPrefix: String = ""
     ): ReactiveJwtAuthenticationConverter {
         val authoritiesConverter = JwtGrantedAuthoritiesConverter().apply {
             setAuthoritiesClaimName(authoritiesClaimName)

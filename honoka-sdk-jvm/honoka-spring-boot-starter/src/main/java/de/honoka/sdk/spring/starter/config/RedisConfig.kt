@@ -2,7 +2,6 @@ package de.honoka.sdk.spring.starter.config
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
     ],
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
-@EnableConfigurationProperties(RedisProperties::class)
 @ConditionalOnProperty(prefix = RedisProperties.PREFIX, name = ["enabled"])
 @Configuration
 class RedisConfig
@@ -27,7 +25,6 @@ class RedisConfig
     "de.honoka.sdk.spring.starter.redis.redisson",
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
-@EnableConfigurationProperties(RedissonProperties::class)
 @ConditionalOnProperty(prefix = RedissonProperties.PREFIX, name = ["enabled"])
 @Configuration
 class RedissonConfig

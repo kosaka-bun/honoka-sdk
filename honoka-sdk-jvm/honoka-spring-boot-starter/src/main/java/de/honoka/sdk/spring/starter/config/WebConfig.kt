@@ -2,7 +2,6 @@ package de.honoka.sdk.spring.starter.config
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.NestedConfigurationProperty
 import org.springframework.context.annotation.*
 import org.springframework.web.cors.CorsConfiguration
@@ -21,7 +20,6 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource as 
     ],
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
-@EnableConfigurationProperties(WebProperties::class)
 @ConditionalOnProperty(
     prefix = WebFluxProperties.PREFIX, name = ["enabled"], havingValue = "false", matchIfMissing = true
 )
@@ -44,7 +42,6 @@ class WebConfig(private val webProperties: WebProperties) {
     "de.honoka.sdk.spring.starter.web.webflux",
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
-@EnableConfigurationProperties(WebFluxProperties::class)
 @ConditionalOnProperty(prefix = WebFluxProperties.PREFIX, name = ["enabled"])
 @Configuration
 class WebFluxConfig(private val webFluxProperties: WebFluxProperties) {

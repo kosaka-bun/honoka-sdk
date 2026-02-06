@@ -59,3 +59,7 @@ fun String?.findOne(@Language("RegExp") regex: String): String? = find(regex).fi
 fun String.trimAllLines(): String {
     return trim().lineSequence().map { it.trim() }.joinToString("\n")
 }
+
+fun String?.isBlank(): Boolean = (this as CharSequence?)?.isBlank() != false
+
+fun String?.isNotBlank(): Boolean = !isBlank()

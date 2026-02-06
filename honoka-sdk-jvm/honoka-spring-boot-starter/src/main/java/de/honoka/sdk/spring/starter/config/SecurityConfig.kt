@@ -6,9 +6,9 @@ import de.honoka.sdk.spring.starter.security.DefaultAccessDeniedHandler
 import de.honoka.sdk.spring.starter.security.DefaultAuthenticationEntryPoint
 import de.honoka.sdk.spring.starter.security.DefaultAuthorizationFilter
 import de.honoka.sdk.spring.starter.security.hasWildcardAuthority
+import de.honoka.sdk.util.kotlin.text.isNotBlank
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.NestedConfigurationProperty
 import org.springframework.context.annotation.*
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -33,7 +33,6 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter
     ],
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
-@EnableConfigurationProperties(SecurityProperties::class)
 @ConditionalOnProperty(prefix = SecurityProperties.PREFIX, name = ["enabled"])
 @Configuration
 class SecurityConfig(private val securityProperties: SecurityProperties) {
@@ -44,7 +43,16 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
             val whiteList = securityProperties.whiteList + "/error"
             it.requestMatchers(*whiteList.toTypedArray()).permitAll()
             securityProperties.authorities.forEach { e ->
-                it.requestMatchers(*e.paths.toTypedArray()).hasWildcardAuthority(e.name!!)
+                if(e.role.isNotBlank() && e.permission.isNotBlank()) {
+                    error("Cannot specify both role and permission.")
+                }
+                it.requestMatchers(*e.paths.toTypedArray()).run {
+                    when {
+                        e.role.isNotBlank() -> hasRole(e.role)
+                        e.permission.isNotBlank() -> hasWildcardAuthority(e.permission!!)
+                        else -> error("Must specify either role or permission.")
+                    }
+                }
             }
             it.anyRequest().authenticated()
         }
@@ -87,7 +95,6 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
     "de.honoka.sdk.spring.starter.security.webflux",
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
-@EnableConfigurationProperties(WebFluxSecurityProperties::class)
 @ConditionalOnProperty(prefix = WebFluxSecurityProperties.PREFIX, name = ["enabled"])
 @Configuration
 class WebFluxSecurityConfig
@@ -111,7 +118,9 @@ data class SecurityProperties(
 
     data class Authority(
 
-        var name: String? = null,
+        var role: String? = null,
+
+        var permission: String? = null,
 
         var paths: List<String> = listOf()
     )

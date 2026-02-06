@@ -25,6 +25,21 @@ class HttpServer(private val options: Options) {
         var customRoutings: List<RoutingDefinition> = listOf()
     )
 
+    companion object {
+
+        internal val threadPool = ThreadPoolUtils.newEagerThreadPool(
+            5, 30, 60, TimeUnit.SECONDS
+        )
+
+        internal val coroutineDispatcher = threadPool.asCoroutineDispatcher()
+
+        internal const val IMAGE_URL_PREFIX = "/android/img"
+
+        internal val staticResourcesPrefixes = listOf(
+            "/assets", "/font", "/img", "/js", "/favicon.ico"
+        )
+    }
+
     private var rawServer: EmbeddedServer<*, *>? = null
 
     var port: Int = 0
@@ -63,7 +78,7 @@ object DefaultHttpServer {
     val active: Boolean
         get() = serverOrNull?.active == true
 
-    internal val firstTryPortFile: File = run {
+    private val firstTryPortFile: File = run {
         File("${global.application.filesDir}/httpServer/port.txt").apply {
             if(exists()) return@apply
             FileUtil.touch(this)
@@ -71,21 +86,9 @@ object DefaultHttpServer {
         }
     }
 
-    internal val firstTryPort: Int = firstTryPortFile.readText().toInt()
+    private val firstTryPort: Int = firstTryPortFile.readText().toInt()
 
     var options: HttpServer.Options = HttpServer.Options(firstTryPort)
-
-    internal val threadPool = ThreadPoolUtils.newEagerThreadPool(
-        5, 30, 60, TimeUnit.SECONDS
-    )
-
-    internal val coroutineDispatcher = threadPool.asCoroutineDispatcher()
-
-    internal const val IMAGE_URL_PREFIX = "/android/img"
-
-    internal val staticResourcesPrefixes = arrayOf(
-        "/assets", "/font", "/img", "/js", "/favicon.ico"
-    )
 
     @Synchronized
     fun start() {
@@ -117,7 +120,7 @@ object DefaultHttpServer {
 
     fun getUrlByPath(path: String): String = "http://localhost:${server.port}$path"
 
-    fun getImageUrlByPath(path: String): String = getUrlByPath("$IMAGE_URL_PREFIX$path")
+    fun getImageUrlByPath(path: String): String = getUrlByPath("${HttpServer.IMAGE_URL_PREFIX}$path")
 
     fun getApiUrlByPath(path: String): String = getUrlByPath("/api$path")
 }

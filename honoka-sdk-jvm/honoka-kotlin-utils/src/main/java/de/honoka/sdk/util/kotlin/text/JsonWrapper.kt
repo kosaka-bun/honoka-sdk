@@ -6,7 +6,8 @@ import cn.hutool.json.JSONObject
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
-class JsonWrapper internal constructor(private val json: JSON) {
+@JvmInline
+value class JsonWrapper internal constructor(private val json: JSON) {
     
     operator fun get(path: String): JSONObject = getObj(path)
     

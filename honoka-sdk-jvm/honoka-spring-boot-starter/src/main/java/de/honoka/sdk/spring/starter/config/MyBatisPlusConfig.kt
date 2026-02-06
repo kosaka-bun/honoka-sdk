@@ -7,7 +7,6 @@ import de.honoka.sdk.spring.starter.core.SpringPropertiesHolder
 import de.honoka.sdk.util.kotlin.various.log
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.RollbackOn
     "de.honoka.sdk.spring.starter.mybatis",
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class
 )
-@EnableConfigurationProperties(MyBatisPlusProperties::class)
 @ConditionalOnProperty(prefix = MyBatisPlusProperties.PREFIX, name = ["enabled"])
 @Configuration
 class MyBatisPlusConfig(

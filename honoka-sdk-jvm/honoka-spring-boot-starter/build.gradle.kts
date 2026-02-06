@@ -13,6 +13,7 @@ honoka.basic {
 dependencies {
     api("org.springframework.boot:spring-boot-starter")
     api("org.springframework.boot:spring-boot-starter-aop")
+    api("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
     compileOnly(libs.mybatis.plus.spring.boot.starter)
