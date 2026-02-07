@@ -3,7 +3,7 @@ package de.honoka.sdk.util.android.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import de.honoka.sdk.util.android.basic.global
+import de.honoka.sdk.util.android.various.global
 import java.util.*
 import kotlin.reflect.KClass
 

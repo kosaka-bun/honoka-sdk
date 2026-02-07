@@ -67,7 +67,7 @@ Object invokeMethod(Object obj, String methodName, Class<?>[] parameterType, Obj
 
 ## 功能展示（Android）
 
-### [BaseContentProvider](./honoka-sdk-android/honoka-android-utils/src/main/java/de/honoka/sdk/util/android/basic/ContentProvider.kt)
+### [BaseContentProvider](./honoka-sdk-android/honoka-android-utils/src/main/java/de/honoka/sdk/util/android/various/ContentProvider.kt)
 能基于`call`方法，实现与其他应用通过JSON数据进行通信的`ContentProvider`。继承该类时，仅需实现一个方法：
 ```kotlin
 //JSON类来自于hutool，是JSONObject和JSONArray的父类
@@ -147,7 +147,7 @@ class WebActivity : AbstractWebActivity() {
 
 有关`AsyncJavascriptInterface`方法的实现原理，请参考源代码。
 
-### [HttpServer](./honoka-sdk-android/honoka-android-utils/src/main/java/de/honoka/sdk/util/android/server/HttpServer.kt)
+### [HttpServer](./honoka-sdk-android/honoka-android-utils/src/main/java/de/honoka/sdk/util/android/web/HttpServer.kt)
 基于Ktor框架实现的HTTP服务，能使应用具有监听端口，对外提供HTTP服务的功能。
 
 要使应用启动一个HTTP服务，只需直接调用`HttpServer.createInstance()`即可。`HttpServer`所监听的默认端口为`38081`，服务启动前将会检测端口占用情况，若端口被占用，则自动依次按端口号向下寻找可用的端口号，最多寻找10个端口号。若希望更改默认端口号，仅需在调用`createInstance()`前，修改`HttpServerVariables.serverPort`的值即可。

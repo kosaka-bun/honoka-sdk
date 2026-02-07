@@ -1,27 +1,10 @@
-package de.honoka.sdk.util.android.server.ktor
+package de.honoka.sdk.util.android.web.server.ktor
 
-import de.honoka.sdk.util.android.server.respondJson
 import de.honoka.sdk.util.kotlin.reflect.callSuspendAdaptive
 import de.honoka.sdk.util.kotlin.reflect.findAnyAnnotation
 import de.honoka.sdk.util.kotlin.reflect.getString
 import io.ktor.server.routing.*
 import kotlin.reflect.KFunction
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS)
-annotation class RestController
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS)
-annotation class RequestMapping(val prefix: String)
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION)
-annotation class GetMapping(val path: String)
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION)
-annotation class PostMapping(val path: String)
 
 private val handlerAnnotations = arrayOf(
     GetMapping::class,

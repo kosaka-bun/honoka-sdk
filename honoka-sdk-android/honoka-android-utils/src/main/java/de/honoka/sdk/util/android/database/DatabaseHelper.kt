@@ -6,7 +6,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
-import de.honoka.sdk.util.android.basic.global
+import de.honoka.sdk.util.android.various.global
 
 internal class DatabaseHelper(
     private val dao: BaseDao<*>, databaseName: String, databaseVersion: Int

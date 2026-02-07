@@ -9,11 +9,25 @@ import android.util.Log
 import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.core.util.StrUtil
 import cn.hutool.json.JSON
-import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
-import de.honoka.sdk.util.android.basic.initGlobalComponents
+import de.honoka.sdk.util.android.various.initGlobalComponents
+import de.honoka.sdk.util.kotlin.text.toJsonString
+import de.honoka.sdk.util.kotlin.various.ExceptionDetails
+import de.honoka.sdk.util.kotlin.various.messageWithName
 
 abstract class BaseContentProvider : ContentProvider() {
+
+    data class CallResponse(
+
+        var result: Any? = null,
+
+        var error: ExceptionDetails? = null
+    )
+
+    companion object {
+
+        const val CALL_RESPONSE_KEY = "response"
+    }
 
     override fun onCreate(): Boolean {
         context!!.initGlobalComponents()
@@ -45,20 +59,19 @@ abstract class BaseContentProvider : ContentProvider() {
             }
         } catch(t: Throwable) {
             ExceptionUtil.getRootCause(t).also {
-                Log.e(javaClass.simpleName, "", it)
+                Log.e(this::class.simpleName, "", it)
             }
         }
-        val json = JSONObject().also {
-            if(result !is Throwable) {
-                it["result"] = result
-            } else {
-                it["error"] = JSONObject().also { jo ->
-                    jo["info"] = ExceptionUtil.getMessage(result)
-                    jo["stackTrace"] = ExceptionUtil.stacktraceToString(result)
+        val response = CallResponse().apply {
+            if(result is Throwable) {
+                error = ExceptionDetails(result).apply {
+                    message = result.messageWithName
                 }
+            } else {
+                this.result = result
             }
         }
-        bundle.putString("json", json.toString())
+        bundle.putString(CALL_RESPONSE_KEY, response.toJsonString())
         return bundle
     }
 

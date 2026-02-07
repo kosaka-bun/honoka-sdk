@@ -10,10 +10,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.starProjectedType
 
-@Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.CLASS)
-annotation class AllOpen
-
 val Date.weekdayNum: Int
     get() {
         val dayOfWeek = Calendar.getInstance().run {

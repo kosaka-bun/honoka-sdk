@@ -1,27 +1,27 @@
-package de.honoka.sdk.util.android.basic
+package de.honoka.sdk.util.android.provider
 
 import android.content.ContentResolver
 import androidx.core.net.toUri
-import cn.hutool.json.JSONUtil
-import de.honoka.sdk.util.kotlin.various.RemoteInvokeException
+import de.honoka.sdk.util.kotlin.text.toJsonString
+import de.honoka.sdk.util.kotlin.text.toJsonWrapper
+import de.honoka.sdk.util.kotlin.various.DetailedException
 import de.honoka.sdk.util.kotlin.various.tryCastOrNull
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
+private class CallFailedException : DetailedException()
+
 fun ContentResolver.call(authority: String, method: String? = null, args: Any? = null): Any? {
     val uri = "content://$authority".toUri()
-    val argsStr = args?.let { JSONUtil.toJsonStr(args) }
-    val result = call(uri, method ?: "", argsStr, null)?.let {
-        it.getString("json").let { jsonStr ->
-            val json = JSONUtil.parseObj(jsonStr)
-            json.getJSONObject("error")?.let { error ->
-                throw RemoteInvokeException(
-                    error.getStr("info"),
-                    error.getStr("stackTrace")
-                )
+    val result = call(uri, method ?: "", args?.toJsonString(), null)?.let {
+        val response = it.getString(BaseContentProvider.CALL_RESPONSE_KEY)!!.toJsonWrapper()
+            .toBean<BaseContentProvider.CallResponse>()
+        response.error?.let { e ->
+            throw CallFailedException().apply {
+                details = e
             }
-            json["result"]
         }
+        response.result
     }
     return result
 }

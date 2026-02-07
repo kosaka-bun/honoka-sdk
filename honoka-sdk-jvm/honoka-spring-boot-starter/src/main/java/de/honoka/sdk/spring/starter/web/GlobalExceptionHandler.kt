@@ -1,6 +1,8 @@
 package de.honoka.sdk.spring.starter.web
 
 import cn.hutool.core.exceptions.ExceptionUtil
+import de.honoka.sdk.spring.starter.config.WebProperties
+import de.honoka.sdk.util.kotlin.various.ExceptionDetails
 import de.honoka.sdk.util.kotlin.various.isAny
 import de.honoka.sdk.util.kotlin.various.log
 import de.honoka.sdk.util.web.ApiResponse
@@ -14,7 +16,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException
 import kotlin.reflect.KClass
 
 @RestControllerAdvice
-class GlobalExceptionHandler {
+class GlobalExceptionHandler(private val webProperties: WebProperties) {
     
     private val disablePrintLogExceptionTypes = listOf<KClass<out Throwable>>(
         MethodArgumentNotValidException::class,
@@ -37,7 +39,11 @@ class GlobalExceptionHandler {
         } else {
             ExceptionUtil.getMessage(t)
         }
-        return ApiResponse.fail(msg)
+        val result = ApiResponse.fail(msg)
+        if(webProperties.returnStackTraceOnError) {
+            result.data = ExceptionDetails(t)
+        }
+        return result
     }
 
     @ExceptionHandler

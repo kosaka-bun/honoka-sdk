@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
 @JvmInline
-value class JsonWrapper internal constructor(private val json: JSON) {
+value class JsonWrapper internal constructor(@PublishedApi internal val json: JSON) {
     
     operator fun get(path: String): JSONObject = getObj(path)
     
@@ -57,4 +57,6 @@ value class JsonWrapper internal constructor(private val json: JSON) {
     override fun toString(): String = json.toString()
 
     fun <T : Any> toBean(clazz: KClass<T>): T = json.toBean(clazz.java)
+
+    inline fun <reified T : Any> toBean(): T = toBean(T::class)
 }

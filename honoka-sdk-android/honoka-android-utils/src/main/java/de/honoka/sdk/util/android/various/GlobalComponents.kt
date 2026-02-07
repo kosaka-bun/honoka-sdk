@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.android.basic
+package de.honoka.sdk.util.android.various
 
 import android.app.Application
 import android.app.Service

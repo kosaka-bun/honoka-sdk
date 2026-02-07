@@ -2,6 +2,7 @@
 
 package de.honoka.sdk.util.kotlin.reflect
 
+import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.allSuperclasses
@@ -11,6 +12,10 @@ import kotlin.reflect.jvm.isAccessible
 
 fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean =
     classes.firstOrNull { isSubclassOf(it) } != null
+
+fun Class<*>.isSubclassOf(clazz: Class<*>): Boolean = clazz.isAssignableFrom(this)
+
+fun Class<*>.isSubclassOf(clazz: KClass<*>): Boolean = isSubclassOf(clazz.java)
 
 fun <T : Any> KClass<T>.setInstanceProp(receiver: T, name: String, value: Any?) {
     val prop = declaredMemberProperties.firstOrNull {
@@ -23,4 +28,9 @@ fun <T : Any> KClass<T>.setInstanceProp(receiver: T, name: String, value: Any?) 
         isAccessible = true
         set(receiver, value)
     }
+}
+
+fun <T : KCallable<*>> T.access(): T {
+    isAccessible = true
+    return this
 }

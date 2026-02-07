@@ -125,3 +125,10 @@ abstract class BaseDao<T : Any>(internal val entityClass: KClass<T>) {
         entityCache.remove(id)
     }
 }
+
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class Table(
+
+    val version: Int
+)

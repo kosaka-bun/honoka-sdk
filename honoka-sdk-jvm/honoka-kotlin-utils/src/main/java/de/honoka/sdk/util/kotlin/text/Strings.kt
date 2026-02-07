@@ -60,6 +60,4 @@ fun String.trimAllLines(): String {
     return trim().lineSequence().map { it.trim() }.joinToString("\n")
 }
 
-fun String?.isBlank(): Boolean = (this as CharSequence?)?.isBlank() != false
-
-fun String?.isNotBlank(): Boolean = !isBlank()
+fun String?.isNotBlank(): Boolean = !isNullOrBlank()

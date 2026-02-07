@@ -1,8 +1,9 @@
-package de.honoka.sdk.util.android.server
+package de.honoka.sdk.util.android.web.server
 
 import cn.hutool.core.io.FileUtil
-import de.honoka.sdk.util.android.basic.global
-import de.honoka.sdk.util.android.server.ktor.KtorModule
+import de.honoka.sdk.util.android.various.global
+import de.honoka.sdk.util.android.web.server.ktor.KtorModule
+import de.honoka.sdk.util.android.web.server.ktor.RoutingDefinition
 import de.honoka.sdk.util.concurrent.ThreadPoolUtils
 import de.honoka.sdk.util.kotlin.net.SocketUtils
 import io.ktor.server.cio.*

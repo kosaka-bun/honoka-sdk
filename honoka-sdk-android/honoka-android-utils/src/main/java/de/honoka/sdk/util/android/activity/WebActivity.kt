@@ -14,11 +14,10 @@ import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import de.honoka.sdk.util.android.R
-import de.honoka.sdk.util.android.basic.getDefaultExtras
-import de.honoka.sdk.util.android.basic.launchOnUi
-import de.honoka.sdk.util.android.basic.toast
-import de.honoka.sdk.util.android.jsinterface.JsInterfaceRegistrar
-import de.honoka.sdk.util.android.server.DefaultHttpServer
+import de.honoka.sdk.util.android.various.launchOnUi
+import de.honoka.sdk.util.android.various.toast
+import de.honoka.sdk.util.android.web.server.DefaultHttpServer
+import de.honoka.sdk.util.android.web.webview.JsInterfaceRegistrar
 import kotlinx.coroutines.delay
 import org.intellij.lang.annotations.Language
 import kotlin.system.exitProcess

@@ -2,11 +2,15 @@ package de.honoka.sdk.spring.starter.config
 
 import de.honoka.sdk.spring.starter.config.SecurityProperties.Authority
 import de.honoka.sdk.spring.starter.config.SecurityProperties.Jwt
+import de.honoka.sdk.spring.starter.core.SimpleValidator
 import de.honoka.sdk.spring.starter.security.DefaultAccessDeniedHandler
 import de.honoka.sdk.spring.starter.security.DefaultAuthenticationEntryPoint
 import de.honoka.sdk.spring.starter.security.DefaultAuthorizationFilter
 import de.honoka.sdk.spring.starter.security.hasWildcardAuthority
 import de.honoka.sdk.util.kotlin.text.isNotBlank
+import jakarta.validation.Constraint
+import jakarta.validation.Payload
+import jakarta.validation.Valid
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.NestedConfigurationProperty
@@ -20,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.intercept.AuthorizationFilter
+import org.springframework.validation.annotation.Validated
+import kotlin.reflect.KClass
 
 @EnableMethodSecurity
 @EnableWebSecurity
@@ -43,14 +49,10 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
             val whiteList = securityProperties.whiteList + "/error"
             it.requestMatchers(*whiteList.toTypedArray()).permitAll()
             securityProperties.authorities.forEach { e ->
-                if(e.role.isNotBlank() && e.permission.isNotBlank()) {
-                    error("Cannot specify both role and permission.")
-                }
                 it.requestMatchers(*e.paths.toTypedArray()).run {
                     when {
                         e.role.isNotBlank() -> hasRole(e.role)
                         e.permission.isNotBlank() -> hasWildcardAuthority(e.permission!!)
-                        else -> error("Must specify either role or permission.")
                     }
                 }
             }
@@ -99,15 +101,17 @@ class SecurityConfig(private val securityProperties: SecurityProperties) {
 @Configuration
 class WebFluxSecurityConfig
 
+@Validated
 @ConfigurationProperties(SecurityProperties.PREFIX)
 data class SecurityProperties(
-    
+
     var enabled: Boolean = false,
-    
+
     var whiteList: List<String> = listOf(),
 
+    @field:Valid
     var authorities: List<Authority> = listOf(),
-    
+
     var jwt: Jwt = Jwt()
 ) {
 
@@ -116,6 +120,7 @@ data class SecurityProperties(
         const val PREFIX = "${WebProperties.PREFIX}.security"
     }
 
+    @AuthorityValidator.UseValidator
     data class Authority(
 
         var role: String? = null,
@@ -131,8 +136,39 @@ data class SecurityProperties(
 
         var tempName: String = "temp_access_token"
     )
+
+    private class AuthorityValidator : SimpleValidator<AuthorityValidator.UseValidator, Authority> {
+
+        @Constraint(validatedBy = [AuthorityValidator::class])
+        @Retention(AnnotationRetention.RUNTIME)
+        @Target(AnnotationTarget.CLASS)
+        annotation class UseValidator(
+
+            val message: String = "",
+
+            val groups: Array<KClass<*>> = [],
+
+            val payload: Array<KClass<out Payload>> = []
+        )
+
+        override fun Authority.isValid() {
+            if(role.isNotBlank() && permission.isNotBlank()) {
+                fail(
+                    "Cannot specify both role and permission.",
+                    ::role, ::permission
+                )
+            }
+            if(role.isNullOrBlank() && permission.isNullOrBlank()) {
+                fail(
+                    "Must specify either role or permission.",
+                    ::role, ::permission
+                )
+            }
+        }
+    }
 }
 
+@Validated
 @ConfigurationProperties(WebFluxSecurityProperties.PREFIX)
 data class WebFluxSecurityProperties(
 
@@ -140,6 +176,7 @@ data class WebFluxSecurityProperties(
 
     var whiteList: List<String> = listOf(),
 
+    @field:Valid
     var authorities: List<Authority> = listOf(),
 
     @NestedConfigurationProperty

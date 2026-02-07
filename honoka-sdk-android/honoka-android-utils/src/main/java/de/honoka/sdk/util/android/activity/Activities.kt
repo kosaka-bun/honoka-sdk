@@ -1,13 +1,10 @@
-package de.honoka.sdk.util.android.basic
+package de.honoka.sdk.util.android.activity
 
 import android.app.Activity
 import android.content.Intent
 import android.view.View
 import android.view.WindowManager
-import de.honoka.sdk.util.android.activity.AbstractWebActivity
-import de.honoka.sdk.util.android.activity.DefaultWebActivity
-import de.honoka.sdk.util.android.activity.WebActivityExtras
-import de.honoka.sdk.util.android.server.DefaultHttpServer
+import de.honoka.sdk.util.android.web.server.DefaultHttpServer
 import de.honoka.sdk.util.kotlin.text.toJsonString
 import de.honoka.sdk.util.kotlin.text.toJsonWrapper
 import kotlin.reflect.KClass

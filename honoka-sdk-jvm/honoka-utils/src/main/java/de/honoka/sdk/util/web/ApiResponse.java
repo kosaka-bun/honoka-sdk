@@ -35,11 +35,11 @@ public class ApiResponse<T> {
         return success(null, data);
     }
     
-    public static ApiResponse<?> success() {
+    public static ApiResponse<Object> success() {
         return success(null);
     }
     
-    public static ApiResponse<?> fail(int httpStatus, String msg) {
+    public static ApiResponse<Object> fail(int httpStatus, String msg) {
         return new ApiResponse<>()
             .setCode(httpStatus)
             .setSuccess(false)
@@ -47,7 +47,7 @@ public class ApiResponse<T> {
             .setData(null);
     }
     
-    public static ApiResponse<?> fail(String msg) {
+    public static ApiResponse<Object> fail(String msg) {
         return fail(HttpStatus.HTTP_INTERNAL_ERROR, msg);
     }
     

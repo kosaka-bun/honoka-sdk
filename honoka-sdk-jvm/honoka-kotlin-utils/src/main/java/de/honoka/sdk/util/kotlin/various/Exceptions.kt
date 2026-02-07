@@ -1,14 +1,32 @@
 package de.honoka.sdk.util.kotlin.various
 
+import cn.hutool.core.exceptions.ExceptionUtil
 import de.honoka.sdk.util.kotlin.reflect.isSubclassOfAny
 import kotlin.reflect.KClass
 
-class RemoteInvokeException(
+data class ExceptionDetails(
 
-    override val message: String,
+    var message: String? = null,
 
-    val stackTraceText: String
-) : RuntimeException(message)
+    var stackTrace: List<String>? = null
+) {
+
+    constructor(t: Throwable) : this(t.message) {
+        val charsToReplace = mapOf('\r' to "", '\t' to "", '\"' to "'")
+        stackTrace = ExceptionUtil.stacktraceToString(
+            t, 3000, charsToReplace
+        ).split('\n')
+    }
+}
+
+open class DetailedException(var details: ExceptionDetails? = null) : RuntimeException() {
+
+    override val message: String?
+        get() = details?.message
+}
+
+val Throwable.messageWithName: String
+    get() = "${this::class.qualifiedName}: $message"
 
 fun <T : Throwable> Throwable?.isAny(vararg types: KClass<out T>): Boolean =
     this?.let { it::class.isSubclassOfAny(*types) } ?: false

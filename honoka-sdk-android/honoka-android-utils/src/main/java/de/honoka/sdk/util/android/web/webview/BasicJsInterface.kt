@@ -1,10 +1,10 @@
-package de.honoka.sdk.util.android.jsinterface
+package de.honoka.sdk.util.android.web.webview
 
 import android.webkit.JavascriptInterface
 import de.honoka.sdk.util.android.activity.AbstractWebActivity
 import de.honoka.sdk.util.android.activity.WebActivityExtras
-import de.honoka.sdk.util.android.basic.startActivity
-import de.honoka.sdk.util.android.server.DefaultHttpServer
+import de.honoka.sdk.util.android.activity.startActivity
+import de.honoka.sdk.util.android.web.server.DefaultHttpServer
 
 internal class BasicJsInterface(private val webActivity: AbstractWebActivity) {
 

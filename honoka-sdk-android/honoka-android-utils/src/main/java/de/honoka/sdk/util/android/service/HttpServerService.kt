@@ -1,6 +1,6 @@
 package de.honoka.sdk.util.android.service
 
-import de.honoka.sdk.util.android.server.DefaultHttpServer
+import de.honoka.sdk.util.android.web.server.DefaultHttpServer
 
 /**
  * 仅用于启动和守护[DefaultHttpServer]的运行，停止或重启该服务不会连带停止或重启[DefaultHttpServer]。

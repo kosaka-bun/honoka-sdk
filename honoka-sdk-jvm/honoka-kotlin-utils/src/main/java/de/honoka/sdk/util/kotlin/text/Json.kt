@@ -30,3 +30,5 @@ inline fun JSONArray.forEachWrapper(block: (JsonWrapper) -> Unit) {
         block((it as JSON).wrapper())
     }
 }
+
+fun buildJsonObject(block: (JSONObject) -> Unit): JSONObject = JSONObject().also(block)

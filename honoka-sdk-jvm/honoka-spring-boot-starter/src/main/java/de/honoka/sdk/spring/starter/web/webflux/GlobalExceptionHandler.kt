@@ -1,6 +1,9 @@
 package de.honoka.sdk.spring.starter.web.webflux
 
 import cn.hutool.core.exceptions.ExceptionUtil
+import de.honoka.sdk.spring.starter.config.WebFluxProperties
+import de.honoka.sdk.spring.starter.core.springBean
+import de.honoka.sdk.util.kotlin.various.ExceptionDetails
 import de.honoka.sdk.util.kotlin.various.isAny
 import de.honoka.sdk.util.kotlin.various.log
 import de.honoka.sdk.util.web.ApiResponse
@@ -24,6 +27,8 @@ class GlobalExceptionHandler {
 
     companion object {
 
+        private val webFluxProperties by lazy { WebFluxProperties::class.springBean }
+
         private val disablePrintLogExceptionTypes = listOf<KClass<out Throwable>>(
             MethodArgumentNotValidException::class,
             ResponseStatusException::class
@@ -45,7 +50,11 @@ class GlobalExceptionHandler {
             } else {
                 ExceptionUtil.getMessage(t)
             }
-            ApiResponse.fail(msg)
+            val result = ApiResponse.fail(msg)
+            if(webFluxProperties.returnStackTraceOnError) {
+                result.data = ExceptionDetails(t)
+            }
+            result
         }
     }
 

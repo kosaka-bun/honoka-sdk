@@ -1,14 +1,12 @@
-package de.honoka.sdk.util.android.server.ktor
+package de.honoka.sdk.util.android.web.server.ktor
 
 import android.util.Log
 import android.webkit.MimeTypeMap
 import cn.hutool.core.exceptions.ExceptionUtil
 import cn.hutool.json.JSONObject
-import de.honoka.sdk.util.android.basic.global
-import de.honoka.sdk.util.android.jsinterface.JsInterfaceRegistrar
-import de.honoka.sdk.util.android.server.HttpServer
-import de.honoka.sdk.util.android.server.StatusPageHandler
-import de.honoka.sdk.util.android.server.respondJson
+import de.honoka.sdk.util.android.various.global
+import de.honoka.sdk.util.android.web.server.HttpServer
+import de.honoka.sdk.util.android.web.webview.JsInterfaceRegistrar
 import de.honoka.sdk.util.web.ApiResponse
 import io.ktor.http.*
 import io.ktor.server.application.*

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor
 import de.honoka.sdk.spring.starter.core.SpringPropertiesHolder
 import de.honoka.sdk.util.kotlin.various.log
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -38,6 +39,7 @@ class MyBatisPlusConfig(
     }
 }
 
+@ConditionalOnClass(DbType::class)
 @ConfigurationProperties(MyBatisPlusProperties.PREFIX)
 data class MyBatisPlusProperties(
     

@@ -62,6 +62,8 @@ data class WebProperties(
 
     var enabled: Boolean = true,
 
+    var returnStackTraceOnError: Boolean = false,
+
     var cors: Cors = Cors()
 ) {
 
@@ -104,6 +106,8 @@ data class WebProperties(
 data class WebFluxProperties(
 
     var enabled: Boolean = false,
+
+    var returnStackTraceOnError: Boolean = false,
 
     @NestedConfigurationProperty
     var cors: WebProperties.Cors = WebProperties.Cors(),

@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.android.basic
+package de.honoka.sdk.util.android.various
 
 import android.content.Context
 import android.webkit.WebView
