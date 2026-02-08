@@ -3,7 +3,7 @@ package de.honoka.sdk.spring.starter.security
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import de.honoka.sdk.spring.starter.config.SecurityProperties
-import de.honoka.sdk.spring.starter.core.springBean
+import de.honoka.sdk.spring.starter.core.springBeanLazy
 import de.honoka.sdk.spring.starter.security.token.JwtUtils
 import de.honoka.sdk.spring.starter.security.token.TempAuthenticationToken
 import de.honoka.sdk.spring.starter.security.token.TempTokenUtils
@@ -22,8 +22,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Suppress("MemberVisibilityCanBePrivate")
 object DefaultAuthorizationFilter : OncePerRequestFilter() {
     
-    private val securityProperties = SecurityProperties::class.springBean
-    
+    private val securityProperties by SecurityProperties::class.springBeanLazy
+
     override fun doFilterInternal(
         request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain
     ) {

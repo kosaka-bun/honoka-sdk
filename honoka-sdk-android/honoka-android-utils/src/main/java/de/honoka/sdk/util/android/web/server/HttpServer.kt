@@ -5,7 +5,7 @@ import de.honoka.sdk.util.android.various.global
 import de.honoka.sdk.util.android.web.server.ktor.KtorModule
 import de.honoka.sdk.util.android.web.server.ktor.RoutingDefinition
 import de.honoka.sdk.util.concurrent.ThreadPoolUtils
-import de.honoka.sdk.util.kotlin.net.SocketUtils
+import de.honoka.sdk.util.kotlin.various.SocketUtils
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import kotlinx.coroutines.asCoroutineDispatcher

@@ -2,6 +2,8 @@ package de.honoka.sdk.util.kotlin.various
 
 import cn.hutool.core.exceptions.ExceptionUtil
 import de.honoka.sdk.util.kotlin.reflect.isSubclassOfAny
+import de.honoka.sdk.util.kotlin.web.ApiResponse
+import kotlin.math.min
 import kotlin.reflect.KClass
 
 data class ExceptionDetails(
@@ -11,11 +13,23 @@ data class ExceptionDetails(
     var stackTrace: List<String>? = null
 ) {
 
-    constructor(t: Throwable) : this(t.message) {
-        val charsToReplace = mapOf('\r' to "", '\t' to "", '\"' to "'")
-        stackTrace = ExceptionUtil.stacktraceToString(
-            t, 3000, charsToReplace
-        ).split('\n')
+    constructor(t: Throwable) : this() {
+        val stackTraceLines = ExceptionUtil.stacktraceToString(
+            t, 3000, mapOf('\t' to "")
+        ).lines()
+        message = stackTraceLines[0]
+        stackTrace = stackTraceLines.subList(1, stackTraceLines.size)
+    }
+
+    fun toApiResponse(lineCount: Int? = null): ApiResponse<Any?> {
+        lineCount?.let {
+            stackTrace = stackTrace?.run {
+                subList(0, min(lineCount, size))
+            }
+        }
+        return ApiResponse.fail(message, this).apply {
+            message = null
+        }
     }
 }
 
@@ -27,6 +41,9 @@ open class DetailedException(var details: ExceptionDetails? = null) : RuntimeExc
 
 val Throwable.messageWithName: String
     get() = "${this::class.qualifiedName}: $message"
+
+val Throwable.details: ExceptionDetails
+    get() = ExceptionDetails(this)
 
 fun <T : Throwable> Throwable?.isAny(vararg types: KClass<out T>): Boolean =
     this?.let { it::class.isSubclassOfAny(*types) } ?: false

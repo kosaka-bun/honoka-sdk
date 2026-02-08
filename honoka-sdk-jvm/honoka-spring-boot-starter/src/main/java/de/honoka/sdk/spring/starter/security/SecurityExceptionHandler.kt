@@ -1,9 +1,12 @@
 package de.honoka.sdk.spring.starter.security
 
-import cn.hutool.core.exceptions.ExceptionUtil
-import cn.hutool.json.JSONObject
-import de.honoka.sdk.spring.starter.various.toApiResponse
+import de.honoka.sdk.spring.starter.config.WebProperties
+import de.honoka.sdk.spring.starter.core.springBeanLazy
 import de.honoka.sdk.spring.starter.web.canAcceptJson
+import de.honoka.sdk.util.kotlin.text.toJsonString
+import de.honoka.sdk.util.kotlin.various.ExceptionDetails
+import de.honoka.sdk.util.kotlin.various.details
+import de.honoka.sdk.util.kotlin.various.log
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
@@ -15,22 +18,39 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.access.ExceptionTranslationFilter
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.RestControllerAdvice
 
-@RestControllerAdvice
-class SecurityExceptionHandler {
+internal object SecurityExceptionHandler {
 
-    internal object Messages {
+    object Messages {
 
         const val UNAUTHORIZED = "未登录或Token已失效"
 
         const val FORBIDDEN = "访问被拒绝"
     }
 
-    @ExceptionHandler
-    fun handle(e: AccessDeniedException, request: HttpServletRequest, response: HttpServletResponse) {
-        DefaultAccessDeniedHandler.handle(request, response, e)
+    val webProperties by WebProperties::class.springBeanLazy
+
+    fun respondError(
+        request: HttpServletRequest, response: HttpServletResponse,
+        status: HttpStatus, msg: String, exception: Throwable
+    ) {
+        response.status = status.value()
+        if(!request.canAcceptJson()) return
+        response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        response.outputStream.writer(Charsets.UTF_8).use {
+            val apiResponse = exception.details.toApiResponse(3).apply {
+                val rawMsg = this.msg
+                this.msg = msg
+                (error as ExceptionDetails).run {
+                    message = rawMsg
+                    if(!webProperties.returnStackTraceOnError) {
+                        SecurityExceptionHandler.log.error("", exception)
+                        stackTrace = null
+                    }
+                }
+            }
+            it.write(apiResponse.toJsonString())
+        }
     }
 }
 
@@ -44,15 +64,11 @@ class SecurityExceptionHandler {
 object DefaultAuthenticationEntryPoint : AuthenticationEntryPoint {
 
     override fun commence(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        authException: AuthenticationException?
+        request: HttpServletRequest, response: HttpServletResponse, e: AuthenticationException
     ) {
-        respondError(
-            request, response,
-            HttpStatus.UNAUTHORIZED,
-            SecurityExceptionHandler.Messages.UNAUTHORIZED,
-            authException
+        SecurityExceptionHandler.respondError(
+            request, response, HttpStatus.UNAUTHORIZED,
+            SecurityExceptionHandler.Messages.UNAUTHORIZED, e
         )
     }
 }
@@ -67,31 +83,11 @@ object DefaultAuthenticationEntryPoint : AuthenticationEntryPoint {
 object DefaultAccessDeniedHandler : AccessDeniedHandler {
 
     override fun handle(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        accessDeniedException: AccessDeniedException?
+        request: HttpServletRequest, response: HttpServletResponse, e: AccessDeniedException
     ) {
-        respondError(
-            request, response,
-            HttpStatus.FORBIDDEN,
-            SecurityExceptionHandler.Messages.FORBIDDEN,
-            accessDeniedException
+        SecurityExceptionHandler.respondError(
+            request, response, HttpStatus.FORBIDDEN,
+            SecurityExceptionHandler.Messages.FORBIDDEN, e
         )
-    }
-}
-
-private fun respondError(
-    request: HttpServletRequest, response: HttpServletResponse,
-    status: HttpStatus, msg: String, exception: Throwable?
-) {
-    response.status = status.value()
-    if(!request.canAcceptJson()) return
-    response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-    response.outputStream.writer(Charsets.UTF_8).use {
-        val json = JSONObject().also { jo ->
-            jo["exception"] = ExceptionUtil.getMessage(exception)
-        }
-        val apiResponse = json.toApiResponse(msg, false, status.value())
-        it.write(apiResponse.toJsonString())
     }
 }

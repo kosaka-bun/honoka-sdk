@@ -1,11 +1,11 @@
 package de.honoka.sdk.spring.starter.web
 
-import cn.hutool.core.exceptions.ExceptionUtil
 import de.honoka.sdk.spring.starter.config.WebProperties
-import de.honoka.sdk.util.kotlin.various.ExceptionDetails
+import de.honoka.sdk.util.kotlin.text.isNotBlank
+import de.honoka.sdk.util.kotlin.various.details
 import de.honoka.sdk.util.kotlin.various.isAny
 import de.honoka.sdk.util.kotlin.various.log
-import de.honoka.sdk.util.web.ApiResponse
+import de.honoka.sdk.util.kotlin.web.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
@@ -29,19 +29,15 @@ class GlobalExceptionHandler(private val webProperties: WebProperties) {
         response: HttpServletResponse,
         status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
     ): ApiResponse<*>? {
-        if(!t.isAny(disablePrintLogExceptionTypes)) {
-            log.error("", t)
+        if(webProperties.returnStackTraceOnError || !t.isAny(disablePrintLogExceptionTypes)) {
+            this@GlobalExceptionHandler.log.error("", t)
         }
         response.status = status.value()
         if(!request.canAcceptJson()) return null
-        val msg = if(t.message?.isNotBlank() == true) {
-            t.message
-        } else {
-            ExceptionUtil.getMessage(t)
-        }
-        val result = ApiResponse.fail(msg)
-        if(webProperties.returnStackTraceOnError) {
-            result.data = ExceptionDetails(t)
+        val result = t.details.toApiResponse(3)
+        if(!webProperties.returnStackTraceOnError) {
+            result.msg = t.message.takeIf { it.isNotBlank() } ?: "内部服务器错误"
+            result.error = null
         }
         return result
     }

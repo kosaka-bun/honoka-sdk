@@ -3,11 +3,11 @@ package de.honoka.sdk.util.android.web.server.ktor
 import android.util.Log
 import android.webkit.MimeTypeMap
 import cn.hutool.core.exceptions.ExceptionUtil
-import cn.hutool.json.JSONObject
 import de.honoka.sdk.util.android.various.global
 import de.honoka.sdk.util.android.web.server.HttpServer
 import de.honoka.sdk.util.android.web.webview.JsInterfaceRegistrar
-import de.honoka.sdk.util.web.ApiResponse
+import de.honoka.sdk.util.kotlin.various.details
+import de.honoka.sdk.util.kotlin.web.ApiResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
@@ -160,7 +160,11 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
 private class StatusHandlerRegistrar(private val config: StatusPagesConfig) {
 
     private val notFoundHandler: StatusPageHandler = { call, status ->
-        val res = ApiResponse.fail(status.value, "path: ${call.request.path()}")
+        val res = ApiResponse.fail(
+            HttpStatusCode.NotFound.value,
+            "path: ${call.request.path()}",
+            null
+        )
         call.respondJson(res, status)
     }
 
@@ -178,13 +182,8 @@ private class StatusHandlerRegistrar(private val config: StatusPagesConfig) {
         config.exception<Throwable> { call, t ->
             val realException = ExceptionUtil.getRootCause(t)
             val status = HttpStatusCode.InternalServerError
-            val res = ApiResponse.of<Any>().apply {
+            val res = realException.details.toApiResponse().apply {
                 code = status.value
-                this.success = false
-                msg = ExceptionUtil.getMessage(realException)
-                data = JSONObject().also {
-                    it["stackTrace"] = ExceptionUtil.stacktraceToString(realException)
-                }
             }
             call.respondJson(res, status)
         }

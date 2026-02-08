@@ -20,3 +20,6 @@ class ApplicationContextHolder : ApplicationContextAware {
 
 val <T : Any> KClass<T>.springBean: T
     get() = ApplicationContextHolder.context.getBean(java)
+
+val <T : Any> KClass<T>.springBeanLazy: Lazy<T>
+    get() = lazy { springBean }

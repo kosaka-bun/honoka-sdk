@@ -1,12 +1,13 @@
 package de.honoka.sdk.spring.starter.web.webflux
 
-import cn.hutool.core.exceptions.ExceptionUtil
 import de.honoka.sdk.spring.starter.config.WebFluxProperties
-import de.honoka.sdk.spring.starter.core.springBean
-import de.honoka.sdk.util.kotlin.various.ExceptionDetails
+import de.honoka.sdk.spring.starter.core.springBeanLazy
+import de.honoka.sdk.util.kotlin.text.isNotBlank
+import de.honoka.sdk.util.kotlin.text.toJsonString
+import de.honoka.sdk.util.kotlin.various.details
 import de.honoka.sdk.util.kotlin.various.isAny
 import de.honoka.sdk.util.kotlin.various.log
-import de.honoka.sdk.util.web.ApiResponse
+import de.honoka.sdk.util.kotlin.web.ApiResponse
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -27,7 +28,7 @@ class GlobalExceptionHandler {
 
     companion object {
 
-        private val webFluxProperties by lazy { WebFluxProperties::class.springBean }
+        private val webFluxProperties by WebFluxProperties::class.springBeanLazy
 
         private val disablePrintLogExceptionTypes = listOf<KClass<out Throwable>>(
             MethodArgumentNotValidException::class,
@@ -39,20 +40,15 @@ class GlobalExceptionHandler {
             exchange: ServerWebExchange,
             status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
         ): ApiResponse<*>? = exchange.run {
-            if(!t.isAny(disablePrintLogExceptionTypes)) {
-                log.error("", t)
+            if(webFluxProperties.returnStackTraceOnError || !t.isAny(disablePrintLogExceptionTypes)) {
+                GlobalExceptionHandler::class.log.error("", t)
             }
             response.statusCode = HttpStatusCode.valueOf(status.value())
             if(!request.canAcceptJson()) return null
-            response.headers.contentType = MediaType.APPLICATION_JSON
-            val msg = if(t.message?.isNotBlank() == true) {
-                t.message
-            } else {
-                ExceptionUtil.getMessage(t)
-            }
-            val result = ApiResponse.fail(msg)
-            if(webFluxProperties.returnStackTraceOnError) {
-                result.data = ExceptionDetails(t)
+            val result = t.details.toApiResponse(3)
+            if(!webFluxProperties.returnStackTraceOnError) {
+                result.msg = t.message.takeIf { it.isNotBlank() } ?: "内部服务器错误"
+                result.error = null
             }
             result
         }
@@ -95,6 +91,7 @@ class GatewayExceptionHandler : WebExceptionHandler {
                 HttpStatus.valueOf(value())
             }
         }
+        response.headers.contentType = MediaType.APPLICATION_JSON
         val result = GlobalExceptionHandler.handleDefault(ex, exchange, status)
         val buffer = response.bufferFactory().wrap(result!!.toJsonString().toByteArray())
         response.writeWith(Mono.just(buffer))

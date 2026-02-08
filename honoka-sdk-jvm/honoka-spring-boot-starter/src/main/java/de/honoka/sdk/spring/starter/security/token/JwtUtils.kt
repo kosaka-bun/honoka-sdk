@@ -6,7 +6,7 @@ import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateTime
 import cn.hutool.jwt.JWT
 import de.honoka.sdk.spring.starter.config.SecurityProperties
-import de.honoka.sdk.spring.starter.core.springBean
+import de.honoka.sdk.spring.starter.core.springBeanLazy
 import de.honoka.sdk.spring.starter.security.DefaultUser
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 
 object JwtUtils {
 
-    private val securityProperties = SecurityProperties::class.springBean
+    private val securityProperties by SecurityProperties::class.springBeanLazy
 
     private val tokenCache = CacheUtil.newTimedCache<String, String?>(0).apply {
         /**

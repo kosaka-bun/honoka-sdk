@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.kotlin.net
+package de.honoka.sdk.util.kotlin.web
 
 import cn.hutool.http.HttpUtil
 
