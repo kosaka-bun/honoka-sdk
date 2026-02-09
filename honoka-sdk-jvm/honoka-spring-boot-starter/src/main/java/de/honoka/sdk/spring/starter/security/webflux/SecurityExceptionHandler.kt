@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono
 
 private object SecurityExceptionHandler {
 
-    val webFluxProperties by WebFluxProperties::class.springBeanLazy
+    private val webFluxProperties by WebFluxProperties::class.springBeanLazy
 
     fun respondError(
         exchange: ServerWebExchange, status: HttpStatusCode, msg: String, exception: Throwable
@@ -32,12 +32,14 @@ private object SecurityExceptionHandler {
         }
         response.headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         val apiResponse = exception.details.toApiResponse(3).apply {
+            code = status.value()
             val rawMsg = this.msg
             this.msg = msg
             (error as ExceptionDetails).run {
                 message = rawMsg
-                if(!webFluxProperties.returnStackTraceOnError) {
+                if(webFluxProperties.returnStackTraceOnError) {
                     SecurityExceptionHandler.log.error("", exception)
+                } else {
                     stackTrace = null
                 }
             }

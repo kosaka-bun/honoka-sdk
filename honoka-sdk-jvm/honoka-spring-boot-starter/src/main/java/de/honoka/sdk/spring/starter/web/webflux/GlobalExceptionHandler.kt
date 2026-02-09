@@ -2,14 +2,13 @@ package de.honoka.sdk.spring.starter.web.webflux
 
 import de.honoka.sdk.spring.starter.config.WebFluxProperties
 import de.honoka.sdk.spring.starter.core.springBeanLazy
-import de.honoka.sdk.util.kotlin.text.isNotBlank
+import de.honoka.sdk.spring.starter.web.GlobalExceptionHandler.Companion.parseHttpStatusCode
 import de.honoka.sdk.util.kotlin.text.toJsonString
 import de.honoka.sdk.util.kotlin.various.details
 import de.honoka.sdk.util.kotlin.various.isAny
 import de.honoka.sdk.util.kotlin.various.log
 import de.honoka.sdk.util.kotlin.web.ApiResponse
 import org.springframework.core.annotation.Order
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -36,18 +35,16 @@ class GlobalExceptionHandler {
         )
 
         internal fun handleDefault(
-            t: Throwable,
-            exchange: ServerWebExchange,
-            status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
+            t: Throwable, exchange: ServerWebExchange, status: Int? = null
         ): ApiResponse<*>? = exchange.run {
             if(webFluxProperties.returnStackTraceOnError || !t.isAny(disablePrintLogExceptionTypes)) {
                 GlobalExceptionHandler::class.log.error("", t)
             }
-            response.statusCode = HttpStatusCode.valueOf(status.value())
+            response.statusCode = HttpStatusCode.valueOf(status ?: parseHttpStatusCode(t))
             if(!request.canAcceptJson()) return null
             val result = t.details.toApiResponse(3)
             if(!webFluxProperties.returnStackTraceOnError) {
-                result.msg = t.message.takeIf { it.isNotBlank() } ?: "内部服务器错误"
+                result.msg = t.message
                 result.error = null
             }
             result
@@ -56,26 +53,18 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler
     fun handle(
-        t: Throwable,
-        exchange: ServerWebExchange,
+        t: Throwable, exchange: ServerWebExchange,
     ): ApiResponse<*>? = handleDefault(t, exchange)
 
     @ExceptionHandler
     fun handle(
-        e: MethodArgumentNotValidException,
-        exchange: ServerWebExchange,
+        e: MethodArgumentNotValidException, exchange: ServerWebExchange,
     ): ApiResponse<*>? {
         val message = e.allErrors.joinToString { it.defaultMessage.toString() }
-        return handleDefault(IllegalArgumentException(message), exchange)
+        return handleDefault(
+            IllegalArgumentException(message), exchange, e.statusCode.value()
+        )
     }
-
-    @ExceptionHandler
-    fun handle(
-        e: ResponseStatusException,
-        exchange: ServerWebExchange,
-    ): ApiResponse<*>? = handleDefault(
-        e, exchange, HttpStatus.valueOf(e.statusCode.value())
-    )
 }
 
 @ForGateway
@@ -84,15 +73,8 @@ class GlobalExceptionHandler {
 class GatewayExceptionHandler : WebExceptionHandler {
 
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> = exchange.run {
-        val status = response.statusCode.run {
-            if(this == null || is2xxSuccessful) {
-                HttpStatus.INTERNAL_SERVER_ERROR
-            } else {
-                HttpStatus.valueOf(value())
-            }
-        }
         response.headers.contentType = MediaType.APPLICATION_JSON
-        val result = GlobalExceptionHandler.handleDefault(ex, exchange, status)
+        val result = GlobalExceptionHandler.handleDefault(ex, exchange)
         val buffer = response.bufferFactory().wrap(result!!.toJsonString().toByteArray())
         response.writeWith(Mono.just(buffer))
     }

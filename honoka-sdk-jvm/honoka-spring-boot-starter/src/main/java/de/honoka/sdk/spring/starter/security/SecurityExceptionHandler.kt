@@ -28,7 +28,7 @@ internal object SecurityExceptionHandler {
         const val FORBIDDEN = "访问被拒绝"
     }
 
-    val webProperties by WebProperties::class.springBeanLazy
+    private val webProperties by WebProperties::class.springBeanLazy
 
     fun respondError(
         request: HttpServletRequest, response: HttpServletResponse,
@@ -39,12 +39,14 @@ internal object SecurityExceptionHandler {
         response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         response.outputStream.writer(Charsets.UTF_8).use {
             val apiResponse = exception.details.toApiResponse(3).apply {
+                code = status.value()
                 val rawMsg = this.msg
                 this.msg = msg
                 (error as ExceptionDetails).run {
                     message = rawMsg
-                    if(!webProperties.returnStackTraceOnError) {
+                    if(webProperties.returnStackTraceOnError) {
                         SecurityExceptionHandler.log.error("", exception)
+                    } else {
                         stackTrace = null
                     }
                 }

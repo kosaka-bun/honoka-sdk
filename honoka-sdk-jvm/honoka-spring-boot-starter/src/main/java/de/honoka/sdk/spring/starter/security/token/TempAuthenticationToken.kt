@@ -1,21 +1,6 @@
 package de.honoka.sdk.spring.starter.security.token
 
-import cn.hutool.json.JSONArray
 import org.springframework.security.authentication.AbstractAuthenticationToken
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-
-@Suppress("CanBeParameter")
-class BasicAuthenticationToken(
-    val userId: Long, authoritiesJson: JSONArray?
-) : UsernamePasswordAuthenticationToken(
-    userId, null,
-    authoritiesJson?.map { SimpleGrantedAuthority(it as String) } ?: listOf<GrantedAuthority>()
-) {
-
-    var authoritiesJson = authoritiesJson ?: JSONArray()
-}
 
 /**
  * 通过临时token获取的临时登录态。

@@ -15,6 +15,8 @@ class DefaultUser {
     var username: String? = null
     
     var password: String? = null
+
+    var roles: String? = null
     
     var authorities: String? = null
     
@@ -33,9 +35,8 @@ open class DefaultUserDetails(private val user: DefaultUser) : UserDetails {
     
     override fun getPassword(): String = user.password!!
     
-    override fun getAuthorities(): Collection<GrantedAuthority> =
-        user.authorities!!.toJsonArray().map { SimpleGrantedAuthority(it as String) }
-    
+    override fun getAuthorities(): Collection<GrantedAuthority> = user.springAuthorityObjects
+
     override fun isEnabled(): Boolean = user.enabled != false
     
     override fun isAccountNonLocked(): Boolean = user.locked != true
@@ -48,5 +49,22 @@ open class DefaultUserDetails(private val user: DefaultUser) : UserDetails {
         if(it != null) System.currentTimeMillis() <= it.time else true
     }
 }
+
+val DefaultUser.springAuthorities: List<String>
+    get() {
+        val list = ArrayList<String>().apply {
+            roles?.toJsonArray()?.forEach { r ->
+                add("ROLE_$r")
+            }
+            authorities?.toJsonArray()?.let { j ->
+                @Suppress("UNCHECKED_CAST")
+                addAll(j as List<String>)
+            }
+        }
+        return list
+    }
+
+val DefaultUser.springAuthorityObjects: List<GrantedAuthority>
+    get() = springAuthorities.map { SimpleGrantedAuthority(it) }
 
 fun DefaultUser.toUserDetails(): DefaultUserDetails = DefaultUserDetails(this)
