@@ -52,14 +52,10 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    fun handle(
-        t: Throwable, exchange: ServerWebExchange,
-    ): ApiResponse<*>? = handleDefault(t, exchange)
+    fun handle(t: Throwable, exchange: ServerWebExchange): ApiResponse<*>? = handleDefault(t, exchange)
 
     @ExceptionHandler
-    fun handle(
-        e: MethodArgumentNotValidException, exchange: ServerWebExchange,
-    ): ApiResponse<*>? {
+    fun handle(e: MethodArgumentNotValidException, exchange: ServerWebExchange): ApiResponse<*>? {
         val message = e.allErrors.joinToString { it.defaultMessage.toString() }
         return handleDefault(
             IllegalArgumentException(message), exchange, e.statusCode.value()

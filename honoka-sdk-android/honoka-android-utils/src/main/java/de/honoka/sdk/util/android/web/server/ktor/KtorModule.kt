@@ -130,16 +130,10 @@ private class RequestMappingsRegistrar(private val routing: Routing) {
         routing.post("/jsInterface/{...}") {
             val path = call.request.path().removePrefix("/jsInterface/").split("/")
             withContext(HttpServer.coroutineDispatcher) {
-                try {
-                    val result = JsInterfaceRegistrar.invokeAsyncMethod(
-                        path[0], path[1], call.receiveText()
-                    )
-                    call.respondJson(ApiResponse.success(result))
-                } catch(t: Throwable) {
-                    val throwable = ExceptionUtil.getRootCause(t)
-                    Log.e("jsInterface", "", throwable)
-                    throw throwable
-                }
+                val result = JsInterfaceRegistrar.invokeAsyncMethod(
+                    path[0], path[1], call.receiveText()
+                )
+                call.respondJson(ApiResponse.success(result))
             }
         }
     }
@@ -161,9 +155,7 @@ private class StatusHandlerRegistrar(private val config: StatusPagesConfig) {
 
     private val notFoundHandler: StatusPageHandler = { call, status ->
         val res = ApiResponse.fail(
-            HttpStatusCode.NotFound.value,
-            "path: ${call.request.path()}",
-            null
+            status.value, "path: ${call.request.path()}", null
         )
         call.respondJson(res, status)
     }
@@ -181,6 +173,11 @@ private class StatusHandlerRegistrar(private val config: StatusPagesConfig) {
     fun exception() {
         config.exception<Throwable> { call, t ->
             val realException = ExceptionUtil.getRootCause(t)
+            Log.e(
+                HttpServer::class.simpleName,
+                "Request handler error (path: ${call.request.path()}): ",
+                realException
+            )
             val status = HttpStatusCode.InternalServerError
             val res = realException.details.toApiResponse().apply {
                 code = status.value

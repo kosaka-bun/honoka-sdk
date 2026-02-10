@@ -13,7 +13,7 @@ import cn.hutool.json.JSONUtil
 import de.honoka.sdk.util.android.various.initGlobalComponents
 import de.honoka.sdk.util.kotlin.text.toJsonString
 import de.honoka.sdk.util.kotlin.various.ExceptionDetails
-import de.honoka.sdk.util.kotlin.various.messageWithName
+import de.honoka.sdk.util.kotlin.various.details
 
 abstract class BaseContentProvider : ContentProvider() {
 
@@ -64,9 +64,7 @@ abstract class BaseContentProvider : ContentProvider() {
         }
         val response = CallResponse().apply {
             if(result is Throwable) {
-                error = ExceptionDetails(result).apply {
-                    message = result.messageWithName
-                }
+                error = result.details
             } else {
                 this.result = result
             }

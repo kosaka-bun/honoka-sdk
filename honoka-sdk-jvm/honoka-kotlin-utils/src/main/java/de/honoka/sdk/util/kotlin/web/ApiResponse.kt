@@ -39,3 +39,5 @@ data class ApiResponse<T>(
         )
     }
 }
+
+fun <T> T.toApiResponse(msg: String? = null): ApiResponse<T> = ApiResponse.success(msg, this)

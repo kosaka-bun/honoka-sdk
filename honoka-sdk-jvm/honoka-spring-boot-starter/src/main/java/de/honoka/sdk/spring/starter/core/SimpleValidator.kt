@@ -30,7 +30,7 @@ interface SimpleValidator<A : Annotation, T> : ConstraintValidator<A, T> {
         return true
     }
 
-    fun fail(message: String, vararg properies: KProperty<*>) {
+    fun fail(message: String, vararg properies: KProperty<*>): Nothing {
         throw FailedException(properies, message)
     }
 }

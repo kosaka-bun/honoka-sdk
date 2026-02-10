@@ -45,9 +45,8 @@ object JwtUtils {
     
     fun parseAvaliableJwt(token: String): JWT = JWT(token).apply {
         setKey(securityProperties.jwt.key.toByteArray())
-        if(!validate(0) && tokenCache.containsKey(cacheKey)) {
-            throw InvalidCookieException("JWT无效或已过期")
-        }
+        if(validate(0) && tokenCache.containsKey(cacheKey)) return@apply
+        throw InvalidCookieException("JWT无效或已过期")
     }
     
     fun cancelJwt() {

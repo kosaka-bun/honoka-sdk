@@ -1,6 +1,5 @@
 package de.honoka.sdk.spring.starter.various
 
-import de.honoka.sdk.util.kotlin.web.ApiResponse
 import org.springframework.core.env.PropertyResolver
 import kotlin.reflect.KClass
 import kotlin.reflect.full.functions
@@ -28,5 +27,3 @@ fun <T : Enum<T>> PropertyResolver.getEnumListProperty(key: String, clazz: KClas
     fun find(name: String): T? = runCatching { valueOfFun.call(name) as T }.getOrNull()
     return list.map { (find(it) ?: find(it.uppercase()))!! }
 }
-
-fun <T> T.toApiResponse(msg: String? = null): ApiResponse<T> = ApiResponse.success(msg, this)

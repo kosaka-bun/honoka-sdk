@@ -5,7 +5,6 @@ import de.honoka.sdk.spring.starter.core.springBeanLazy
 import de.honoka.sdk.spring.starter.security.SecurityExceptionHandler.Messages
 import de.honoka.sdk.spring.starter.web.webflux.canAcceptJson
 import de.honoka.sdk.util.kotlin.text.toJsonString
-import de.honoka.sdk.util.kotlin.various.ExceptionDetails
 import de.honoka.sdk.util.kotlin.various.details
 import de.honoka.sdk.util.kotlin.various.log
 import org.springframework.http.HttpHeaders
@@ -33,15 +32,11 @@ private object SecurityExceptionHandler {
         response.headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         val apiResponse = exception.details.toApiResponse(3).apply {
             code = status.value()
-            val rawMsg = this.msg
             this.msg = msg
-            (error as ExceptionDetails).run {
-                message = rawMsg
-                if(webFluxProperties.returnStackTraceOnError) {
-                    SecurityExceptionHandler.log.error("", exception)
-                } else {
-                    stackTrace = null
-                }
+            if(webFluxProperties.returnStackTraceOnError) {
+                SecurityExceptionHandler.log.error("", exception)
+            } else {
+                error = null
             }
         }
         val data = response.bufferFactory().wrap(apiResponse.toJsonString().toByteArray())
