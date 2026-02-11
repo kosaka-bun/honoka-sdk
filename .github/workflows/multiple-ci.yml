@@ -95,12 +95,16 @@ jobs:
           java-version: 17
           distribution: temurin
           cache: gradle
+      - name: Set up pnpm 10
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: 22.18.0
-          cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache: pnpm
+          cache-dependency-path: '**/pnpm-lock.yaml'
       - name: Build with npm and publish to npm registry
         run: |
           ./ci-builders/scripts/run.sh npm-library publish

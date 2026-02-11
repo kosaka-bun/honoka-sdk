@@ -1,26 +1,26 @@
-//noinspection JSUnusedGlobalSymbols
+import codeUtils from '@/basic/code'
 
 class EventListenerUtils {
 
-  listeners = {
+  listeners: any = {
     onBackButtonPressed: {},
     onActivityPause: {},
     onActivityResume: {}
   }
 
-  //仅在main.js中调用一次
-  exposeToGlobal() {
-    if(!window.android) {
-      window.android = {}
+  //仅在main.ts中调用一次
+  exposeToGlobal(): void {
+    if(!codeUtils.window.android) {
+      codeUtils.window.android = {}
     }
-    window.android.eventListenerUtils = this
+    codeUtils.window.android.eventListenerUtils = this
   }
 
-  invokeListeners(type) {
+  invokeListeners(type: string): boolean | undefined {
     let listenerGroups = this.listeners[type]
     if(!listenerGroups) return
     let result = false
-    Object.values(listenerGroups).forEach(group => {
+    Object.values(listenerGroups).forEach((group: any) => {
       for(let listener of group) {
         //监听器方法若返回true，表示监听器的预定义行为被触发
         if(listener()) result = true
@@ -30,6 +30,6 @@ class EventListenerUtils {
   }
 }
 
-const eventListenerUtils = new EventListenerUtils()
+const eventListenerUtils: EventListenerUtils = new EventListenerUtils()
 
 export default eventListenerUtils

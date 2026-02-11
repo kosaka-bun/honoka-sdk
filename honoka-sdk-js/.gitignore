@@ -1,11 +1,6 @@
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+.gradle/
+gradle-build/
+local.properties
 
 node_modules/
 .DS_Store
@@ -14,17 +9,22 @@ dist-ssr/
 coverage/
 *.local
 
-.gradle/
-gradle-build/
-local.properties
-
 # Editor directories and files
+.idea/
 .vscode/*
 !.vscode/extensions.json
-.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 *.iml
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*

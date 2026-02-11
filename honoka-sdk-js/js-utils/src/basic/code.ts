@@ -1,16 +1,16 @@
-//noinspection JSUnusedGlobalSymbols
-
 class CodeUtils {
 
-  sleep(timeMillis) {
+  window = window as any
+
+  sleep(timeMillis: any): Promise<unknown> {
     return new Promise(resolve => setTimeout(resolve, timeMillis))
   }
 
-  getDomHeight(dom) {
+  getDomHeight(dom: Element): number {
     return parseFloat(window.getComputedStyle(dom).height)
   }
 
-  async tryForResult(getter, times = 20, interval = 5) {
+  async tryForResult(getter: () => any, times = 20, interval = 5): Promise<any> {
     let result
     let exception
     for(let i = 0; i < times; i++) {
@@ -29,8 +29,8 @@ class CodeUtils {
   /**
    * 将使用class构造出的对象转换为普通的object
    */
-  convertObjectToNormal(object) {
-    let clonedObject = {}
+  convertObjectToNormal(object: any): any {
+    let clonedObject: any = {}
     for(let prop in object) {
       clonedObject[prop] = object[prop]
     }
@@ -38,6 +38,6 @@ class CodeUtils {
   }
 }
 
-const codeUtils = new CodeUtils()
+const codeUtils: CodeUtils = new CodeUtils()
 
 export default codeUtils

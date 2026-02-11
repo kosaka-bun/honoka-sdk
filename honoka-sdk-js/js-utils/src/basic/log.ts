@@ -1,12 +1,10 @@
-//noinspection JSUnusedGlobalSymbols
-
 class LogUtils {
 
-  seperator() {
+  seperator(): void {
     console.log('-----------------------------------')
   }
 }
 
-const logUtils = new LogUtils()
+const logUtils: LogUtils = new LogUtils()
 
 export default logUtils

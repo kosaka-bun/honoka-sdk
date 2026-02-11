@@ -1,14 +1,13 @@
-//noinspection JSUnusedGlobalSymbols
-
-import axios from 'axios'
+import codeUtils from '@/basic/code'
+import axios, { AxiosInstance } from 'axios'
 
 class AndroidInterfaceStubUtils {
 
   enableWarning = true
 
-  showErrorMsg(msg) {}
+  showErrorMsg(msg: string): void {}
 
-  #axios
+  #axios?: AxiosInstance
 
   constructor() {
     this.#initAxios()
@@ -35,7 +34,6 @@ class AndroidInterfaceStubUtils {
         console.error(`Call ${error.config.url}\n本地网络请求失败`)
         this.showErrorMsg('本地网络请求失败')
       } else {
-        //noinspection JSUnresolvedReference
         let msg = error.response.data?.msg
         if(!msg || msg === '') {
           msg = error.message
@@ -51,37 +49,36 @@ class AndroidInterfaceStubUtils {
     })
   }
 
-  #warning(name) {
+  #warning(name: any) {
     if(!this.enableWarning) return
     let msg = `You are calling an Android JavaScript Interface function "${name}" ` +
       'directly in browser!'
     console.warn(msg)
   }
 
-  getStub(interfaceName, definition) {
-    let androidInterface = window[`android_${interfaceName}`]
-    let stub = {}
+  getStub(interfaceName: string, definition: any): any {
+    let androidInterface = codeUtils.window[`android_${interfaceName}`]
+    let stub: any = {}
     Object.keys(definition).forEach(it => {
       let methodDef = definition[it]
       if(methodDef instanceof Function) {
-        stub[it] = androidInterface ? this.#getMethodStub(androidInterface, it) : (...args) => {
+        stub[it] = androidInterface ? this.#getMethodStub(androidInterface, it) : (...args: any) => {
           this.#warning(`${interfaceName}.${it}()`)
           return methodDef(...args)
         }
         return
       }
       if(methodDef instanceof Object) {
-        //noinspection JSUnresolvedReference
         let isAsync = methodDef.isAsync ?? false
         if(isAsync) {
           stub[it] = androidInterface ? this.#getAsyncMethodStub(interfaceName, it) : (
-            async (...args) => {
+            async (...args: any) => {
               this.#warning(`${interfaceName}.${it}()`)
               return await methodDef.fallback(...args)
             }
           )
         } else {
-          stub[it] = androidInterface ? this.#getMethodStub(androidInterface, it) : (...args) => {
+          stub[it] = androidInterface ? this.#getMethodStub(androidInterface, it) : (...args: any) => {
             this.#warning(`${interfaceName}.${it}()`)
             return methodDef.fallback(...args)
           }
@@ -93,12 +90,12 @@ class AndroidInterfaceStubUtils {
     return stub
   }
 
-  #getMethodStub(androidInterface, methodName) {
-    return (...args) => androidInterface[methodName](...args)
+  #getMethodStub(androidInterface: any, methodName: string) {
+    return (...args: any) => androidInterface[methodName](...args)
   }
 
-  #getAsyncMethodStub(interfaceName, methodName) {
-    return (...args) => this.#axios({
+  #getAsyncMethodStub(interfaceName: string, methodName: string) {
+    return (...args: any) => (this.#axios!)({
       url: `/${interfaceName}/${methodName}`,
       method: 'post',
       data: args
@@ -106,6 +103,6 @@ class AndroidInterfaceStubUtils {
   }
 }
 
-const androidInterfaceStubUtils = new AndroidInterfaceStubUtils()
+const androidInterfaceStubUtils: AndroidInterfaceStubUtils = new AndroidInterfaceStubUtils()
 
 export default androidInterfaceStubUtils
