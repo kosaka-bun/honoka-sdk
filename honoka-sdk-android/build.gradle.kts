@@ -33,7 +33,6 @@ subprojects {
 
         dependencies {
             kotlinAndroid()
-            lombok()
         }
 
         publishing {

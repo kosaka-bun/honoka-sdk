@@ -7,44 +7,36 @@ import android.os.SystemClock
 import android.view.*
 import android.webkit.WebChromeClient
 import android.webkit.WebChromeClient.CustomViewCallback
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import de.honoka.sdk.util.android.R
 import de.honoka.sdk.util.android.various.launchOnUi
 import de.honoka.sdk.util.android.various.toast
+import de.honoka.sdk.util.android.view.DefaultWebViewClient
 import de.honoka.sdk.util.android.web.server.DefaultHttpServer
 import de.honoka.sdk.util.android.web.webview.JsInterfaceRegistrar
+import de.honoka.sdk.util.kotlin.various.forEachRun
 import kotlinx.coroutines.delay
 import org.intellij.lang.annotations.Language
+import java.util.*
 import kotlin.system.exitProcess
 
 @SuppressLint("SetJavaScriptEnabled")
 abstract class AbstractWebActivity : AppCompatActivity() {
 
-    protected val extras by lazy { getDefaultExtras(WebActivityExtras::class)!! }
+    protected val extras by lazy { parseBasicExtras<WebActivityExtras>() }
 
-    lateinit var webView: WebView
+    lateinit var webViews: List<WebView>
 
-    protected val webViewClient = object : WebViewClient() {
+    protected abstract val webViewIds: List<Int>
 
-        //重写此方法，解决WebView在重定向时打开系统浏览器的问题
-        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            val url = request.url.toString()
-            //禁止WebView加载未知协议的URL
-            if(!url.startsWith("http")) {
-                return true
-            }
-            view.loadUrl(url)
-            return true
-        }
-    }
+    protected val webViewClient = DefaultWebViewClient()
 
     protected val webChromeClient = object : WebChromeClient() {
 
+        @Synchronized
         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
             fullScreenView?.run {
                 callback.onCustomViewHidden()
@@ -52,11 +44,16 @@ abstract class AbstractWebActivity : AppCompatActivity() {
             }
             setFullScreen(true)
             val decorView = window.decorView as FrameLayout
-            decorView.addView(view, fullScreenViewParams)
+            val params = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            decorView.addView(view, params)
             fullScreenView = view
             fullScreenViewCallBack = callback
         }
 
+        @Synchronized
         override fun onHideCustomView() {
             fullScreenView ?: return
             setFullScreen(false)
@@ -64,18 +61,15 @@ abstract class AbstractWebActivity : AppCompatActivity() {
             decorView.removeView(fullScreenView)
             fullScreenView = null
             fullScreenViewCallBack?.onCustomViewHidden()
-            webView.visibility = View.VISIBLE
+            webViews.forEach {
+                it.visibility = View.VISIBLE
+            }
         }
     }
 
     private lateinit var jsInterfaceRegistrar: JsInterfaceRegistrar
 
     protected var fullScreenView: View? = null
-
-    protected val fullScreenViewParams = FrameLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT
-    )
 
     protected var fullScreenViewCallBack: CustomViewCallback? = null
 
@@ -90,18 +84,17 @@ abstract class AbstractWebActivity : AppCompatActivity() {
 
         override fun handleOnBackPressed() {
             launchOnUi {
-                try {
-                    val result = dispatchEventToListenersInWebView(
-                        "onBackButtonPressed"
-                    )
+                runCatching {
+                    val result = dispatchEventToListenersInWebView("onBackButtonPressed")
                     if(!result) doBack()
-                } catch(_: Throwable) {
+                }.getOrElse {
                     doBack()
                 }
             }
         }
 
         private fun doBack() {
+            val webView = webViews.firstOrNull { currentFocus == it } ?: webViews[0]
             if(webView.canGoBack()) {
                 webView.goBack()
                 return
@@ -149,8 +142,9 @@ abstract class AbstractWebActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         //解决状态栏白底白字的问题
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        setContentView(R.layout.activity_web)
+        initActivity()
         initWebView()
+        afterInitWebView()
     }
 
     override fun onPause() {
@@ -165,17 +159,21 @@ abstract class AbstractWebActivity : AppCompatActivity() {
         dispatchEventToListenersInWebViewDirectly("onActivityResume")
     }
 
-    abstract fun onResumeExt()
+    protected abstract fun onResumeExt()
 
     override fun onDestroy() {
-        webView.destroy()
+        webViews.forEach {
+            it.destroy()
+        }
         super.onDestroy()
     }
 
+    protected abstract fun initActivity()
+
     protected fun initWebView() {
-        webView = findViewById(R.id.web_view)
         val activity = this
-        webView.run {
+        webViews = webViewIds.map { findViewById(it) }
+        webViews.forEachRun {
             webViewClient = activity.webViewClient
             webChromeClient = activity.webChromeClient
             settings.run {
@@ -184,14 +182,15 @@ abstract class AbstractWebActivity : AppCompatActivity() {
             }
             isVerticalScrollBarEnabled = false
             scrollBarStyle = View.SCROLLBARS_OUTSIDE_OVERLAY
-            jsInterfaceRegistrar = JsInterfaceRegistrar(
-                activity, definedJsInterfaceInstances
-            )
-            loadUrl(activity.extras.url)
         }
+        jsInterfaceRegistrar = JsInterfaceRegistrar(
+            this, definedJsInterfaceInstances
+        )
         onBackPressedDispatcher.addCallback(onBackPressedCallback)
         orientationEventListener.enable()
     }
+
+    protected abstract fun afterInitWebView()
 
     protected fun setFullScreen(fullScreen: Boolean) {
         if(fullScreen) {
@@ -214,15 +213,21 @@ abstract class AbstractWebActivity : AppCompatActivity() {
     protected suspend fun dispatchEventToListenersInWebView(type: String): Boolean {
         @Language("JavaScript")
         val script = "window.android.eventListenerUtils.invokeListeners('$type')"
-        var result: String? = null
-        webView.evaluateJavascript(script) {
-            result = it
+        val results = Collections.synchronizedList(ArrayList<String?>()).apply {
+            repeat(webViews.size) {
+                add(null)
+            }
+        }
+        webViews.forEachIndexed { i, v ->
+            v.evaluateJavascript(script) {
+                results[i] = it
+            }
         }
         while(true) {
-            if(result != null) break
+            if(results.all { it != null }) break
             delay(1)
         }
-        return result.toBoolean()
+        return results.any { it.toBoolean() }
     }
 
     protected fun dispatchEventToListenersInWebViewDirectly(type: String) {
@@ -231,7 +236,8 @@ abstract class AbstractWebActivity : AppCompatActivity() {
         }
     }
 
-    fun simulateClick(positionX: Float, positionY: Float) {
+    @Suppress("SameParameterValue")
+    fun simulateClick(webViewIndex: Int, positionX: Float, positionY: Float) {
         fun obtainEvent(action: Int): MotionEvent = MotionEvent.obtain(
             SystemClock.uptimeMillis(),
             SystemClock.uptimeMillis(),
@@ -240,6 +246,7 @@ abstract class AbstractWebActivity : AppCompatActivity() {
             positionY,
             0
         )
+        val webView = webViews[webViewIndex]
         obtainEvent(MotionEvent.ACTION_DOWN).run {
             webView.dispatchTouchEvent(this)
             recycle()
@@ -263,7 +270,21 @@ data class WebActivityExtras(
 
 open class DefaultWebActivity : AbstractWebActivity() {
 
+    override val webViewIds: List<Int> = listOf(R.id.default_web_activity_web_view)
+
     override val definedJsInterfaceInstances: List<Any> = listOf()
 
     override fun onResumeExt() {}
+
+    override fun initActivity() {
+        setContentView(R.layout.activity_default_web)
+    }
+
+    override fun afterInitWebView() {
+        webViews[0].loadUrl(extras.url)
+    }
+
+    fun simulateClick(positionX: Float, positionY: Float) {
+        simulateClick(0, positionX, positionY)
+    }
 }

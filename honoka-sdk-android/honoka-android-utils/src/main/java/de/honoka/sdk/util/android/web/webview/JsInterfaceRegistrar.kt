@@ -18,10 +18,10 @@ internal class JsInterfaceRegistrar(
         private val interfaces = ConcurrentHashMap<String, Any>()
 
         fun invokeAsyncMethod(jsInterfaceName: String, functionName: String, args: String): Any? {
-            val jsInterface = interfaces[jsInterfaceName].also {
-                it ?: error("Unknown JavaScript interface name: $jsInterfaceName")
-            }
-            val function = jsInterface!!::class.declaredMemberFunctions.firstOrNull {
+            val jsInterface = interfaces[jsInterfaceName] ?: error(
+                "Unknown JavaScript interface name: $jsInterfaceName"
+            )
+            val function = jsInterface::class.declaredMemberFunctions.firstOrNull {
                 it.name == functionName && it.hasAnnotation<AsyncJavascriptInterface>()
             } ?: error(
                 """
@@ -46,9 +46,9 @@ internal class JsInterfaceRegistrar(
     @SuppressLint("JavascriptInterface")
     private fun registerJsInterfaces() {
         interfaceInstances.forEach {
-            webActivity.webView.addJavascriptInterface(
-                it, "android_${it::class.simpleName}"
-            )
+            webActivity.webViews.forEach { v ->
+                v.addJavascriptInterface(it, "android_${it::class.simpleName}")
+            }
         }
         val interfacesMap = interfaceInstances.associateBy { it::class.simpleName!! }
         interfaces.putAll(interfacesMap)

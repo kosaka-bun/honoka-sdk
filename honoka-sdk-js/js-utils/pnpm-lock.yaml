@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       axios:
-        specifier: ^1.5.1
+        specifier: ^1.12.2
         version: 1.13.5
     devDependencies:
       tsc-alias:

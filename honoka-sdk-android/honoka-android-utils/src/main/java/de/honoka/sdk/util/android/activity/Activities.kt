@@ -9,12 +9,12 @@ import de.honoka.sdk.util.kotlin.text.toJsonString
 import de.honoka.sdk.util.kotlin.text.toJsonWrapper
 import kotlin.reflect.KClass
 
-private const val ACTIVITY_DEFAULT_EXTRAS_NAME = "defaultExtras"
+private const val ACTIVITY_BASIC_EXTRAS_NAME = "basicExtras"
 
 fun Activity.startActivity(clazz: KClass<out Activity>, extras: Any? = null) {
     val intent = Intent(this, clazz.java)
     extras?.let {
-        intent.putExtra(ACTIVITY_DEFAULT_EXTRAS_NAME, it.toJsonString())
+        intent.putExtra(ACTIVITY_BASIC_EXTRAS_NAME, it.toJsonString())
     }
     startActivity(intent)
 }
@@ -31,9 +31,12 @@ fun Activity.startRootWebActivty(
     switchActivity(webActivityClass, WebActivityExtras(url, true))
 }
 
-fun <T : Any> Activity.getDefaultExtras(clazz: KClass<T>): T? = intent.run {
-    getStringExtra(ACTIVITY_DEFAULT_EXTRAS_NAME)?.toJsonWrapper()?.toBean(clazz)
+inline fun <reified T : Any> Activity.parseBasicExtras(): T = intent.run {
+    getBasicExtrasString().toJsonWrapper().toBean(T::class)
 }
+
+@PublishedApi
+internal fun Intent.getBasicExtrasString(): String = getStringExtra(ACTIVITY_BASIC_EXTRAS_NAME)!!
 
 /**
  * 全屏化当前Activity
