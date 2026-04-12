@@ -1,7 +1,7 @@
-package de.honoka.sdk.util.gui;
+package de.honoka.sdk.util.ui;
 
 import cn.hutool.core.util.ArrayUtil;
-import de.honoka.sdk.util.various.ActionUtils;
+import de.honoka.sdk.util.various.CodeUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -22,8 +22,8 @@ public class ColorfulOutputStream extends OutputStream {
 
     private final Color defaultPrintColor;
 
-    @Getter
     @Setter
+    @Getter
     private Color printColor;
 
     @Setter
@@ -41,7 +41,6 @@ public class ColorfulOutputStream extends OutputStream {
         originalPrintStream.write(b);
     }
 
-    @SuppressWarnings("NullableProblems")
     @SneakyThrows
     @Override
     public synchronized void write(byte[] b, int off, int len) {
@@ -60,7 +59,7 @@ public class ColorfulOutputStream extends OutputStream {
                 printColor = defaultPrintColor;
                 return;
             }
-            ActionUtils.doIgnoreException(() -> {
+            CodeUtils.runCatching(() -> {
                 int ansiCode = Integer.parseInt(s);
                 Color color = ColorAttributeSets.getColor(ansiCode);
                 if(color != null) {

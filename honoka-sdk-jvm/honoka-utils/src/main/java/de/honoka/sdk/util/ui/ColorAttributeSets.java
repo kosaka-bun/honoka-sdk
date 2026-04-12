@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.gui;
+package de.honoka.sdk.util.ui;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;

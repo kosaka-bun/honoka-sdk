@@ -8,7 +8,7 @@ import com.j256.ormlite.table.TableUtils
 import de.honoka.sdk.util.android.various.global
 
 internal class DatabaseHelper(
-    private val dao: BaseDao<*>, databaseName: String, databaseVersion: Int
+    dao: BaseDao<*>, databaseName: String, databaseVersion: Int
 ) : OrmLiteSqliteOpenHelper(
     global.application, databaseName, null, databaseVersion
 ) {

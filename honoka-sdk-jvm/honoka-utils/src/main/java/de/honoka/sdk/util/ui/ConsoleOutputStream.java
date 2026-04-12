@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.gui;
+package de.honoka.sdk.util.ui;
 
 import lombok.Getter;
 import lombok.Setter;

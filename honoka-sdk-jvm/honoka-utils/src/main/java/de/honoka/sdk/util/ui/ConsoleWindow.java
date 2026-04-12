@@ -1,8 +1,8 @@
-package de.honoka.sdk.util.gui;
+package de.honoka.sdk.util.ui;
 
 import cn.hutool.core.util.StrUtil;
 import de.honoka.sdk.util.text.TextUtils;
-import de.honoka.sdk.util.various.ActionUtils;
+import de.honoka.sdk.util.various.CodeUtils;
 import de.honoka.sdk.util.various.ThrowsRunnable;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -34,13 +34,8 @@ import java.util.Objects;
 @SuppressWarnings("ExtractMethodRecommender")
 public class ConsoleWindow {
 
-    //全局初始化，先于所有类型的初始化执行
     static {
-        //设置本机系统外观
-        //noinspection CodeBlock2Expr
-        ActionUtils.doIgnoreException(() -> {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        });
+        UiUtils.setUiStyleWithCurrentOs();
     }
 
     @SuppressWarnings("unused")
@@ -326,7 +321,7 @@ public class ConsoleWindow {
             //通过新线程执行方法，避免卡住界面
             new Thread(() -> {
                 item.setEnabled(false);
-                ActionUtils.doAction(name, action);
+                CodeUtils.tryActionVisiable(name, action);
                 item.setEnabled(true);
             }).start();
         });
@@ -526,7 +521,7 @@ public class ConsoleWindow {
     private void initFrame() {
         frame.setTitle(windowName);
         frame.setMinimumSize(defaultFrameSize);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
     }
 

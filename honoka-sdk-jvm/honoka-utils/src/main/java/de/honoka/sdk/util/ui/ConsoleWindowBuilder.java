@@ -1,4 +1,4 @@
-package de.honoka.sdk.util.gui;
+package de.honoka.sdk.util.ui;
 
 import de.honoka.sdk.util.various.ThrowsRunnable;
 import lombok.AccessLevel;

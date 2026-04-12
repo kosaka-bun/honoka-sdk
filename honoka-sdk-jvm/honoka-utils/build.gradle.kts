@@ -1,4 +1,5 @@
-import de.honoka.gradle.util.dsl.*
+import de.honoka.gradle.util.dsl.common
+import de.honoka.gradle.util.dsl.libs
 
 honoka.basic.publishing.version = libs.common.versions.p.honoka.utils.get()
 
@@ -10,5 +11,6 @@ dependencies {
     implementation(libs.logback)
     compileOnly("org.jetbrains:annotations:24.0.0")
     runtimeOnly("org.bouncycastle:bcpkix-jdk18on:1.80")
+    compileOnly("com.formdev:flatlaf:3.7.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
 }

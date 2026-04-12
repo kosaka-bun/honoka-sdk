@@ -24,11 +24,10 @@ public class CodeUtils {
      */
     public static void printSystemProperties() {
         List<Map.Entry<Object, Object>> props = System.getProperties()
-                .entrySet()
-                .stream().sorted(
-                        (o1, o2) -> String.CASE_INSENSITIVE_ORDER
-                                .compare(o1.toString(), o2.toString())
-                ).collect(Collectors.toList());
+            .entrySet()
+            .stream()
+            .sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.toString(), o2.toString()))
+            .collect(Collectors.toList());
         for(Map.Entry<Object, Object> prop : props) {
             System.out.println(prop.getKey().toString() + "=" + prop.getValue());
             System.out.println();
@@ -52,6 +51,37 @@ public class CodeUtils {
             return null;
         } catch(Throwable t) {
             return null;
+        }
+    }
+
+    /**
+     * 忽略异常执行一段代码
+     */
+    public static void runCatching(boolean printStackTrace, ThrowsRunnable action) {
+        try {
+            action.throwsRun();
+        } catch(Throwable t) {
+            if(printStackTrace) {
+                t.printStackTrace();
+            }
+        }
+    }
+
+    public static void runCatching(ThrowsRunnable action) {
+        runCatching(false, action);
+    }
+
+    /**
+     * 控制台可视化执行一段代码
+     */
+    public static void tryActionVisiable(String name, ThrowsRunnable action) {
+        System.out.println("开始执行" + name + "……");
+        try {
+            action.throwsRun();
+            System.out.println(name + "执行完成");
+        } catch(Throwable t) {
+            System.err.println(name + "未成功执行，错误信息如下：");
+            t.printStackTrace();
         }
     }
 }
