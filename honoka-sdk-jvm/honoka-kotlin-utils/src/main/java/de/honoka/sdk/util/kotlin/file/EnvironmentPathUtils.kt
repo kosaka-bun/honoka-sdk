@@ -15,23 +15,29 @@ object EnvironmentPathUtils {
     var buildTool = BuildTool.GRADLE
         set(value) {
             field = value
-            dataDirPath = null
+            dataDirPathOrNull = null
         }
+
+    var pathOffset = ""
 
     @Volatile
-    private var dataDirPath: String? = null
+    private var dataDirPathOrNull: String? = null
 
-    fun getDataDirPathOfApp(): String {
-        dataDirPath?.let { return it }
-        if(FileUtils.isAppRunningInJar()) {
-            dataDirPath = FileUtils.getMainClasspath()
-            return dataDirPath!!
+    val dataDirPath: String
+        get() {
+            dataDirPathOrNull?.let { return it }
+            dataDirPathOrNull = if(FileUtils.isAppRunningInJar()) {
+                val mainClasspath = FileUtils.getMainClasspath()
+                if(pathOffset.isBlank()) {
+                    mainClasspath
+                } else {
+                    Path(mainClasspath, pathOffset).normalize().toString()
+                }
+            } else {
+                Path(getClassesDirPath(), "../data$pathOffset").normalize().toString()
+            }
+            return dataDirPathOrNull!!
         }
-        dataDirPath = Path(getClassesDirPath(), "../data").run {
-            normalize().toString()
-        }
-        return dataDirPath!!
-    }
 
     private fun getClassesDirPath(): String {
         val relativePath = when(buildTool) {

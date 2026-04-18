@@ -11,6 +11,5 @@ dependencies {
     implementation(libs.logback)
     compileOnly("org.jetbrains:annotations:24.0.0")
     runtimeOnly("org.bouncycastle:bcpkix-jdk18on:1.80")
-    compileOnly("com.formdev:flatlaf:3.7.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
 }

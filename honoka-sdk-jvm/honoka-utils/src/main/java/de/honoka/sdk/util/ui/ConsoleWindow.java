@@ -34,10 +34,6 @@ import java.util.Objects;
 @SuppressWarnings("ExtractMethodRecommender")
 public class ConsoleWindow {
 
-    static {
-        UiUtils.setUiStyleWithCurrentOs();
-    }
-
     @SuppressWarnings("unused")
     public static class Builder {
 
